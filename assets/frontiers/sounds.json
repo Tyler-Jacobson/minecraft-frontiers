@@ -62,165 +62,95 @@
       "frontiers:ice_whoosh_16"
     ]
   },
-  "grenade_1_short_mono": {
+  "fire_staff_fireball_explosion1": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_1_short_mono"
+      "frontiers:fire_staff_fireball_explosion1"
     ]
   },
-    "grenade_2_short_mono": {
+    "fire_staff_fireball_explosion2": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_2_short_mono"
+      "frontiers:fire_staff_fireball_explosion2"
     ]
   },
-    "grenade_3_short_mono": {
+    "fire_staff_fireball_explosion3": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_3_short_mono"
+      "frontiers:fire_staff_fireball_explosion3"
     ]
   },
-    "grenade_4_short_mono": {
+    "fire_staff_fireball_explosion4": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_4_short_mono"
+      "frontiers:fire_staff_fireball_explosion4"
     ]
   },
-    "grenade_5_short_mono": {
+    "fire_staff_fireball_explosion5": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_5_short_mono"
+      "frontiers:fire_staff_fireball_explosion5"
     ]
   },
-    "grenade_6_short_mono": {
+    "fire_staff_fireball_explosion6": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_6_short_mono"
+      "frontiers:fire_staff_fireball_explosion6"
     ]
   },
-    "grenade_7_short_mono": {
+    "fire_staff_fireball_explosion7": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_7_short_mono"
+      "frontiers:fire_staff_fireball_explosion7"
     ]
   },
-    "grenade_8_short_mono": {
+    "fire_staff_fireball_explosion8": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_8_short_mono"
+      "frontiers:fire_staff_fireball_explosion8"
     ]
   },
-    "grenade_9_short_mono": {
+    "fire_staff_fireball_explosion9": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_9_short_mono"
+      "frontiers:fire_staff_fireball_explosion9"
     ]
   },
-    "grenade_10_short_mono": {
+    "fire_staff_fireball_explosion10": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:grenade_10_short_mono"
+      "frontiers:fire_staff_fireball_explosion10"
     ]
   },
-    "loading_start": {
+    "fire_staff_swing_whoosh_start": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:loading_start"
+      "frontiers:fire_staff_swing_whoosh_start"
     ]
   },
-    "loading_middle1": {
+    "fire_staff_swing_whoosh_middle": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:loading_middle1"
+      "frontiers:fire_staff_swing_whoosh_middle"
     ]
   },
-    "fire_whoosh": {
+    "fire_staff_fireball_projectile_whoosh": {
     "category": "neutral",
     "subtitle": "You catch something unnatural",
     "sounds": [
-      "frontiers:fire_whoosh"
-    ]
-  },
-    "fire_woosh_start1": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_woosh_start1"
-    ]
-  },
-    "fire_whoosh_start1": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_whoosh_start1"
-    ]
-  },
-    "fire_whoosh_start2": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_whoosh_start2"
-    ]
-  },
-    "fire_whoosh_start3": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_whoosh_start3"
-    ]
-  },
-    "fire_projectile_whoosh1": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_projectile_whoosh1"
-    ]
-  },
-    "fire_projectile_burn1": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_projectile_burn1"
-    ]
-  },
-    "fire_projectile_whoosh2": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_projectile_whoosh2"
-    ]
-  },
-    "fire_projectile_whoosh3": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_projectile_whoosh3"
-    ]
-  },
-    "fire_projectile_whoosh4": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_projectile_whoosh4"
-    ]
-  },
-    "fire_projectile_whoosh5": {
-    "category": "neutral",
-    "subtitle": "You catch something unnatural",
-    "sounds": [
-      "frontiers:fire_projectile_whoosh5"
+      "frontiers:fire_staff_fireball_projectile_whoosh"
     ]
   }
 }
