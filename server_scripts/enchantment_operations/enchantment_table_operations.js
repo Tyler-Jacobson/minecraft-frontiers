@@ -1,6 +1,5 @@
 MoreJSEvents.filterAvailableEnchantments((event) => { // this handles which enhcantments can be given to an item ONLY when using the enchantment table
     if (event.getItem() === 'frontiers:fire_staff') {
-        console.info(`running filterAvailableEnchants code`)
         event.remove("minecraft:sharpness")
         event.remove("minecraft:bane_of_arthropods")
         event.remove("minecraft:smite")
