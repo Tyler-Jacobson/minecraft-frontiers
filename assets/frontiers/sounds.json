@@ -1,0 +1,226 @@
+{
+  "forst_nova_short_01": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:forst_nova_short_01"
+    ]
+  },
+  "forst_nova_short_05": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:forst_nova_short_05"
+    ]
+  },
+  "forst_nova_short_08": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:forst_nova_short_08"
+    ]
+  },
+  "ice_teleport_in_02": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:ice_teleport_in_02"
+    ]
+  },
+  "ice_teleport_in_04": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:ice_teleport_in_04"
+    ]
+  },
+  "ice_teleport_out_02": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:ice_teleport_out_02"
+    ]
+  },
+  "ice_teleport_out_04": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:ice_teleport_out_04"
+    ]
+  },
+  "ice_whoosh_09": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:ice_whoosh_09"
+    ]
+  },
+  "ice_whoosh_16": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:ice_whoosh_16"
+    ]
+  },
+  "grenade_1_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_1_short_mono"
+    ]
+  },
+    "grenade_2_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_2_short_mono"
+    ]
+  },
+    "grenade_3_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_3_short_mono"
+    ]
+  },
+    "grenade_4_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_4_short_mono"
+    ]
+  },
+    "grenade_5_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_5_short_mono"
+    ]
+  },
+    "grenade_6_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_6_short_mono"
+    ]
+  },
+    "grenade_7_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_7_short_mono"
+    ]
+  },
+    "grenade_8_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_8_short_mono"
+    ]
+  },
+    "grenade_9_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_9_short_mono"
+    ]
+  },
+    "grenade_10_short_mono": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:grenade_10_short_mono"
+    ]
+  },
+    "loading_start": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:loading_start"
+    ]
+  },
+    "loading_middle1": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:loading_middle1"
+    ]
+  },
+    "fire_whoosh": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_whoosh"
+    ]
+  },
+    "fire_woosh_start1": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_woosh_start1"
+    ]
+  },
+    "fire_whoosh_start1": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_whoosh_start1"
+    ]
+  },
+    "fire_whoosh_start2": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_whoosh_start2"
+    ]
+  },
+    "fire_whoosh_start3": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_whoosh_start3"
+    ]
+  },
+    "fire_projectile_whoosh1": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_projectile_whoosh1"
+    ]
+  },
+    "fire_projectile_burn1": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_projectile_burn1"
+    ]
+  },
+    "fire_projectile_whoosh2": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_projectile_whoosh2"
+    ]
+  },
+    "fire_projectile_whoosh3": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_projectile_whoosh3"
+    ]
+  },
+    "fire_projectile_whoosh4": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_projectile_whoosh4"
+    ]
+  },
+    "fire_projectile_whoosh5": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:fire_projectile_whoosh5"
+    ]
+  }
+}
