@@ -6,20 +6,19 @@ const $EnchantmentCategory = Java.loadClass(
 )
 
 const fireballCollisionSounds = [
-    'frontiers:grenade_1_short_mono', 'frontiers:grenade_2_short_mono', 'frontiers:grenade_3_short_mono',
-    'frontiers:grenade_4_short_mono', 'frontiers:grenade_5_short_mono', 'frontiers:grenade_6_short_mono',
-    'frontiers:grenade_7_short_mono', 'frontiers:grenade_8_short_mono', 'frontiers:grenade_9_short_mono',
-    'frontiers:grenade_10_short_mono'
+    'frontiers:fire_staff_fireball_explosion1', 'frontiers:fire_staff_fireball_explosion2', 'frontiers:fire_staff_fireball_explosion3',
+    'frontiers:fire_staff_fireball_explosion4', 'frontiers:fire_staff_fireball_explosion5', 'frontiers:fire_staff_fireball_explosion6',
+    'frontiers:fire_staff_fireball_explosion7', 'frontiers:fire_staff_fireball_explosion8', 'frontiers:fire_staff_fireball_explosion9',
+    'frontiers:fire_staff_fireball_explosion10'
 ]
 
 StartupEvents.registry('sound_event', event => {
     fireballCollisionSounds.forEach(sound => {
         event.create(sound)
     })
-    event.create('frontiers:fire_whoosh')
-    event.create('frontiers:fire_whoosh_start3')
-    event.create('frontiers:fire_projectile_whoosh5')
-
+    event.create('frontiers:fire_staff_swing_whoosh_start')
+    event.create('frontiers:fire_staff_swing_whoosh_middle')
+    event.create('frontiers:fire_staff_fireball_projectile_whoosh')
 })
 
 const allowedEnchantsForFireStaff = [
@@ -84,7 +83,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.AnvilUpdateEvent', (event) => {
 const FIRESTAFF_BASE_REPAIR_COST = 1
 const FIRESTAFF_BASE_DAMAGE = 17
 
-let nextFireStaffSwingAnimation = 8 // multiplayer
+let nextFireStaffSwingAnimation = 'fire_staff_swing_left' // multiplayer
 
 let threeMostRecentFireCollisionSoundSelections = [] // mutiplayer
 
@@ -118,10 +117,10 @@ ForgeEvents.onEvent('net.minecraftforge.event.entity.living.LivingEntityUseItemE
             player.setYBodyRot(player.getYHeadRot())
 
             if (event.getDuration() === 34) {// this counts down from the max value passed to useDuration to 0
-                level.playSound(player, player.block.pos, 'frontiers:fire_whoosh_start3', "players", 1, 1)
+                level.playSound(player, player.block.pos, 'frontiers:fire_staff_swing_whoosh_start', "players", 1, 1)
             }
             if (event.getDuration() === 30) {// this counts down from the max value passed to useDuration to 0
-                level.playSound(player, player.block.pos, 'frontiers:fire_whoosh', "players", 1, 1)
+                level.playSound(player, player.block.pos, 'frontiers:fire_staff_swing_whoosh_middle', "players", 1, 1)
             }
 
         }
@@ -132,15 +131,15 @@ StartupEvents.registry("item", event => {
     event.create("frontiers:fire_staff", 'sword')
         .use((level, player, hand) => {
             if (!(level === 'ClientLevel')) {
-                if (nextFireStaffSwingAnimation === 8) {
-                    player.triggerAnimation("frontiers:firestaff_animation8")
-                    nextFireStaffSwingAnimation = 9
-                } else if (nextFireStaffSwingAnimation === 9) {
-                    player.triggerAnimation("frontiers:firestaff_animation9") // firestaff_animation9
-                    nextFireStaffSwingAnimation = 10
-                } else if (nextFireStaffSwingAnimation === 10) {
-                    player.triggerAnimation("frontiers:firestaff_animation10") // firestaff_animation10
-                    nextFireStaffSwingAnimation = 8
+                if (nextFireStaffSwingAnimation === 'fire_staff_swing_left') {
+                    player.triggerAnimation("frontiers:fire_staff_swing_left")
+                    nextFireStaffSwingAnimation = 'fire_staff_swing_right'
+                } else if (nextFireStaffSwingAnimation === 'fire_staff_swing_right') {
+                    player.triggerAnimation("frontiers:fire_staff_swing_right")
+                    nextFireStaffSwingAnimation = 'fire_staff_swing_center'
+                } else if (nextFireStaffSwingAnimation === 'fire_staff_swing_center') {
+                    player.triggerAnimation("frontiers:fire_staff_swing_center")
+                    nextFireStaffSwingAnimation = 'fire_staff_swing_left'
                 }
             }
             return true
@@ -152,15 +151,15 @@ StartupEvents.registry("item", event => {
         })
         .releaseUsing((itemstack, level, player) => {
             if (!(level === 'ClientLevel')) {
-                if (nextFireStaffSwingAnimation === 8) { // if 8, 10 must have been canceled. Re-queue 10
-                    player.stopAnimation("frontiers:firestaff_animation10");
-                    nextFireStaffSwingAnimation = 10
-                } else if (nextFireStaffSwingAnimation === 9) { // if 9, 8 must have been canceled. Re-queue 8
-                    player.stopAnimation("frontiers:firestaff_animation8");
-                    nextFireStaffSwingAnimation = 8
-                } else if (nextFireStaffSwingAnimation === 10) {
-                    player.stopAnimation("frontiers:firestaff_animation9");
-                    nextFireStaffSwingAnimation = 9
+                if (nextFireStaffSwingAnimation === 'fire_staff_swing_left') { // if 'fire_staff_swing_left', 'fire_staff_swing_center' must have been canceled. Re-queue 'fire_staff_swing_center'
+                    player.stopAnimation("frontiers:fire_staff_swing_center");
+                    nextFireStaffSwingAnimation = 'fire_staff_swing_center'
+                } else if (nextFireStaffSwingAnimation === 'fire_staff_swing_right') { // if 'fire_staff_swing_right', 'fire_staff_swing_left' must have been canceled. Re-queue 'fire_staff_swing_left'
+                    player.stopAnimation("frontiers:fire_staff_swing_left");
+                    nextFireStaffSwingAnimation = 'fire_staff_swing_left'
+                } else if (nextFireStaffSwingAnimation === 'fire_staff_swing_center') {
+                    player.stopAnimation("frontiers:fire_staff_swing_right");
+                    nextFireStaffSwingAnimation = 'fire_staff_swing_right'
                 }
             }
         })
@@ -168,7 +167,8 @@ StartupEvents.registry("item", event => {
 })
 
 StartupEvents.registry('entity_type', event => {
-    event.create("frontiers:fireball1", "entityjs:geckolib_projectile").onHitEntity(context => {
+    // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
+    event.create("frontiers:fireball_entity", "entityjs:geckolib_projectile").onHitEntity(context => {
         // 'entity' in this context is the projectile that is spawned
         // 'result.entity' in this context is the target that is hit by the projectile
         const { entity, result } = context;
@@ -251,13 +251,13 @@ StartupEvents.registry('entity_type', event => {
         const collisionZ = entity.z
 
         if (entity.age === 3) {
-            world.playSound(entity, entity.block.pos, 'frontiers:fire_projectile_whoosh5', "players", 1, 1)
+            world.playSound(entity, entity.block.pos, 'frontiers:fire_staff_fireball_projectile_whoosh', "players", 1, 1)
         }
 
         const smokeParticleYOffset = 0.3
         const smokeParticleCountPerTick = 1
         const smokeParticleSpeedPerTick = 0
-        
+
         const lavaParticleCountPerTick = 1
         const lavaParticleSpeedPerTick = 20
 
@@ -267,7 +267,7 @@ StartupEvents.registry('entity_type', event => {
 })
 
 const spawnFireball = (player, level, eyePosition, lookAngle) => {
-    const projectile = level.createEntity("frontiers:fireball1");
+    const projectile = level.createEntity("frontiers:fireball_entity");
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     projectile.setOwner(player)
     const vel = lookAngle.scale(1.5)
