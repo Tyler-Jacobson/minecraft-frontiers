@@ -66,7 +66,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.AnvilUpdateEvent', (event) => {
 
 
                 let newFireStaffItem = Item.of('frontiers:fire_staff')
-                if (outputItemEnchantsList.length) { // needed for now but there is a better way to do this. maybe just wait 1 tick
+                if (outputItemEnchantsList.length) {
                     newFireStaffItem.nbt.putInt('Damage', modifiedInputItemNBTData.getInt('Damage')) // working
                     newFireStaffItem.nbt.putInt('RepairCost', anvilMenuData.getInventoryContainer().calculateIncreasedRepairCost(cost)) // working
                     newFireStaffItem.nbt.put('Enchantments', outputItemEnchantsList) // working

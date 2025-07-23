@@ -2,17 +2,19 @@
 
 const getPlayerSpecificData = (player, key) => {
     let playerStringUUID = `${player.getStringUuid()}`
+    let keyString = `${key}`
 
     let playerData = global.globalPlayerDataMap.get(playerStringUUID)
-    return playerData[key]
+    return playerData[keyString]
 }
 
 const setPlayerSpecificData = (player, key, value) => {
     try {
         let playerStringUUID = `${player.getStringUuid()}`
+        let keyString = `${key}`
         let playerData = global.globalPlayerDataMap.get(playerStringUUID) ?? {}
 
-        playerData[key] = value
+        playerData[keyString] = value
         global.globalPlayerDataMap.set(playerStringUUID, playerData)
     } catch (err) {
         console.error(`setPlayerSpecificData error: ${err}`)

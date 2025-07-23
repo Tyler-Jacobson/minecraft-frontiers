@@ -20,7 +20,8 @@ const getRandomSound = (soundsArray, threeMostRecentSoundSelections) => {
 
 const getPlayerSpecificData = (player, key) => {
     let playerStringUUID = `${player.getStringUuid()}`
+    let keyString = `${key}`
 
     let playerData = global.globalPlayerDataMap.get(playerStringUUID)
-    return playerData[key]
+    return playerData[keyString]
 }
