@@ -58,7 +58,7 @@ ForgeEvents.onEvent('net.minecraftforge.event.AnvilUpdateEvent', (event) => {
         if (!(event.getPlayer().level === 'ClientLevel')) {
             if ((left.id === 'frontiers:fire_staff') && (right.id === 'minecraft:enchanted_book')) {
 
-                let anvilMenuData = getPlayerSpecificData(player, 'anvilMenuRef')
+                let anvilMenuData = global.getPlayerSpecificData(player, 'anvilMenuRef')
                 let getOutputItem = anvilMenuData.getInventoryContainer().getSlot(2).getItem()
 
                 let outputItemEnchantmentsCopy = getOutputItem.getEnchantmentTags().copy()
