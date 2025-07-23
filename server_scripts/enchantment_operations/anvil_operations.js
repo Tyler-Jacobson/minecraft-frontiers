@@ -1,5 +1,5 @@
-global.anvilMenuRef = 'something'
 
 PlayerEvents.inventoryOpened('anvil', (event) => {
-    global.anvilMenuRef = event
+    const player = event.getPlayer()
+    global.setPlayerSpecificData(player, 'anvilMenuRef', event)
 })
