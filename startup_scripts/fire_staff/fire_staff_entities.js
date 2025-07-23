@@ -1,5 +1,4 @@
 
-
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
     event.create("frontiers:fireball_entity", "entityjs:geckolib_projectile").onHitEntity(context => {
