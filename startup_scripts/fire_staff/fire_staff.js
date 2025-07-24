@@ -3,12 +3,15 @@ console.info('Loaded Fire Staff Startup Script')
 
 const FIRESTAFF_BASE_REPAIR_COST = 1
 const FIRESTAFF_BASE_DAMAGE = 17
+const FIRESTAFF_BONUS_DAMAGE_PER_POWER_ENCHANTMENT_LEVEL = 2
 
 const finishUsingFireCrystal = (/**@type {Internal.ItemStack}*/itemstack, /**@type {Internal.Level}*/level, /**@type {Internal.Player}*/player) => {
     const { usedItemHand, inventory, lookAngle, eyePosition } = player
 
     player.addItemCooldown(itemstack.item, 0) // itemcooldown 0 is perfect for gat mode
     player.damageHeldItem(usedItemHand, 1)
+
+    // global.setPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack', itemstack)
 
     spawnFireball(player, level, eyePosition, lookAngle)
 
@@ -32,3 +35,10 @@ StartupEvents.registry("item", event => {
         .useDuration(itemstack => 40) // how many ticks to charge up weapon before calling .finishUsing
         .attackDamageBaseline(1)
 })
+
+const getFireStaffPowerEnchantmentBonusDamage = (itemStack) => {
+    if (!itemStack.getEnchantments().get('minecraft:power')) {
+        return 0
+    }
+    return itemStack.getEnchantments().get('minecraft:power') * FIRESTAFF_BONUS_DAMAGE_PER_POWER_ENCHANTMENT_LEVEL
+}
