@@ -11,7 +11,7 @@ const finishUsingFireCrystal = (/**@type {Internal.ItemStack}*/itemstack, /**@ty
     player.addItemCooldown(itemstack.item, 0) // itemcooldown 0 is perfect for gat mode
     player.damageHeldItem(usedItemHand, 100)
 
-    // global.setPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack', itemstack)
+    global.setPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack', itemstack)
 
     spawnFireball(player, level, eyePosition, lookAngle)
 
@@ -41,4 +41,11 @@ const getFireStaffPowerEnchantmentBonusDamage = (itemStack) => {
         return 0
     }
     return itemStack.getEnchantments().get('minecraft:power') * FIRESTAFF_BONUS_DAMAGE_PER_POWER_ENCHANTMENT_LEVEL
+}
+
+const hasKindnessEnchant = (itemStack) => {
+    if (itemStack.getEnchantments().get('frontiers:kindness')) {
+        return true
+    }
+    return false
 }

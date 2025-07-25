@@ -35,9 +35,13 @@ StartupEvents.registry('entity_type', event => {
 
         const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-        const nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
         let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
         let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+        console.info(`hasKindnessEnchant ${hasKindnessEnchant(itemStack)}`)
+        if (hasKindnessEnchant(itemStack)) {
+            nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
+        }
 
         nearbyEntities.forEach((nearbyEntity) => {
             nearbyEntity.setRemainingFireTicks(100)
@@ -71,10 +75,14 @@ StartupEvents.registry('entity_type', event => {
 
         const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-        const nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+
 
         let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
         let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+        if (hasKindnessEnchant(itemStack)) {
+            nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
+        }
 
         nearbyEntities.forEach((nearbyEntity) => {
             nearbyEntity.setRemainingFireTicks(100)
