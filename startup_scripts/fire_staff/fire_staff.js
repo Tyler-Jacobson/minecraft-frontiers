@@ -9,7 +9,7 @@ const finishUsingFireCrystal = (/**@type {Internal.ItemStack}*/itemstack, /**@ty
     const { usedItemHand, inventory, lookAngle, eyePosition } = player
 
     player.addItemCooldown(itemstack.item, 0) // itemcooldown 0 is perfect for gat mode
-    player.damageHeldItem(usedItemHand, 100)
+    player.damageHeldItem(usedItemHand, 1)
 
     global.setPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack', itemstack)
 

@@ -111,7 +111,7 @@ StartupEvents.registry('entity_type', event => {
 
         world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
         world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
-    })
+    }).noItem()
 })
 
 const spawnFireball = (player, level, eyePosition, lookAngle) => {
