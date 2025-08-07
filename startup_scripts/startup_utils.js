@@ -20,7 +20,10 @@ global.getPlayerSpecificData = (player, key) => {
     let keyString = `${key}`
 
     let playerData = global.globalPlayerDataMap.get(playerStringUUID)
-    return playerData[keyString]
+    if (playerData) {
+        return playerData[keyString]
+    }
+    return null
 }
 
 global.setPlayerSpecificData = (player, key, value) => {
@@ -30,6 +33,8 @@ global.setPlayerSpecificData = (player, key, value) => {
         let playerData = global.globalPlayerDataMap.get(playerStringUUID) ?? {}
 
         playerData[keyString] = value
+        console.info(`set playerData[keyString] = value to: ${playerData[keyString]} = ${value}`)
+        console.info(`set playerData for player ${playerStringUUID} to ${Object.keys(playerData)}`)
         global.globalPlayerDataMap.set(playerStringUUID, playerData)
     } catch (err) {
         console.error(`setPlayerSpecificData error: ${err}`)

@@ -27,8 +27,7 @@ StartupEvents.registry('entity_type', event => {
         world.spawnParticles("explosiveenhancement:smoke", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
         world.spawnParticles("explosiveenhancement:blastwave", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 3, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
 
-        // we now get rid of the projectile entity
-        entity.kill()
+
 
         const RADIUS = 3
 
@@ -36,12 +35,21 @@ StartupEvents.registry('entity_type', event => {
 
         const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-        const nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
+        let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+        console.info(`hasKindnessEnchant ${hasKindnessEnchant(itemStack)}`)
+        if (hasKindnessEnchant(itemStack)) {
+            nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
+        }
 
         nearbyEntities.forEach((nearbyEntity) => {
             nearbyEntity.setRemainingFireTicks(100)
-            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE)
+            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
         })
+
+        // we now get rid of the projectile entity
+        entity.kill()
     }).onHitBlock(context => {
         const { entity } = context
 
@@ -67,11 +75,18 @@ StartupEvents.registry('entity_type', event => {
 
         const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-        const nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+
+
+        let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
+        let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+        if (hasKindnessEnchant(itemStack)) {
+            nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
+        }
 
         nearbyEntities.forEach((nearbyEntity) => {
             nearbyEntity.setRemainingFireTicks(100)
-            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE)
+            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
 
         })
 
@@ -96,7 +111,7 @@ StartupEvents.registry('entity_type', event => {
 
         world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
         world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
-    })
+    }).noItem()
 })
 
 const spawnFireball = (player, level, eyePosition, lookAngle) => {
