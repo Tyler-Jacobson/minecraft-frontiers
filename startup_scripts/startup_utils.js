@@ -20,7 +20,10 @@ global.getPlayerSpecificData = (player, key) => {
     let keyString = `${key}`
 
     let playerData = global.globalPlayerDataMap.get(playerStringUUID)
-    return playerData[keyString]
+    if (playerData) {
+        return playerData[keyString]
+    }
+    return null
 }
 
 global.setPlayerSpecificData = (player, key, value) => {
