@@ -20,7 +20,7 @@ ItemEvents.entityInteracted('minecraft:shears', (event => {
     let player = event.getPlayer()
 
     if (entity.getName().getString() === 'Chicken') {
-        if (!entity.persistentData.remainingShearCooldown) {
+        if (!entity.persistentData.remainingShearCooldown && entity.nbt.get('Age') >= 0) {
             const damageSource = entity.damageSources().playerAttack(player)
             
             entity.attack(damageSource, 0)
