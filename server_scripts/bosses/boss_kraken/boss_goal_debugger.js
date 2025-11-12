@@ -6,12 +6,12 @@ ServerEvents.tick(event => {
   // This is "once per second" (20 ticks) to keep logs sane.
   if (server.tickCount % 20 !== 0) return;
 
-  // Find all cows in all loaded dimensions
+  // Find all kraken in all loaded dimensions
   server.entities
     .filterSelector('@e[type=frontiers:custom_kraken]')
-    .forEach(cow => {
-      // Cows are mobs, so they have a goalSelector
-      const mob = /** @type {Internal.Mob} */ (cow);
+    .forEach(kraken => {
+      // Kraken are mobs, so they have a goalSelector
+      const mob = /** @type {Internal.Mob} */ (kraken);
 
       // getRunningGoals() -> Stream<WrappedGoal>
       mob.goalSelector
@@ -22,7 +22,7 @@ ServerEvents.tick(event => {
           const running = wrapped.running;      // bean for isRunning()
 
           console.log(
-            `[Cow AI] @ ${mob.blockX},${mob.blockY},${mob.blockZ} ` +
+            `[Kraken AI] @ ${mob.blockX},${mob.blockY},${mob.blockZ} ` +
             `priority=${priority}, running=${running}, goal=${goal.class.name}`
           );
         });
