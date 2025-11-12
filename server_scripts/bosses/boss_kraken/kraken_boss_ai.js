@@ -4,6 +4,8 @@
 // We explicitly install the same goals a Ghast uses in initGoals(),
 // using vanilla Java classes + EntityJS arbitraryGoal helpers.
 
+const MOVE_SPEED = 0.01; 
+
 const BOSS_ID = 'frontiers:custom_kraken'
 
 EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
@@ -12,11 +14,11 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
     const $GhastLookGoal = Java.loadClass('net.minecraft.world.entity.monster.Ghast$GhastLookGoal')
     const $GhastShootFireballGoal = Java.loadClass('net.minecraft.world.entity.monster.Ghast$GhastShootFireballGoal')
 
-    event.arbitraryGoal(
-        7,
-        /** @param {Internal.GhastEntityJS} entity */
-        entity => new $RandomFloatAroundGoal(entity)
-    )
+    // event.arbitraryGoal(
+    //     7,
+    //     /** @param {Internal.GhastEntityJS} entity */
+    //     entity => new $RandomFloatAroundGoal(entity)
+    // )
 
     event.arbitraryGoal(
         8,
@@ -28,6 +30,29 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
         2,
         /** @param {Internal.GhastEntityJS} entity */
         entity => new $GhastShootFireballGoal(entity)
+    )
+    event.customGoal(
+        'follow_target',
+        1,
+        mob => true,
+        mob => true,
+        true,
+        mob => { },
+        mob => mob.getNavigation().stop(),
+        true,
+        /** @param {Internal.GhastEntityJS} mob */ mob => {
+            const entity = mob.level.getNearestPlayer(mob, 50)
+            if (entity == null) return
+            const moveTo = new Vec3d((entity.x - mob.getX()) * MOVE_SPEED, (entity.y - mob.getY()) * MOVE_SPEED, (entity.z - mob.getZ()) * MOVE_SPEED)
+            const moveAway = new Vec3d((mob.getX() - entity.x) * MOVE_SPEED, (mob.getY() - entity.y) * MOVE_SPEED, (mob.getZ() - entity.z) * MOVE_SPEED)
+            if (entity.distanceToEntity(mob) > 30) {
+                mob.setDeltaMovement(moveTo);
+            }
+            if (entity.player && entity.distanceToEntity(mob) < 20) {
+                mob.setDeltaMovement(moveAway);
+            }
+
+        }
     )
 })
 
@@ -50,7 +75,7 @@ EntityJSEvents.addGoals(BOSS_ID, event => {
     )
 
     // this does nothing for creatures without a melee attack. Keeping it here for future reference
-    event.hurtByTarget( 
+    event.hurtByTarget(
         2,
         [],    // excluded classes (none)
         true,  // alertAllies
