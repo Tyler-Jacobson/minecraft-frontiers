@@ -21,7 +21,7 @@ StartupEvents.registry("item", event => {
 if (Platform.isClientEnvironment()) {
   ClientEvents.init(event => {
     let $BetterCombatClientEvents = Java.loadClass('net.bettercombat.api.client.BetterCombatClientEvents')
-    let $PlayerAttackStart = Java.loadClass('net.bettercombat.api.client.BetterCombatClientEvents$PlayerAttackStart')
+    let $PlayerAttackStart = Java.loadClass('net.bettercombat.api.client.BetterCombatClientEvents$PlayerAttackStart') // there is also a BetterCombatClientEvents$PlayerAttackHit event
     $BetterCombatClientEvents.ATTACK_START.register(new JavaAdapter($PlayerAttackStart, {
       onPlayerAttackStart: function (player, hand) {
         // this sends a packet from client to server on the better_combat_scythe_attack_started channel to say an attack has started

@@ -25,7 +25,7 @@ EntityEvents.spawned((event => {
     if (event.getEntity().getName().getString() === 'Arrow') {
         // console.info(`event.getPlayer() ${event.getPlayer()} ${event.getEntity().getName().getString()}`)
         let player = event.entity.owner
-        console.info(`event.getOwner() ${player}`)
+        // console.info(`event.getOwner() ${player}`)
     }
     // console.info(`event.getPlayer() ${event.getPlayer()} ${event.getEntity().getId()}`)
     // if (event.getPlayer()) {
