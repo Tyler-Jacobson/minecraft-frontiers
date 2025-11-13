@@ -4,7 +4,7 @@
 // We explicitly install the same goals a Ghast uses in initGoals(),
 // using vanilla Java classes + EntityJS arbitraryGoal helpers.
 
-const MOVE_SPEED = 0.01; 
+const MOVE_SPEED = 0.01;
 
 const BOSS_ID = 'frontiers:custom_kraken'
 
@@ -32,12 +32,19 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
         entity => new $GhastShootFireballGoal(entity)
     )
     event.customGoal(
-        'follow_target',
+        'maintain_distance',
         1,
         mob => true,
         mob => true,
         true,
-        mob => { },
+        mob => {
+            let $MoveGoalFlag = Java.loadClass("net.minecraft.world.entity.ai.goal.Goal$Flag")
+            let EnumSet = Java.loadClass("java.util.EnumSet")
+            let currentGoal = mob.goalSelector.getAvailableGoals().find(selector => selector.getGoal().toString() === 'CustomGoal[maintain_distance]')
+            console.log(`currentGoal ${$MoveGoalFlag.MOVE}`)
+
+            currentGoal.setFlags(EnumSet.of($MoveGoalFlag.MOVE))
+        },
         mob => mob.getNavigation().stop(),
         true,
         /** @param {Internal.GhastEntityJS} mob */ mob => {
@@ -54,6 +61,22 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
 
         }
     )
+    const COOLDOWN_TICKS = 100, SPAWN_OFFSET = 2.5; let spawnCooldown = 0;
+    event.customGoal('spawn_near_player', 1, mob => true, mob => true, true, mob => { }, mob => { }, true, mob => {
+        if (spawnCooldown > 0) { spawnCooldown--; } else {
+            let nearestPlayer = mob.level.getNearestPlayer(mob, 64); if (nearestPlayer) {
+                let spawnX = nearestPlayer.x + (Math.random() * 2 - 1) * SPAWN_OFFSET, spawnY = nearestPlayer.y, spawnZ = nearestPlayer.z + (Math.random() * 2 - 1) * SPAWN_OFFSET;
+                let zombieEntity = mob.level.createEntity('minecraft:zombie'); zombieEntity.setPos(spawnX, spawnY, spawnZ); zombieEntity.spawn();
+                // mob.level.addParticle('minecraft:portal', spawnX, spawnY + 1, spawnZ, 0, 0, 0);
+                mob.level.spawnParticles("minecraft:smoke", false, spawnX, spawnY, spawnZ, 0, 0, 0, 100, 0.1)
+            }
+            spawnCooldown = COOLDOWN_TICKS;
+        }
+        let targetPlayer = mob.level.getNearestPlayer(mob, 128); if (!targetPlayer) return;
+        mob.level.getEntitiesWithin(mob.boundingBox.inflate(32)).forEach(candidate => {
+            if (String(candidate.type) === 'minecraft:zombie') candidate.setTarget(targetPlayer);
+        });
+    });
 })
 
 // ---------------------------------------------------------------------------
