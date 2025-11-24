@@ -8,6 +8,10 @@ const MOVE_SPEED = 0.01;
 
 const BOSS_ID = 'frontiers:custom_kraken'
 
+// EntityEvents.hurt('frontiers:custom_kraken', event => {
+//   event.entity.triggerAnimation('krakenBossController', 'kraken_idle')
+// })
+
 EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
 
     const $RandomFloatAroundGoal = Java.loadClass('net.minecraft.world.entity.monster.Ghast$RandomFloatAroundGoal')
@@ -21,19 +25,19 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
     // )
 
     event.arbitraryGoal(
-        8,
+        1,
         /** @param {Internal.GhastEntityJS} entity */
         entity => new $GhastLookGoal(entity)
     )
 
     event.arbitraryGoal(
-        2,
+        3,
         /** @param {Internal.GhastEntityJS} entity */
         entity => new $GhastShootFireballGoal(entity)
     )
     event.customGoal(
         'maintain_distance',
-        1,
+        2,
         mob => true,
         mob => true,
         true,
@@ -50,19 +54,19 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
         /** @param {Internal.GhastEntityJS} mob */ mob => {
             const entity = mob.level.getNearestPlayer(mob, 50)
             if (entity == null) return
-            const moveTo = new Vec3d((entity.x - mob.getX()) * MOVE_SPEED, (entity.y - mob.getY()) * MOVE_SPEED, (entity.z - mob.getZ()) * MOVE_SPEED)
-            const moveAway = new Vec3d((mob.getX() - entity.x) * MOVE_SPEED, (mob.getY() - entity.y) * MOVE_SPEED, (mob.getZ() - entity.z) * MOVE_SPEED)
+            const moveTo = new Vec3d((entity.x - mob.getX()) * MOVE_SPEED, ((entity.y - mob.getY()) + 30) * MOVE_SPEED, (entity.z - mob.getZ()) * MOVE_SPEED)
+            const moveAway = new Vec3d((mob.getX() - entity.x) * MOVE_SPEED, ((mob.getY() - (entity.y)) + 30) * MOVE_SPEED, (mob.getZ() - entity.z) * MOVE_SPEED)
             if (entity.distanceToEntity(mob) > 30) {
                 mob.setDeltaMovement(moveTo);
             }
             if (entity.player && entity.distanceToEntity(mob) < 20) {
                 mob.setDeltaMovement(moveAway);
             }
-
+            // mob.setSyncedData('Idle', true)
         }
     )
     const COOLDOWN_TICKS = 100, SPAWN_OFFSET = 2.5; let spawnCooldown = 0;
-    event.customGoal('spawn_near_player', 1, mob => true, mob => true, true, mob => { }, mob => { }, true, mob => {
+    event.customGoal('spawn_near_player', 9, mob => true, mob => true, true, mob => { }, mob => { }, true, mob => {
         if (spawnCooldown > 0) { spawnCooldown--; } else {
             let nearestPlayer = mob.level.getNearestPlayer(mob, 64); if (nearestPlayer) {
                 let spawnX = nearestPlayer.x + (Math.random() * 2 - 1) * SPAWN_OFFSET, spawnY = nearestPlayer.y, spawnZ = nearestPlayer.z + (Math.random() * 2 - 1) * SPAWN_OFFSET;
@@ -71,6 +75,7 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
                 mob.level.spawnParticles("minecraft:smoke", false, spawnX, spawnY, spawnZ, 0, 0, 0, 100, 0.1)
             }
             spawnCooldown = COOLDOWN_TICKS;
+            mob.setSyncedData('Idle', !mob.getSyncedData('Idle'))
         }
         let targetPlayer = mob.level.getNearestPlayer(mob, 128); if (!targetPlayer) return;
         mob.level.getEntitiesWithin(mob.boundingBox.inflate(32)).forEach(candidate => {
@@ -105,3 +110,4 @@ EntityJSEvents.addGoals(BOSS_ID, event => {
         []     // ignored classes (none)
     )
 })
+
