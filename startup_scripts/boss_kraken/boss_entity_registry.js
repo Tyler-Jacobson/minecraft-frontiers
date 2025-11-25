@@ -13,6 +13,7 @@ EntityJSEvents.modifyEntity(event => {
   event.modify(BOSS_ID, modifyBuilder => {
     modifyBuilder.defineSyncedData(entity => {
       entity.addSyncedData("string", "Idle", false)
+      entity.addSyncedData("string", "Rotation", 0)
     })
   })
 })
@@ -24,8 +25,8 @@ StartupEvents.registry('entity_type', event => {
     .defaultGoals(false)
     .mobCategory('monster')
     .sized(BOSS_WIDTH, BOSS_HEIGHT)
-    .clientTrackingRange(50)
-    .updateInterval(3)
+    .clientTrackingRange(1000)
+    .updateInterval(1)
     .isPersistenceRequired(true)
     .isAlwaysExperienceDropper(true)
     .canSpawnFarFromPlayer(true)
