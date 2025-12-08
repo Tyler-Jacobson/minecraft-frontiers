@@ -31,6 +31,7 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
     //     entity => new $GhastLookGoal(entity)
     // )
 
+
     event.customGoal(
         'look_nearest_player',
         1,
@@ -51,15 +52,20 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
 
             mob.setDeltaMovement(moveTo);
 
-            // let targetPlayer = nearbyPlayers[0]
-            // mob.lookAt(targetPlayer, 30, 30) // working
-            
-            let currentRotation = mob.getSyncedData('Rotation') || 0
-            mob.setRotation(currentRotation, 50)
+            try {
+                let targetPlayer = nearbyPlayers[0]
+                mob.lookAt(targetPlayer, 30, 30) // working
+            } catch (err) {
+                console.error(`look at error ${err}`)
+            }
 
 
-            mob.setSyncedData('Rotation', currentRotation + 1)
-            console.log(`currentRotation ${currentRotation}`)
+            // let currentRotation = mob.getSyncedData('Rotation') || 0
+            // mob.setRotation(currentRotation, 50)
+
+
+            // mob.setSyncedData('Rotation', currentRotation + 1)
+            // console.log(`currentRotation ${currentRotation}`)
 
         }
     )
@@ -118,6 +124,42 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
     //         if (String(candidate.type) === 'minecraft:zombie') candidate.setTarget(targetPlayer);
     //     });
     // });
+
+    const COOLDOWN_TICKS = 100, SPAWN_OFFSET = 2.5; let spawnCooldown = 0;
+    event.customGoal('red_crystal_attack',
+        9,
+        mob => true,
+        mob => true,
+        true,
+        mob => { },
+        mob => { },
+        true,
+        /** @param {Internal.GhastEntityJS} mob */ mob => {
+            // console.log(`ticking spawn_near_player`)
+            if (spawnCooldown > 0) { spawnCooldown--; } else {
+                let nearestPlayer = mob.level.getNearestPlayer(mob, 64); if (nearestPlayer) {
+                    let spawnX = nearestPlayer.x + (Math.random() * 2 - 1) * SPAWN_OFFSET, spawnY = nearestPlayer.y, spawnZ = nearestPlayer.z + (Math.random() * 2 - 1) * SPAWN_OFFSET;
+                    // let zombieEntity = mob.level.createEntity('minecraft:zombie'); zombieEntity.setPos(spawnX, spawnY, spawnZ); zombieEntity.spawn();
+                    try {
+                        let attackStartingLocation = mobRelativeLocation(mob, 40, 90)
+                        let attackAngle = angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
+                        console.log(`attackAngle ${attackAngle}`)
+                        global.spawnKrakenRedProjectile(mob, mob.level, attackStartingLocation, attackAngle)
+                    } catch (err) {
+                        console.error(`spawnKrakenRedProjectile erorr: ${err}`)
+                    }
+                    // mob.level.addParticle('minecraft:portal', spawnX, spawnY + 1, spawnZ, 0, 0, 0);
+                    mob.level.spawnParticles("minecraft:smoke", false, spawnX, spawnY, spawnZ, 0, 0, 0, 100, 0.1)
+                }
+                spawnCooldown = COOLDOWN_TICKS;
+                mob.setSyncedData('Idle', !mob.getSyncedData('Idle'))
+
+            }
+            let targetPlayer = mob.level.getNearestPlayer(mob, 128); if (!targetPlayer) return;
+            mob.level.getEntitiesWithin(mob.boundingBox.inflate(32)).forEach(candidate => {
+                if (String(candidate.type) === 'minecraft:zombie') candidate.setTarget(targetPlayer);
+            });
+        });
 })
 
 // ---------------------------------------------------------------------------
@@ -149,3 +191,34 @@ EntityJSEvents.addGoals(BOSS_ID, event => {
     )
 })
 
+// calculates a position relative to the current position and rotation of a mob / boss / player. Usually for spawning attack entities
+// first arg is the mob, second is distance in blocks away from the mob's eye position, last is the number of degrees of rotation around the mob to spawn the attack
+const mobRelativeLocation = (mob, distance, angleDegrees) => {
+    try {
+        let lookDirection = mob.getLookAngle()
+        let radians = angleDegrees * JavaMath.PI / 180
+        let cosAngle = Math.cos(radians)
+        let sinAngle = Math.sin(radians)
+        let directionX = lookDirection.x() * cosAngle - lookDirection.z() * sinAngle
+        let directionZ = lookDirection.x() * sinAngle + lookDirection.z() * cosAngle
+        let directionY = lookDirection.y()
+        let targetX = mob.x + directionX * distance
+        let targetY = mob.y + directionY * distance
+        let targetZ = mob.z + directionZ * distance
+        return new Vec3d(targetX, targetY, targetZ)
+    } catch (err) {
+        console.error(`mobRelativeLocation ${err}`)
+    }
+}
+
+// calculates the trajectory of projectiles from point a to b. Both args are Vec3d
+function angleVecFromAToB(positionA, positionB) {
+  let deltaX = positionB.x() - positionA.x()
+  let deltaY = positionB.y() - positionA.y()
+  let deltaZ = positionB.z() - positionA.z()
+  let length = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+  let directionX = deltaX / length
+  let directionY = deltaY / length
+  let directionZ = deltaZ / length
+  return new Vec3d(directionX, directionY, directionZ)
+}
