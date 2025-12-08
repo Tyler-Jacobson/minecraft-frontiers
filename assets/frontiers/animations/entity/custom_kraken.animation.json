@@ -1,128 +1,307 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"kraken_idle": {
-			"animation_length": 3,
+		"kraken_idle2": {
+			"animation_length": 5,
 			"bones": {
 				"tentacle": {
-					"rotation": {
-						"0.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"1.5": {
-							"post": [-60, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"2.5": {
-							"post": [12.5, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"3.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
+					"rotation": ["-Math.sin(query.anim_time * 36) * -10", 0, 0]
 				},
 				"tentacle_bone2": {
-					"rotation": {
-						"0.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"1.25": {
-							"post": [22.5, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"2.25": {
-							"post": [-5, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"3.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
+					"rotation": ["-Math.sin(query.anim_time * 36) * 20", 0, 0]
 				},
 				"tentacle_bone3": {
-					"rotation": {
-						"0.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"1.0": {
-							"post": [42.5, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"2.0": {
-							"post": [-12.5, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"3.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
 				},
 				"tentacle_bone4": {
-					"rotation": {
-						"0.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"1.0": {
-							"post": [40, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"2.0": {
-							"post": [-15, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"3.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
+					"rotation": ["-Math.sin(query.anim_time * 36) * -5", 0, 0]
 				},
 				"tentacle_bone5": {
-					"rotation": {
-						"0.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"1.0": {
-							"post": [5, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"2.0": {
-							"post": [-52.5, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"3.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
+					"rotation": ["-Math.sin(query.anim_time * 36) * -5", 0, 0]
 				},
 				"tentacle_bone6": {
-					"rotation": {
-						"0.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"1.0": {
-							"post": [-20, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"2.0": {
-							"post": [-60, 0, 0],
-							"lerp_mode": "catmullrom"
-						},
-						"3.0": {
-							"post": [0, 0, 0],
-							"lerp_mode": "catmullrom"
-						}
-					}
+					"rotation": ["-Math.sin(query.anim_time * 36) * -5", 0, 0]
+				},
+				"head": {
+					"scale": "Math.cos(query.anim_time * 150) * 0.01 + 1"
+				},
+				"tentacle2": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 5", 0, 0]
+				},
+				"tentacle_bone7": {
+					"rotation": ["-Math.sin(query.anim_time * 108) * -10", 0, 0]
+				},
+				"tentacle_bone8": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 30", 0, 0]
+				},
+				"tentacle_bone9": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 10", 0, 0]
+				},
+				"tentacle_bone10": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle_bone11": {
+					"rotation": ["-Math.sin(query.anim_time * 108) * 50", 0, 0]
+				},
+				"tentacle3": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone12": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone13": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone14": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone15": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * -30", 0, 0]
+				},
+				"tentacle_bone16": {
+					"rotation": ["-Math.sin(query.anim_time * 108) * -50", 0, 0]
+				},
+				"tentacle4": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 5", 0, 0]
+				},
+				"tentacle_bone17": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -10", 0, 0]
+				},
+				"tentacle_bone18": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -15", 0, 0]
+				},
+				"tentacle_bone19": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
+				},
+				"tentacle_bone20": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle_bone21": {
+					"rotation": ["-Math.sin(query.anim_time * 108) * -30", 0, 0]
+				},
+				"tentacle5": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone22": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone23": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone24": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle_bone25": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone26": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle6": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 10", 0, 0]
+				},
+				"tentacle_bone27": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 5", 0, 0]
+				},
+				"tentacle_bone28": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 20", 0, 0]
+				},
+				"tentacle_bone29": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -20", 0, 0]
+				},
+				"tentacle_bone30": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 20", 0, 0]
+				},
+				"tentacle_bone31": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 30", 0, 0]
+				},
+				"tentacle7": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 30", 0, 0]
+				},
+				"tentacle_bone32": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -50", 0, 0]
+				},
+				"tentacle_bone33": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
+				},
+				"tentacle_bone34": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -30", 0, 0]
+				},
+				"tentacle_bone35": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * -30", 0, 0]
+				},
+				"tentacle_bone36": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * -20", 0, 0]
+				},
+				"tentacle8": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone37": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone38": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone39": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 50", 0, 0]
+				},
+				"tentacle_bone40": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
+				},
+				"tentacle_bone41": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 50", 0, 0]
+				}
+			}
+		},
+		"kraken_red_attack": {
+			"animation_length": 5,
+			"bones": {
+				"tentacle": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -10", 0, 0]
+				},
+				"tentacle_bone2": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 20", 0, 0]
+				},
+				"tentacle_bone3": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
+				},
+				"tentacle_bone4": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -5", 0, 0]
+				},
+				"tentacle_bone5": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -5", 0, 0]
+				},
+				"tentacle_bone6": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -5", 0, 0]
+				},
+				"head": {
+					"scale": "Math.cos(query.anim_time * 150) * 0.01 + 1"
+				},
+				"tentacle2": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 5", 0, 0]
+				},
+				"tentacle_bone7": {
+					"rotation": ["-Math.sin(query.anim_time * 108) * -10", 0, 0]
+				},
+				"tentacle_bone8": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 30", 0, 0]
+				},
+				"tentacle_bone9": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 10", 0, 0]
+				},
+				"tentacle_bone10": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle_bone11": {
+					"rotation": ["-Math.sin(query.anim_time * 108) * 50", 0, 0]
+				},
+				"tentacle3": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone12": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone13": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone14": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone15": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * -30", 0, 0]
+				},
+				"tentacle_bone16": {
+					"rotation": ["-Math.sin(query.anim_time * 108) * -50", 0, 0]
+				},
+				"tentacle4": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 5", 0, 0]
+				},
+				"tentacle_bone17": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -10", 0, 0]
+				},
+				"tentacle_bone18": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -15", 0, 0]
+				},
+				"tentacle_bone19": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
+				},
+				"tentacle_bone20": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle_bone21": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -30", 0, 0]
+				},
+				"tentacle5": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone22": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone23": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone24": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle_bone25": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone26": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 30", 0, 0]
+				},
+				"tentacle6": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 10", 0, 0]
+				},
+				"tentacle_bone27": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 5", 0, 0]
+				},
+				"tentacle_bone28": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 20", 0, 0]
+				},
+				"tentacle_bone29": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -20", 0, 0]
+				},
+				"tentacle_bone30": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 20", 0, 0]
+				},
+				"tentacle_bone31": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 30", 0, 0]
+				},
+				"tentacle7": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * 30", 0, 0]
+				},
+				"tentacle_bone32": {
+					"rotation": ["-Math.sin(query.anim_time * 36) * -50", 0, 0]
+				},
+				"tentacle_bone33": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
+				},
+				"tentacle_bone34": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -30", 0, 0]
+				},
+				"tentacle_bone35": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * -30", 0, 0]
+				},
+				"tentacle_bone36": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * -20", 0, 0]
+				},
+				"tentacle8": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone37": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 20", 0, 0]
+				},
+				"tentacle_bone38": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * 30", 0, 0]
+				},
+				"tentacle_bone39": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 50", 0, 0]
+				},
+				"tentacle_bone40": {
+					"rotation": ["-Math.sin(query.anim_time * 72) * -20", 0, 0]
+				},
+				"tentacle_bone41": {
+					"rotation": ["-Math.sin(query.anim_time * 144) * 50", 0, 0]
 				}
 			}
 		}

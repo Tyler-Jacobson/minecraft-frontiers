@@ -6,8 +6,8 @@
 const BOSS_ID = 'frontiers:custom_kraken'
 const BOSS_EGG_ID = 'frontiers:custom_kraken_spawn_egg'
 const BOSS_NAME = 'custom_kraken'
-const BOSS_WIDTH = 7
-const BOSS_HEIGHT = 11
+const BOSS_WIDTH = 20
+const BOSS_HEIGHT = 20
 
 EntityJSEvents.modifyEntity(event => {
   event.modify(BOSS_ID, modifyBuilder => {
@@ -41,7 +41,7 @@ StartupEvents.registry('entity_type', event => {
     })
     .addAnimationController('krakenBossController', 1, event => {
 
-      event.addTriggerableAnimation('kraken_idle', 'hurtID', 'default')
+      event.addTriggerableAnimation('kraken_idle2', 'hurtID', 'default')
 
       // if (event.entity.hurtTime > 8) {
       //     event.thenPlay('hurt_custom_enderman_geckolib')
@@ -56,11 +56,10 @@ StartupEvents.registry('entity_type', event => {
     .onAddedToWorld(entity => {
       entity.noCulling = true
     })
-    .addAnimationController("krakenBossController", 5, e => global.addAnimationController(e, new ResourceLocation(BOSS_ID)))
+    .addAnimationController("krakenBossController", 5, e => global.addKrakenAnimationController(e, new ResourceLocation(BOSS_ID)))
 
-  // let id = 
-  // // builder
-  // global.addAnimationController(event, id.path)
+  const RenderType = Java.loadClass("net.minecraft.client.renderer.RenderType")
+  builder.renderType(entity => RenderType.entityTranslucent("frontiers:textures/entity/custom_kraken.png"))
 
   // You can still use other builder hooks here:
   // - builder.animationResource(...)
@@ -70,11 +69,11 @@ StartupEvents.registry('entity_type', event => {
   // etc.
 })
 
-global.addAnimationController = (event, prefix) => {
+global.addKrakenAnimationController = (event, prefix) => {
   try {
     let entity = event.entity
     let entityIdleData = entity.getSyncedData('Idle')
-    event.thenPlayAndHold('kraken_idle')
+    event.thenPlay('kraken_idle2')
     // if (entityIdleData) {
 
     //   entity.setSyncedData('Idle', false)
