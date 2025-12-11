@@ -10,7 +10,7 @@ NetworkEvents.dataReceived('better_combat_scythe_attack_started', (event) => { /
     // console.info(`event data received ${event.data}`)
     // console.info(`event entity ${player}`)
     // console.log(`main hand item ${player.getMainHandItem().getDisplayName()}`)
-    console.log(`main hand item ${player.getMainHandItem()}`)
+    // console.log(`main hand item ${player.getMainHandItem()}`)
 
     if (player.getMainHandItem() === 'frontiers:custom_scythe') {
         spawnCrescent(player, level, eyePosition, lookAngle)
