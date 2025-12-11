@@ -48,9 +48,9 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
             if (nearbyPlayers.length === 0) return
             nearbyPlayers.sort((firstPlayer, secondPlayer) => firstPlayer.distanceToEntity(mob) - secondPlayer.distanceToEntity(mob))
 
-            const moveTo = new Vec3d((mob.x - 0.01) * MOVE_SPEED, ((mob.y - 0.01) + 30) * MOVE_SPEED, (mob.z - 0.01) * MOVE_SPEED)
+            // const moveTo = new Vec3d((mob.x - 0.01), ((mob.y - 0.01)), (mob.z - 0.01))
 
-            mob.setDeltaMovement(moveTo);
+            // mob.setDeltaMovement(moveTo);
 
             try {
                 let targetPlayer = nearbyPlayers[0]
@@ -74,37 +74,37 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
     //     /** @param {Internal.GhastEntityJS} entity */
     //     entity => new $GhastShootFireballGoal(entity)
     // )
-    event.customGoal(
-        'maintain_distance',
-        2,
-        mob => true,
-        mob => true,
-        true,
-        mob => {
-            let $MoveGoalFlag = Java.loadClass("net.minecraft.world.entity.ai.goal.Goal$Flag")
-            let EnumSet = Java.loadClass("java.util.EnumSet")
-            let currentGoal = mob.goalSelector.getAvailableGoals().find(selector => selector.getGoal().toString() === 'CustomGoal[maintain_distance]')
-            console.log(`currentGoal ${$MoveGoalFlag.MOVE}`)
+    // event.customGoal(
+    //     'maintain_distance',
+    //     2,
+    //     mob => true,
+    //     mob => true,
+    //     true,
+    //     mob => {
+    //         let $MoveGoalFlag = Java.loadClass("net.minecraft.world.entity.ai.goal.Goal$Flag")
+    //         let EnumSet = Java.loadClass("java.util.EnumSet")
+    //         let currentGoal = mob.goalSelector.getAvailableGoals().find(selector => selector.getGoal().toString() === 'CustomGoal[maintain_distance]')
+    //         console.log(`currentGoal ${$MoveGoalFlag.MOVE}`)
 
-            currentGoal.setFlags(EnumSet.of($MoveGoalFlag.MOVE))
-        },
-        mob => mob.getNavigation().stop(),
-        true,
-        /** @param {Internal.GhastEntityJS} mob */ mob => {
-            const entity = mob.level.getNearestPlayer(mob, 500)
-            if (entity == null) return
-            const moveTo = new Vec3d((entity.x - mob.getX()) * MOVE_SPEED, ((entity.y - mob.getY()) + 30) * MOVE_SPEED, (entity.z - mob.getZ()) * MOVE_SPEED)
-            const moveAway = new Vec3d((mob.getX() - entity.x) * MOVE_SPEED, ((mob.getY() - (entity.y)) + 30) * MOVE_SPEED, (mob.getZ() - entity.z) * MOVE_SPEED)
-            if (entity.distanceToEntity(mob) > 30) {
-                mob.setDeltaMovement(moveTo);
-            }
-            if (entity.player && entity.distanceToEntity(mob) < 20) {
-                mob.setDeltaMovement(moveAway);
-            }
-            // console.log(`ticking maintain distance`)
-            // mob.setSyncedData('Idle', true)
-        }
-    )
+    //         currentGoal.setFlags(EnumSet.of($MoveGoalFlag.MOVE))
+    //     },
+    //     mob => mob.getNavigation().stop(),
+    //     true,
+    //     /** @param {Internal.GhastEntityJS} mob */ mob => {
+    //         const entity = mob.level.getNearestPlayer(mob, 500)
+    //         if (entity == null) return
+    //         const moveTo = new Vec3d((entity.x - mob.getX()) * MOVE_SPEED, ((entity.y - mob.getY()) + 15) * MOVE_SPEED, (entity.z - mob.getZ()) * MOVE_SPEED)
+    //         const moveAway = new Vec3d((mob.getX() - entity.x) * MOVE_SPEED, ((mob.getY() - (entity.y)) + 15) * MOVE_SPEED, (mob.getZ() - entity.z) * MOVE_SPEED)
+    //         if (entity.distanceToEntity(mob) > 50) {
+    //             mob.setDeltaMovement(moveTo);
+    //         }
+    //         if (entity.player && entity.distanceToEntity(mob) < 40) {
+    //             mob.setDeltaMovement(moveAway);
+    //         }
+    //         // console.log(`ticking maintain distance`)
+    //         // mob.setSyncedData('Idle', true)
+    //     }
+    // )
     // const COOLDOWN_TICKS = 100, SPAWN_OFFSET = 2.5; let spawnCooldown = 0;
     // event.customGoal('spawn_near_player', 9, mob => true, mob => true, true, mob => { }, mob => { }, true, mob => {
     //     // console.log(`ticking spawn_near_player`)
@@ -140,14 +140,14 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
                 let nearestPlayer = mob.level.getNearestPlayer(mob, 64); if (nearestPlayer) {
                     let spawnX = nearestPlayer.x + (Math.random() * 2 - 1) * SPAWN_OFFSET, spawnY = nearestPlayer.y, spawnZ = nearestPlayer.z + (Math.random() * 2 - 1) * SPAWN_OFFSET;
                     // let zombieEntity = mob.level.createEntity('minecraft:zombie'); zombieEntity.setPos(spawnX, spawnY, spawnZ); zombieEntity.spawn();
-                    try {
-                        let attackStartingLocation = mobRelativeLocation(mob, 40, 90)
-                        let attackAngle = angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
-                        console.log(`attackAngle ${attackAngle}`)
-                        global.spawnKrakenRedProjectile(mob, mob.level, attackStartingLocation, attackAngle)
-                    } catch (err) {
-                        console.error(`spawnKrakenRedProjectile erorr: ${err}`)
-                    }
+                    // try {
+                    //     let attackStartingLocation = mobRelativeLocation(mob, 20, 0)
+                    //     let attackAngle = angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
+                    //     console.log(`attackAngle ${attackAngle}`)
+                    //     global.spawnKrakenRedProjectile(mob, mob.level, attackStartingLocation, attackAngle)
+                    // } catch (err) {
+                    //     console.error(`spawnKrakenRedProjectile erorr: ${err}`)
+                    // }
                     // mob.level.addParticle('minecraft:portal', spawnX, spawnY + 1, spawnZ, 0, 0, 0);
                     mob.level.spawnParticles("minecraft:smoke", false, spawnX, spawnY, spawnZ, 0, 0, 0, 100, 0.1)
                 }
@@ -160,6 +160,20 @@ EntityJSEvents.addGoalSelectors(BOSS_ID, event => {
                 if (String(candidate.type) === 'minecraft:zombie') candidate.setTarget(targetPlayer);
             });
         });
+
+    const SPEED = 0.02, RANGE = 16, RETARGET_TICKS = 60;
+    let target = null, retarget = 0;
+
+    // event.addGoal(1, new GhastJSBuilder().tick(mob => {
+    //     if (retarget <= 0 || !target || mob.distanceToSqr(target.x, target.y, target.z) < 4) {
+    //         target = { x: mob.x + (Math.random() - 0.5) * RANGE, y: mob.y + (Math.random() - 0.5) * (RANGE * 0.5), z: mob.z + (Math.random() - 0.5) * RANGE };
+    //         retarget = RETARGET_TICKS;
+    //     } else retarget--;
+
+    //     const dx = target.x - mob.x, dy = target.y - mob.y, dz = target.z - mob.z;
+    //     const mag = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+    //     mob.setDeltaMovement((dx / mag) * SPEED, (dy / mag) * SPEED, (dz / mag) * SPEED);
+    // }).build());
 })
 
 // ---------------------------------------------------------------------------
@@ -191,6 +205,21 @@ EntityJSEvents.addGoals(BOSS_ID, event => {
     )
 })
 
+// EntityEvents.hurt('frontiers:custom_kraken', event => {
+//   event.entity.triggerAnimation('krakenBossController', 'kraken_idle')
+// })
+
+// EntityEvents.tick('frontiers:custom_kraken', event => {
+//   let tickingEntity = event.entity
+//   let data = tickingEntity.persistentData
+//   if (data.logCooldown <= 0) {
+//     console.log('entity tick log')
+//     data.logCooldown = 100
+//   } else {
+//     data.logCooldown--
+//   }
+// })
+
 // calculates a position relative to the current position and rotation of a mob / boss / player. Usually for spawning attack entities
 // first arg is the mob, second is distance in blocks away from the mob's eye position, last is the number of degrees of rotation around the mob to spawn the attack
 const mobRelativeLocation = (mob, distance, angleDegrees) => {
@@ -213,12 +242,12 @@ const mobRelativeLocation = (mob, distance, angleDegrees) => {
 
 // calculates the trajectory of projectiles from point a to b. Both args are Vec3d
 function angleVecFromAToB(positionA, positionB) {
-  let deltaX = positionB.x() - positionA.x()
-  let deltaY = positionB.y() - positionA.y()
-  let deltaZ = positionB.z() - positionA.z()
-  let length = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
-  let directionX = deltaX / length
-  let directionY = deltaY / length
-  let directionZ = deltaZ / length
-  return new Vec3d(directionX, directionY, directionZ)
+    let deltaX = positionB.x() - positionA.x()
+    let deltaY = positionB.y() - positionA.y()
+    let deltaZ = positionB.z() - positionA.z()
+    let length = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+    let directionX = deltaX / length
+    let directionY = deltaY / length
+    let directionZ = deltaZ / length
+    return new Vec3d(directionX, directionY, directionZ)
 }

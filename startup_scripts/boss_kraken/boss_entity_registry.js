@@ -6,8 +6,8 @@
 const BOSS_ID = 'frontiers:custom_kraken'
 const BOSS_EGG_ID = 'frontiers:custom_kraken_spawn_egg'
 const BOSS_NAME = 'custom_kraken'
-const BOSS_WIDTH = 20
-const BOSS_HEIGHT = 20
+const BOSS_WIDTH = 7
+const BOSS_HEIGHT = 10
 
 EntityJSEvents.modifyEntity(event => {
   event.modify(BOSS_ID, modifyBuilder => {
@@ -41,22 +41,50 @@ StartupEvents.registry('entity_type', event => {
     })
     .addAnimationController('krakenBossController', 1, event => {
 
-      event.addTriggerableAnimation('kraken_idle2', 'hurtID', 'default')
+      event.addTriggerableAnimation('kraken_idle2', 'k_idle', 'default')
+      event.addTriggerableAnimation('kraken_red_attack2', 'k_attack', 'default')
 
-      // if (event.entity.hurtTime > 8) {
-      //     event.thenPlay('hurt_custom_enderman_geckolib')
+
+      // let tickingEntity = event.entity
+      // let data = tickingEntity.persistentData
+
+
+      // if (data.logCooldown === 199) {
+      //  console.log(`kraken_idle2 ${data.logCooldown}`)
+      //   event.thenPlay('kraken_idle2')
       // }
-      console.log(`getSyncedData ${event.entity.getSyncedData('Idle')}`)
-      // if (!event.isMoving()) {
-      //   event.thenLoop('kraken_idle')
+      // if (data.logCooldown === 99) {
+      //  console.log(`kraken_red_attack ${data.logCooldown}`)
+      //   event.thenPlay('kraken_red_attack')
       // }
 
       return true
     })
     .onAddedToWorld(entity => {
       entity.noCulling = true
+      let spawnedEntity = entity
+      spawnedEntity.persistentData.logCooldown = 0
+      console.log(`entity tick log ${spawnedEntity.persistentData.logCooldown}`)
     })
-    .addAnimationController("krakenBossController", 5, e => global.addKrakenAnimationController(e, new ResourceLocation(BOSS_ID)))
+    .tick(entity => {
+      // if (!(entity.level === 'ClientLevel')) {
+      //   if (entity.age % 100 === 0) {
+      //     console.log(`kraken age ${entity.age % 100} is ${entity.age}`)
+      //     entity.triggerAnimation('krakenBossController', 'k_idle')
+      //   }
+      // }
+
+      // let tickingEntity = entity
+      // let data = tickingEntity.persistentData
+      // // console.log(`entity tick log ${data.logCooldown}`)
+      // if (data.logCooldown >= 200) {
+      //   console.log(`entity internal clock ${data.logCooldown}`)
+      //   data.logCooldown = 0
+      // } else {
+      //   data.logCooldown++
+      // }
+    })
+  // .addAnimationController("krakenBossController", 5, e => global.addKrakenAnimationController(e, new ResourceLocation(BOSS_ID)))
 
   const RenderType = Java.loadClass("net.minecraft.client.renderer.RenderType")
   builder.renderType(entity => RenderType.entityTranslucent("frontiers:textures/entity/custom_kraken.png"))
@@ -69,19 +97,19 @@ StartupEvents.registry('entity_type', event => {
   // etc.
 })
 
-global.addKrakenAnimationController = (event, prefix) => {
-  try {
-    let entity = event.entity
-    let entityIdleData = entity.getSyncedData('Idle')
-    event.thenPlay('kraken_idle2')
-    // if (entityIdleData) {
+// global.addKrakenAnimationController = (event, prefix) => {
+//   try {
+//     let entity = event.entity
+//     let entityIdleData = entity.getSyncedData('Idle')
+//     event.thenPlay('kraken_idle2')
+//     // if (entityIdleData) {
 
-    //   entity.setSyncedData('Idle', false)
-    //   console.log(`playing idle animation`)
-    // }
-    return true
-  } catch (error) {
-    console.log("Error in addAnimationController:", error)
-    return true
-  }
-}
+//     //   entity.setSyncedData('Idle', false)
+//     //   console.log(`playing idle animation`)
+//     // }
+//     return true
+//   } catch (error) {
+//     console.log("Error in addAnimationController:", error)
+//     return true
+//   }
+// }

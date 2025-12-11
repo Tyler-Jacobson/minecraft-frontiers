@@ -2,93 +2,94 @@
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
     event.create("frontiers:kraken_red_projectile", "entityjs:geckolib_projectile").onHitEntity(context => {
-        // 'entity' in this context is the projectile that is spawned
-        // 'result.entity' in this context is the target that is hit by the projectile
+        // // 'entity' in this context is the projectile that is spawned
+        // // 'result.entity' in this context is the target that is hit by the projectile
         const { entity, result } = context;
 
-        // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
-        // to set the player as the source of damage, we choose .playerAttack() as the damage source,
-        // which requires a reference to the player be passed to it.
-        // This can be any player reference, in this case we're using entity.getOwner(), 
-        // which is a value we set to be the player with this line in global.exampleFinishUsing below when spawning the projectile:
-        const player = entity.getOwner()
-        const damageSource = entity.damageSources().playerAttack(player)
-        const world = player.level
+        // // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
+        // // to set the player as the source of damage, we choose .playerAttack() as the damage source,
+        // // which requires a reference to the player be passed to it.
+        // // This can be any player reference, in this case we're using entity.getOwner(), 
+        // // which is a value we set to be the player with this line in global.exampleFinishUsing below when spawning the projectile:
+        const kraken = entity.getOwner()
+        const damageSource = entity.damageSources().indirectMagic(entity, kraken)
+        const world = kraken.level
+            
+        // const randomFireballCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
 
-        const randomFireballCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
+        // world.playSound(entity, entity.block.pos, randomFireballCollisionSound, "players", 3, 1)
 
-        world.playSound(entity, entity.block.pos, randomFireballCollisionSound, "players", 3, 1)
+        // const collisionX = result.entity.x
+        // const collisionY = result.entity.y
+        // const collisionZ = result.entity.z
 
-        const collisionX = result.entity.x
-        const collisionY = result.entity.y
-        const collisionZ = result.entity.z
-
-        world.spawnParticles("explosiveenhancement:fireball", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 7, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
-        world.spawnParticles("explosiveenhancement:smoke", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
-        world.spawnParticles("explosiveenhancement:blastwave", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 3, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
+        // world.spawnParticles("explosiveenhancement:fireball", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 7, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
+        // world.spawnParticles("explosiveenhancement:smoke", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
+        // world.spawnParticles("explosiveenhancement:blastwave", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 3, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
 
 
 
-        const RADIUS = 3
+        // const RADIUS = 3
 
         const hitEntity = result.entity
+        console.log(`hitEntity ${hitEntity}`)
+        hitEntity.attack(damageSource, 15)
+        // const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-        const { xsize, ysize, zsize } = hitEntity.boundingBox
+        // let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        // let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
+        // let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+        // console.info(`hasKindnessEnchant ${hasKindnessEnchant(itemStack)}`)
+        // if (hasKindnessEnchant(itemStack)) {
+        //     nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
+        // }
 
-        let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
-        let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
-        let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
-        console.info(`hasKindnessEnchant ${hasKindnessEnchant(itemStack)}`)
-        if (hasKindnessEnchant(itemStack)) {
-            nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
-        }
+        // nearbyEntities.forEach((nearbyEntity) => {
+        //     nearbyEntity.setRemainingFireTicks(100)
+        //     nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
+        // })
 
-        nearbyEntities.forEach((nearbyEntity) => {
-            nearbyEntity.setRemainingFireTicks(100)
-            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
-        })
-
-        // we now get rid of the projectile entity
+        // // we now get rid of the projectile entity
         entity.kill()
     }).onHitBlock(context => {
         const { entity } = context
 
-        const player = entity.getOwner()
-        const damageSource = entity.damageSources().playerAttack(player)
-        const world = player.level
+        // const player = entity.getOwner()
+        // const damageSource = entity.damageSources().playerAttack(player)
+        // const world = player.level
 
-        const randomFireballBlockCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
+        // const randomFireballBlockCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
 
-        world.playSound(entity, entity.block.pos, randomFireballBlockCollisionSound, "players", 3, 1)
+        // world.playSound(entity, entity.block.pos, randomFireballBlockCollisionSound, "players", 3, 1)
 
-        const collisionX = entity.x
-        const collisionY = entity.y
-        const collisionZ = entity.z
+        // const collisionX = entity.x
+        // const collisionY = entity.y
+        // const collisionZ = entity.z
 
-        world.spawnParticles("explosiveenhancement:fireball", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 7, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
-        world.spawnParticles("explosiveenhancement:smoke", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
-        world.spawnParticles("explosiveenhancement:blastwave", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 3, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
+        // world.spawnParticles("explosiveenhancement:fireball", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 7, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
+        // world.spawnParticles("explosiveenhancement:smoke", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
+        // world.spawnParticles("explosiveenhancement:blastwave", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 3, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
 
-        const RADIUS = 3
+        // const RADIUS = 3
 
-        const hitEntity = entity
+        // const hitEntity = entity
 
-        const { xsize, ysize, zsize } = hitEntity.boundingBox
+        // const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-        let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        // let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
 
 
-        let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
-        let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
-        if (hasKindnessEnchant(itemStack)) {
-            nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
-        }
+        // let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
+        // let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+        // if (hasKindnessEnchant(itemStack)) {
+        //     nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
+        // }
 
-        nearbyEntities.forEach((nearbyEntity) => {
-            nearbyEntity.setRemainingFireTicks(100)
-            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
+        // nearbyEntities.forEach((nearbyEntity) => {
+        //     nearbyEntity.setRemainingFireTicks(100)
+        //     nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
 
-        })
+        // })
 
         entity.kill()
     }).tick(entity => {
@@ -119,7 +120,7 @@ global.spawnKrakenRedProjectile = (mob, level, eyePosition, lookAngle) => {
     const projectile = level.createEntity("frontiers:kraken_red_projectile");
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     projectile.setOwner(mob)
-    const vel = lookAngle.scale(1.5)
+    const vel = lookAngle.scale(3)
     projectile.setMotion(vel.x(), vel.y(), vel.z())
     projectile.setPosition(eyePosition.x(), eyePosition.y(), eyePosition.z())
     projectile.setNoGravity(true)
