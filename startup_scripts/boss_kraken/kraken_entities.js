@@ -115,14 +115,15 @@ StartupEvents.registry('entity_type', event => {
     }).noItem()
 })
 
-global.spawnKrakenRedProjectile = (mob, level, eyePosition, lookAngle) => {
+global.spawnKrakenRedProjectile = (mob, level, attackStartingLocation, lookAngle) => {
     // const { level } = mob
     const projectile = level.createEntity("frontiers:kraken_red_projectile");
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
+    console.log(`attackStartingLocation2 ${attackStartingLocation}`)
     projectile.setOwner(mob)
     const vel = lookAngle.scale(3)
     projectile.setMotion(vel.x(), vel.y(), vel.z())
-    projectile.setPosition(eyePosition.x(), eyePosition.y(), eyePosition.z())
+    projectile.setPosition(attackStartingLocation.x(), attackStartingLocation.y(), attackStartingLocation.z())
     projectile.setNoGravity(true)
     projectile.spawn()
 }

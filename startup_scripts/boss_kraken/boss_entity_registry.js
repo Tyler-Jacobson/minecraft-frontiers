@@ -63,8 +63,8 @@ StartupEvents.registry('entity_type', event => {
     .onAddedToWorld(entity => {
       entity.noCulling = true
       let spawnedEntity = entity
-      spawnedEntity.persistentData.logCooldown = 0
-      console.log(`entity tick log ${spawnedEntity.persistentData.logCooldown}`)
+      spawnedEntity.persistentData.actionQueue = ['idle']
+      spawnedEntity.persistentData.startNextActionAge = 100
     })
     .tick(entity => {
       // if (!(entity.level === 'ClientLevel')) {
