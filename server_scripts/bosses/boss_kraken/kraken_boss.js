@@ -15,6 +15,19 @@ LevelEvents.tick(event => {
             }
             // add here: kraken code that should run every tick
 
+            // switch this to look at target player
+            let nearbyEntities = krakenEntity.level.getEntitiesWithin(krakenEntity.boundingBox.inflate(500))
+            // let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer() && !entity.creative && !entity.spectator) // switch the below to this
+            let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer())
+            if (nearbyPlayers[0]) {
+                krakenEntity.lookAt(nearbyPlayers[0], 30, 30)
+                // console.log(`${krakenEntity.getYHeadRot()} ${krakenEntity.getYBodyRot()}`)
+                // krakenEntity.setYBodyRot(krakenEntity.getYHeadRot()) // maybe opposite of this?
+                // krakenEntity.setDisableBodyRotation(true)
+                fixClientAnimationSync(krakenEntity)
+
+            }
+
         })
     }
 })
@@ -24,6 +37,11 @@ const stopAllAnimations = (entity) => {
     entity.stopTriggeredAnimation('krakenBossController', 'k_attack')
 }
 
+const fixClientAnimationSync = (krakenEntity) => {
+    let deltaMovement = krakenEntity.getDeltaMovement()
+    let moveTo = new Vec3d(deltaMovement.x() + 0.001, deltaMovement.y(), deltaMovement.z())
+    krakenEntity.setDeltaMovement(moveTo)
+}
 
 
 const startNewAction = (entity, event) => {

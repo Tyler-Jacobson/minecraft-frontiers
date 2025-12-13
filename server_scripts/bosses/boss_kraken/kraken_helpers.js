@@ -27,7 +27,7 @@ const mobRelativeLocation = (mob, distance, angleDegrees) => {
 }
 
 // calculates the trajectory of projectiles from point a to b. Both args are Vec3d
-function angleVecFromAToB(positionA, positionB) {
+const angleVecFromAToB = (positionA, positionB) => {
     let deltaX = positionB.x() - positionA.x()
     let deltaY = positionB.y() - positionA.y()
     let deltaZ = positionB.z() - positionA.z()
@@ -36,4 +36,11 @@ function angleVecFromAToB(positionA, positionB) {
     let directionY = deltaY / length
     let directionZ = deltaZ / length
     return new Vec3d(directionX, directionY, directionZ)
+}
+
+const getRandomIntInclusive = (min, max) => {
+  const minCeiled = Math.ceil(min);
+  const maxFloored = Math.floor(max);
+  // The maximum is inclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (maxFloored - minCeiled + 1)) + minCeiled;
 }
