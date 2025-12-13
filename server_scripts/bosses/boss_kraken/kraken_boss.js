@@ -21,28 +21,12 @@ LevelEvents.tick(event => {
             let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer())
             if (nearbyPlayers[0]) {
                 krakenEntity.lookAt(nearbyPlayers[0], 30, 30)
-                // console.log(`${krakenEntity.getYHeadRot()} ${krakenEntity.getYBodyRot()}`)
-                // krakenEntity.setYBodyRot(krakenEntity.getYHeadRot()) // maybe opposite of this?
-                // krakenEntity.setDisableBodyRotation(true)
-                fixClientAnimationSync(krakenEntity)
-
+                let newYaw = krakenEntity.getYaw()
+                krakenEntity.setYaw(newYaw)
             }
-
         })
     }
 })
-
-const stopAllAnimations = (entity) => {
-    entity.stopTriggeredAnimation('krakenBossController', 'k_idle')
-    entity.stopTriggeredAnimation('krakenBossController', 'k_attack')
-}
-
-const fixClientAnimationSync = (krakenEntity) => {
-    let deltaMovement = krakenEntity.getDeltaMovement()
-    let moveTo = new Vec3d(deltaMovement.x() + 0.001, deltaMovement.y(), deltaMovement.z())
-    krakenEntity.setDeltaMovement(moveTo)
-}
-
 
 const startNewAction = (entity, event) => {
     let actionQueue;

@@ -65,6 +65,8 @@ StartupEvents.registry('entity_type', event => {
       let spawnedEntity = entity
       spawnedEntity.persistentData.actionQueue = ['idle']
       spawnedEntity.persistentData.startNextActionAge = 100
+      krakenEntity.setYaw(0) // needed?
+
     })
     .tick(entity => {
       // if (!(entity.level === 'ClientLevel')) {
