@@ -5,14 +5,29 @@ let nextFireStaffSwingAnimation = 'fire_staff_swing_left' // multiplayer
 const playFireStaffSwingAnimation = (level, player) => {
     if (!(level === 'ClientLevel')) { // move to animations
         if (nextFireStaffSwingAnimation === 'fire_staff_swing_left') {
-            player.triggerAnimation("frontiers:fire_staff_swing_left")
-            nextFireStaffSwingAnimation = 'fire_staff_swing_right'
+            // player.triggerAnimation("frontiers:fire_staff_swing_left")
+            try {
+                player.triggerAnimation("frontiers:fire_staff_swing_left", 1, "linear", true, true)
+                nextFireStaffSwingAnimation = 'fire_staff_swing_right'
+            } catch (err) {
+                console.error(`failed to play fire staff animation: ${err}`)
+            }
+
         } else if (nextFireStaffSwingAnimation === 'fire_staff_swing_right') {
-            player.triggerAnimation("frontiers:fire_staff_swing_right")
-            nextFireStaffSwingAnimation = 'fire_staff_swing_center'
+            try {
+                player.triggerAnimation("frontiers:fire_staff_swing_right", 1, "linear", true, true)
+                nextFireStaffSwingAnimation = 'fire_staff_swing_center'
+            } catch (err) {
+                console.error(`failed to play fire staff animation: ${err}`)
+            }
+
         } else if (nextFireStaffSwingAnimation === 'fire_staff_swing_center') {
-            player.triggerAnimation("frontiers:fire_staff_swing_center")
-            nextFireStaffSwingAnimation = 'fire_staff_swing_left'
+            try {
+                player.triggerAnimation("frontiers:fire_staff_swing_center", 1, "linear", true, true)
+                nextFireStaffSwingAnimation = 'fire_staff_swing_left'
+            } catch (err) {
+                console.error(`failed to play fire staff animation: ${err}`)
+            }
         }
     }
 }

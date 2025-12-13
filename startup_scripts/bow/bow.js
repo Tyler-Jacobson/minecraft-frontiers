@@ -5,7 +5,7 @@ StartupEvents.registry('entity_type', event => {
         console.info(`arrow hit entity`)
 
     }).tick(entity => {
-        console.info(`ticking arrow`)
+        // console.info(`ticking arrow`)
         const world = entity.level
 
         const collisionX = entity.x

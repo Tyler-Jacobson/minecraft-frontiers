@@ -2,7 +2,7 @@ StartupEvents.registry("item", event => {
   event.create("frontiers:custom_scythe", 'sword')
     .use((level, player, hand) => {
       // playFireStaffSwingAnimation(level, player)
-      return true
+      return false
     })
     .maxDamage(382)
     .finishUsing((itemstack, level, entity) => {
@@ -22,6 +22,7 @@ if (Platform.isClientEnvironment()) {
   ClientEvents.init(event => {
     let $BetterCombatClientEvents = Java.loadClass('net.bettercombat.api.client.BetterCombatClientEvents')
     let $PlayerAttackStart = Java.loadClass('net.bettercombat.api.client.BetterCombatClientEvents$PlayerAttackStart') // there is also a BetterCombatClientEvents$PlayerAttackHit event
+    // if (event.getPlayer().getMainHandItem())
     $BetterCombatClientEvents.ATTACK_START.register(new JavaAdapter($PlayerAttackStart, {
       onPlayerAttackStart: function (player, hand) {
         // this sends a packet from client to server on the better_combat_scythe_attack_started channel to say an attack has started

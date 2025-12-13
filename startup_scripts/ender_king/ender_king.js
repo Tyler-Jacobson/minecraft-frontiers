@@ -27,7 +27,7 @@ StartupEvents.registry('entity_type', event => {
             entity.goalSelector.getRunningGoals().forEach(goal => {
                 if (goal.goal && (newMobGoal !== goal.goal)) {
                     console.info(`new mob goal: ${goal.goal.toString()}`)
-                    console.log(`entity age ${entity.age}`)
+                    // console.log(`entity age ${entity.age}`)
                     newMobGoal = goal.goal
                 }
             })
