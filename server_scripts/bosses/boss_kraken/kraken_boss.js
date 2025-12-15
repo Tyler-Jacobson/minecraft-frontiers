@@ -15,12 +15,9 @@ LevelEvents.tick(event => {
             }
             // add here: kraken code that should run every tick
 
-            // switch this to look at target player
-            let nearbyEntities = krakenEntity.level.getEntitiesWithin(krakenEntity.boundingBox.inflate(500))
-            // let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer() && !entity.creative && !entity.spectator) // switch the below to this
-            let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer())
-            if (nearbyPlayers[0]) {
-                krakenEntity.lookAt(nearbyPlayers[0], 30, 30)
+            let lookAtTarget = getPriorityTarget(krakenEntity)
+            if (lookAtTarget) {
+                krakenEntity.lookAt(lookAtTarget, 30, 30)
                 let newYaw = krakenEntity.getYaw()
                 krakenEntity.setYaw(newYaw)
             }
