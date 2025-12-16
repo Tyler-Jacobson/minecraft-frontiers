@@ -16,7 +16,7 @@ const mobRelativeLocation = (mob, distance, angleDegrees, yOffset) => {
         let sinAngle = Math.sin(radians)
         let directionX = lookDirection.x() * cosAngle - lookDirection.z() * sinAngle
         let directionZ = lookDirection.x() * sinAngle + lookDirection.z() * cosAngle
-        let directionY = lookDirection.y()
+        let directionY = 0 // don't want Y look angle to affect relative location
         let targetX = mob.x + directionX * distance
         let targetY = mob.y + directionY * distance + yOffset
         let targetZ = mob.z + directionZ * distance
