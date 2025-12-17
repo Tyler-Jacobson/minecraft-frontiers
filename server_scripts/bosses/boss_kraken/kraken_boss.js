@@ -15,34 +15,15 @@ LevelEvents.tick(event => {
             }
             // add here: kraken code that should run every tick
 
-            // switch this to look at target player
-            let nearbyEntities = krakenEntity.level.getEntitiesWithin(krakenEntity.boundingBox.inflate(500))
-            // let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer() && !entity.creative && !entity.spectator) // switch the below to this
-            let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer())
-            if (nearbyPlayers[0]) {
-                krakenEntity.lookAt(nearbyPlayers[0], 30, 30)
-                // console.log(`${krakenEntity.getYHeadRot()} ${krakenEntity.getYBodyRot()}`)
-                // krakenEntity.setYBodyRot(krakenEntity.getYHeadRot()) // maybe opposite of this?
-                // krakenEntity.setDisableBodyRotation(true)
-                fixClientAnimationSync(krakenEntity)
-
+            let lookAtTarget = getPriorityTarget(krakenEntity)
+            if (lookAtTarget) {
+                krakenEntity.lookAt(lookAtTarget, 30, 30)
+                let newYaw = krakenEntity.getYaw()
+                krakenEntity.setYaw(newYaw)
             }
-
         })
     }
 })
-
-const stopAllAnimations = (entity) => {
-    entity.stopTriggeredAnimation('krakenBossController', 'k_idle')
-    entity.stopTriggeredAnimation('krakenBossController', 'k_attack')
-}
-
-const fixClientAnimationSync = (krakenEntity) => {
-    let deltaMovement = krakenEntity.getDeltaMovement()
-    let moveTo = new Vec3d(deltaMovement.x() + 0.001, deltaMovement.y(), deltaMovement.z())
-    krakenEntity.setDeltaMovement(moveTo)
-}
-
 
 const startNewAction = (entity, event) => {
     let actionQueue;
@@ -61,13 +42,13 @@ const startNewAction = (entity, event) => {
             runRed(entity, event)
             break;
         case 'yellow':
-            runYellow(entity)
+            runYellow(entity, event)
             break;
         case 'blue':
-            runBlue(entity)
+            runBlue(entity, event)
             break;
         case 'white':
-            runWhite(entity) // giga laser
+            runWhite(entity, event) // giga laser
             break;
         default:
             console.error('ran default in global.startNewAction')

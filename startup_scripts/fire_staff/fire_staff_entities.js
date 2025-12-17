@@ -36,6 +36,9 @@ StartupEvents.registry('entity_type', event => {
         const { xsize, ysize, zsize } = hitEntity.boundingBox
 
         let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+        if (!nearbyEntities.contains(hitEntity)) {
+            nearbyEntities.push(hitEntity)
+        }
         let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
         let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
         console.info(`hasKindnessEnchant ${hasKindnessEnchant(itemStack)}`)
