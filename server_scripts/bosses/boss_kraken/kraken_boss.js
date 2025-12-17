@@ -42,13 +42,13 @@ const startNewAction = (entity, event) => {
             runRed(entity, event)
             break;
         case 'yellow':
-            runYellow(entity)
+            runYellow(entity, event)
             break;
         case 'blue':
-            runBlue(entity)
+            runBlue(entity, event)
             break;
         case 'white':
-            runWhite(entity) // giga laser
+            runWhite(entity, event) // giga laser
             break;
         default:
             console.error('ran default in global.startNewAction')
