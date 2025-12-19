@@ -21,7 +21,7 @@ const runYellow = (entity, event) => {
 const runYellowAttack = (uuid, event) => {
     let entity = event.level.getEntity(uuid)
     if (entity && entity.isAlive()) {
-        let attackStartingLocation = mobRelativeLocation(entity, 30, 0, 20)
+        let attackStartingLocation = mobRelativeLocation(entity, 10, 45, 20)
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
         let attackAngle = angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
         spawnKrakenYellowProjectile(entity, entity.level, attackStartingLocation, attackAngle)
@@ -34,7 +34,7 @@ const spawnKrakenYellowProjectile = (mob, level, attackStartingLocation, lookAng
     const projectile = level.createEntity("frontiers:kraken_yellow_laser");
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     projectile.setOwner(mob)
-    const vel = lookAngle.scale(3)
+    const vel = lookAngle.scale(0.5)
     projectile.setMotion(vel.x(), vel.y(), vel.z())
     projectile.setPosition(attackStartingLocation.x(), attackStartingLocation.y(), attackStartingLocation.z())
     projectile.setNoGravity(true)

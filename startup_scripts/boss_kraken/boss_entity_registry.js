@@ -23,6 +23,7 @@ StartupEvents.registry('entity_type', event => {
   const builder = event.create(BOSS_ID, 'minecraft:ghast')
     // IMPORTANT: we’ll manage all goals in KubeJS.
     .defaultGoals(false)
+    .canChangeDimensions(entity => false)
     .mobCategory('monster')
     .sized(BOSS_WIDTH, BOSS_HEIGHT)
     .clientTrackingRange(1000)

@@ -14,7 +14,7 @@ StartupEvents.registry('entity_type', event => {
         const kraken = entity.getOwner()
         const damageSource = entity.damageSources().indirectMagic(entity, kraken)
         const world = kraken.level
-            
+
         // const randomFireballCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
 
         // world.playSound(entity, entity.block.pos, randomFireballCollisionSound, "players", 3, 1)
@@ -131,7 +131,14 @@ global.spawnKrakenRedProjectile = (mob, level, attackStartingLocation, lookAngle
 
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
-    event.create("frontiers:kraken_yellow_laser", "entityjs:geckolib_projectile").onHitEntity(context => {
+    const builder = event.create("frontiers:kraken_yellow_laser", "entityjs:geckolib_projectile")
+    .newGlowingGeoLayer(builder => {
+        builder.textureResource(entity => {
+            // return some glowing texture overlay
+            return "frontiers:textures/entity/kraken_yellow_laser_emissive.png"
+        })
+    })
+    .onHitEntity(context => {
         // // 'entity' in this context is the projectile that is spawned
         // // 'result.entity' in this context is the target that is hit by the projectile
         const { entity, result } = context;
@@ -144,7 +151,7 @@ StartupEvents.registry('entity_type', event => {
         const kraken = entity.getOwner()
         const damageSource = entity.damageSources().indirectMagic(entity, kraken)
         const world = kraken.level
-            
+
         // const randomFireballCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
 
         // world.playSound(entity, entity.block.pos, randomFireballCollisionSound, "players", 3, 1)
@@ -243,7 +250,30 @@ StartupEvents.registry('entity_type', event => {
         world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
         world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
     }).noItem()
+    const RenderType = Java.loadClass("net.minecraft.client.renderer.RenderType")
+    builder.renderType(entity => RenderType.entityTranslucent("frontiers:textures/entity/kraken_yellow_laser.png"))
 })
+
+// EntityJSEvents.render('frontiers:kraken_yellow_laser', event => {
+//     const builder = event.renderer
+
+//     // Base model + base texture (supports transparency if you want)
+//     builder.model("frontiers:geo/kraken_yellow_laser.geo.json")
+//     builder.texture("frontiers:textures/entity/kraken_yellow_laser.png")
+
+//     // Make the base texture translucent-capable (for transparent parts)
+//     builder.renderType(entity => 
+//         RenderType.entityTranslucent("frontiers:textures/entity/kraken_yellow_laser.png")
+//     )
+
+//     // Glowing eye overlay
+//     builder.newGlowingGeoLayer(layer => {
+//         layer.textureResource(entity => {
+//             // Only eye pixels are painted in this texture
+//             return "frontiers:textures/entity/kraken_yellow_laser_emissive.png"
+//         })
+//     })
+// })
 
 global.spawnKrakenRedProjectile = (mob, level, attackStartingLocation, lookAngle) => {
     // const { level } = mob
