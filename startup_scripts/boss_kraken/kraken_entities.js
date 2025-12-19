@@ -135,7 +135,7 @@ StartupEvents.registry('entity_type', event => {
     .newGlowingGeoLayer(builder => {
         builder.textureResource(entity => {
             // return some glowing texture overlay
-            return "frontiers:textures/entity/kraken_yellow_laser_emissive.png"
+            return "frontiers:textures/entity/kraken_yellow_laser.png"
         })
     })
     .onHitEntity(context => {
@@ -250,30 +250,7 @@ StartupEvents.registry('entity_type', event => {
         world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
         world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
     }).noItem()
-    const RenderType = Java.loadClass("net.minecraft.client.renderer.RenderType")
-    builder.renderType(entity => RenderType.entityTranslucent("frontiers:textures/entity/kraken_yellow_laser.png"))
 })
-
-// EntityJSEvents.render('frontiers:kraken_yellow_laser', event => {
-//     const builder = event.renderer
-
-//     // Base model + base texture (supports transparency if you want)
-//     builder.model("frontiers:geo/kraken_yellow_laser.geo.json")
-//     builder.texture("frontiers:textures/entity/kraken_yellow_laser.png")
-
-//     // Make the base texture translucent-capable (for transparent parts)
-//     builder.renderType(entity => 
-//         RenderType.entityTranslucent("frontiers:textures/entity/kraken_yellow_laser.png")
-//     )
-
-//     // Glowing eye overlay
-//     builder.newGlowingGeoLayer(layer => {
-//         layer.textureResource(entity => {
-//             // Only eye pixels are painted in this texture
-//             return "frontiers:textures/entity/kraken_yellow_laser_emissive.png"
-//         })
-//     })
-// })
 
 global.spawnKrakenRedProjectile = (mob, level, attackStartingLocation, lookAngle) => {
     // const { level } = mob
