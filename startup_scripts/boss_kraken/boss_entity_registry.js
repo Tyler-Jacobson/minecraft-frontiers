@@ -45,6 +45,7 @@ StartupEvents.registry('entity_type', event => {
       event.addTriggerableAnimation('kraken_idle2', 'k_idle', 'default')
       event.addTriggerableAnimation('kraken_red_attack2', 'k_red_laser', 'default')
       event.addTriggerableAnimation('kraken_yellow', 'k_yellow_laser', 'default')
+      event.addTriggerableAnimation('kraken_blue', 'k_blue_laser', 'default')
 
 
       // let tickingEntity = event.entity
