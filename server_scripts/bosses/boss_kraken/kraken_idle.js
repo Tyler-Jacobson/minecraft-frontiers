@@ -19,7 +19,7 @@ const moveToLocation = (entity) => {
     let randomMovementAngle = getRandomIntInclusive(0, 360)
 
     let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomMovementAngle, yOffsetFromTargetPlayer)
-    let destinationAngle = angleVecFromAToB(entity.getEyePosition(), targetDestination)
+    let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), targetDestination)
     const vel = destinationAngle.scale(KRAKEN_MOVESPEED)
     entity.setMotion(vel.x(), vel.y(), vel.z())
     // entity.setDeltaMovement(targetPlayer.getEyePosition())

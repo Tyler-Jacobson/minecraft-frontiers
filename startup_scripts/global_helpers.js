@@ -40,3 +40,15 @@ global.setPlayerSpecificData = (player, key, value) => {
         console.error(`setPlayerSpecificData error: ${err}`)
     }
 }
+
+// calculates the trajectory of projectiles from point a to b. Both args are Vec3d
+global.angleVecFromAToB = (positionA, positionB) => {
+    let deltaX = positionB.x() - positionA.x()
+    let deltaY = positionB.y() - positionA.y()
+    let deltaZ = positionB.z() - positionA.z()
+    let length = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+    let directionX = deltaX / length
+    let directionY = deltaY / length
+    let directionZ = deltaZ / length
+    return new Vec3d(directionX, directionY, directionZ)
+}

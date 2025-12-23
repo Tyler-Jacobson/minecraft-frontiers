@@ -89,7 +89,7 @@ StartupEvents.registry('entity_type', event => {
 
         nearbyEntities.forEach((nearbyEntity) => {
             nearbyEntity.setRemainingFireTicks(100)
-            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
+            nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage) // this should be explosive attack or fire damage attack
 
         })
 

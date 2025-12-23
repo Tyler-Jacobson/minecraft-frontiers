@@ -23,7 +23,7 @@ const runRedAttack = (uuid, event) => {
     if (entity && entity.isAlive()) {
         let attackStartingLocation = mobRelativeLocation(entity, 30, 0, 20)
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
-        let attackAngle = angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
+        let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
         spawnKrakenRedProjectile(entity, entity.level, attackStartingLocation, attackAngle)
     }
 

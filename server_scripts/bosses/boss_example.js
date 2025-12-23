@@ -2,8 +2,9 @@
 
 // CONFIG — change these to match your boss
 const BOSS_ENTITY_ID = 'frontiers:custom_kraken'        // or 'yourmod:ancient_titan' if using EntityJS
-const BOSSBAR_ID     = 'frontiers:custom_kraken'       // namespaced id for /bossbar
-const BOSS_NAME      = 'Void Kraken'
+const BOSSBAR_ID = 'frontiers:custom_kraken'       // namespaced id for /bossbar
+const BOSS_NAME = 'Void Kraken'
+const MAX_HEALTH = 100
 
 // Utility to (silently) run vanilla commands
 function cmd(server, str) { server.runCommandSilent(str) }
@@ -20,10 +21,13 @@ ServerEvents.loaded(event => {
 // When boss spawns: show bar, set max/value, assign nearby players
 EntityEvents.spawned(e => {
   const s = e.server
+  const entity = e.entity
   if (e.entity.type !== BOSS_ENTITY_ID) return
+  entity.setMaxHealth(MAX_HEALTH)
+  entity.setHealth(MAX_HEALTH)
 
-  const max = Math.floor(e.entity.maxHealth)
-  const hp  = Math.max(0, Math.floor(e.entity.health))
+  const max = Math.floor(MAX_HEALTH)
+  const hp = Math.max(0, Math.floor(e.entity.health))
 
   cmd(s, `bossbar set ${BOSSBAR_ID} max ${max}`)
   cmd(s, `bossbar set ${BOSSBAR_ID} value ${hp}`)
@@ -43,8 +47,8 @@ EntityEvents.spawned(e => {
 EntityEvents.hurt(e => {
   if (!e.entity.tags.contains('kjs_boss')) return
 
-  const s  = e.server
-  const hp = Math.max(0, Math.floor(e.entity.health)) // post-damage health
+  const s = e.server
+  const hp = Math.max(0, Math.floor(e.entity.health - e.getDamage())) // post-damage health
   cmd(s, `bossbar set ${BOSSBAR_ID} value ${hp}`)
 
   // Simple phase gates
@@ -78,7 +82,7 @@ EntityEvents.checkSpawn(e => {
 })
 
 // Tuneables
-const VIEW_RADIUS   = 64   // who can see the bar
+const VIEW_RADIUS = 64   // who can see the bar
 const TICK_INTERVAL = 20   // ~1s
 
 let _audienceTicker = 0
