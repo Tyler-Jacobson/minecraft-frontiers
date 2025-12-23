@@ -1,3 +1,6 @@
+let YELLOW_LASER_MOVE_SPEED = 0.3
+
+
 
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
@@ -218,8 +221,14 @@ StartupEvents.registry('entity_type', event => {
             const world = entity.level
             const target = world.getNearestPlayer(entity, 64)
 
+            // let destinationAngle = angleVecFromAToB(entity.getEyePosition(), target)
+            // let MOVE_SPEED = 0.1
+            // const moveTo = new Vec3d((target.x - entity.getX()) * MOVE_SPEED, (target.y - entity.getY()) * MOVE_SPEED, (target.z - entity.getZ()) * MOVE_SPEED)
+            // entity.setDeltaMovement(moveTo)
 
-
+            let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), target.getEyePosition())
+            const vel = destinationAngle.scale(YELLOW_LASER_MOVE_SPEED)
+            entity.setMotion(vel.x(), vel.y(), vel.z())
 
             const collisionX = entity.x
             const collisionY = entity.y
