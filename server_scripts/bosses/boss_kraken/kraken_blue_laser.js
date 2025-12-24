@@ -25,7 +25,10 @@ const runBlueAttack = (uuid, event) => {
         let attackStartingLocation = mobRelativeLocation(entity, 10, 45, -8)
 
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
-        let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
+        let nearestPlayerEyePos = nearestPlayer.getEyePosition()
+        console.log(`nearestPlayerEyePos ${nearestPlayerEyePos}`)
+        let playerLocationWithOffset = new Vec3d(nearestPlayerEyePos.x(), nearestPlayerEyePos.y() + 10, nearestPlayerEyePos.z())
+        let attackAngle = global.angleVecFromAToB(attackStartingLocation, playerLocationWithOffset)
         spawnKrakenBlueProjectile(entity, entity.level, attackStartingLocation, attackAngle)
     }
 
