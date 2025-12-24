@@ -321,9 +321,28 @@ StartupEvents.registry('entity_type', event => {
 
             // world.playSound(entity, entity.block.pos, randomFireballBlockCollisionSound, "players", 3, 1)
 
-            // const collisionX = entity.x
-            // const collisionY = entity.y
-            // const collisionZ = entity.z
+            const collisionX = entity.x
+            const collisionY = entity.y
+            const collisionZ = entity.z
+            function placeObsidianAt(x, y, z) {
+                let roundedX = Math.round(x)
+                let roundedY = Math.round(y)
+                let roundedZ = Math.round(z)
+                console.log(`setblock ${x} ${y} ${z} frontiers:tick_logger_block`)
+                Utils.server.runCommandSilent(`setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:tick_logger_block`)
+            }
+            // function placeObsidianAt(x, y, z) {
+            //     console.log(`setblock ${x} ${y} ${z} minecraft:obsidian destroy`)
+            //     Utils.server.runCommandSilent(`setblock ${x} ${y} ${z} minecraft:obsidian destroy`)
+            // }
+            console.log(`hit block at ${collisionX} ${collisionY} ${collisionZ}`)
+            try {
+                placeObsidianAt(collisionX, collisionY, collisionZ)
+
+            } catch (err) {
+                console.log(`failed to place obsidian ${err}`)
+            }
+
 
             // world.spawnParticles("explosiveenhancement:fireball", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 7, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
             // world.spawnParticles("explosiveenhancement:smoke", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
