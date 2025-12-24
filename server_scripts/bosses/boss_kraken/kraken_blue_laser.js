@@ -1,42 +1,49 @@
-const runYellow = (entity, event) => {
-    console.log('running yellow')
+const runBlue = (entity, event) => {
     let actionDuration = 100
     entity.persistentData.startNextActionAge = entity.age + actionDuration
     entity.persistentData.putBoolean('lastActionWasIdle', false)
     try {
-        entity.triggerAnimation('krakenBossController', 'k_yellow_laser')
-
+        entity.triggerAnimation('krakenBossController', 'k_blue_laser')
     } catch (err) {
         console.log(`could not trigger animation ${err}`)
     }
     let uuid = entity.uuid
     entity.persistentData.actionQueue = []
+    console.log(`entity1 ${entity.type}`)
+
     // target = getTarget() // set target player into storage as current look / move around target
 
     event.server.scheduleInTicks(50, () => {
-        runYellowAttack(uuid, event)
+        runBlueAttack(uuid, event)
     })
 }
 
-const runYellowAttack = (uuid, event) => {
+const runBlueAttack = (uuid, event) => {
     let entity = event.level.getEntity(uuid)
+    console.log(`entity2 ${entity.type}`)
     if (entity && entity.isAlive()) {
-        let attackStartingLocation = mobRelativeLocation(entity, 10, -45, 20)
+        let attackStartingLocation = mobRelativeLocation(entity, 10, 45, -8)
+
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
-        let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
-        spawnKrakenYellowProjectile(entity, entity.level, attackStartingLocation, attackAngle)
+        let nearestPlayerEyePos = nearestPlayer.getEyePosition()
+        console.log(`nearestPlayerEyePos ${nearestPlayerEyePos}`)
+        let playerLocationWithOffset = new Vec3d(nearestPlayerEyePos.x(), nearestPlayerEyePos.y() + 10, nearestPlayerEyePos.z())
+        let attackAngle = global.angleVecFromAToB(attackStartingLocation, playerLocationWithOffset)
+        spawnKrakenBlueProjectile(entity, entity.level, attackStartingLocation, attackAngle)
     }
 
 }
 
-const spawnKrakenYellowProjectile = (mob, level, attackStartingLocation, lookAngle) => {
+const spawnKrakenBlueProjectile = (mob, level, attackStartingLocation, lookAngle) => {
     // const { level } = mob
-    const projectile = level.createEntity("frontiers:kraken_yellow_laser");
+    const projectile = level.createEntity("frontiers:kraken_blue_laser");
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
+    console.log(`entity3 ${mob.type}`)
+
     projectile.setOwner(mob)
-    const vel = lookAngle.scale(0.5)
+    const vel = lookAngle.scale(1.5)
     projectile.setMotion(vel.x(), vel.y(), vel.z())
     projectile.setPosition(attackStartingLocation.x(), attackStartingLocation.y(), attackStartingLocation.z())
-    projectile.setNoGravity(true)
+    projectile.setNoGravity(false)
     projectile.spawn()
 }

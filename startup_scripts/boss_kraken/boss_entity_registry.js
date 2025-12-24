@@ -23,6 +23,7 @@ StartupEvents.registry('entity_type', event => {
   const builder = event.create(BOSS_ID, 'minecraft:ghast')
     // IMPORTANT: we’ll manage all goals in KubeJS.
     .defaultGoals(false)
+    .canChangeDimensions(entity => false)
     .mobCategory('monster')
     .sized(BOSS_WIDTH, BOSS_HEIGHT)
     .clientTrackingRange(1000)
@@ -44,6 +45,7 @@ StartupEvents.registry('entity_type', event => {
       event.addTriggerableAnimation('kraken_idle2', 'k_idle', 'default')
       event.addTriggerableAnimation('kraken_red_attack2', 'k_red_laser', 'default')
       event.addTriggerableAnimation('kraken_yellow', 'k_yellow_laser', 'default')
+      event.addTriggerableAnimation('kraken_blue', 'k_blue_laser', 'default')
 
 
       // let tickingEntity = event.entity
@@ -68,7 +70,6 @@ StartupEvents.registry('entity_type', event => {
       spawnedEntity.persistentData.actionQueue = ['idle']
       spawnedEntity.persistentData.startNextActionAge = 100
       entity.setYaw(0) // needed?
-
     })
     .tick(entity => {
       // if (!(entity.level === 'ClientLevel')) {
