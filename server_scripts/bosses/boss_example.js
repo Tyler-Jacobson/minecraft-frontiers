@@ -18,6 +18,14 @@ ServerEvents.loaded(event => {
   cmd(s, `bossbar set ${BOSSBAR_ID} visible false`)
 })
 
+EntityEvents.spawned(e => {
+  const s = e.server
+  const entity = e.entity
+  if (e.entity.type !== 'block_factorys_bosses:infernal_dragon') return
+  entity.setMaxHealth(100)
+  entity.setHealth(100)
+})
+
 // When boss spawns: show bar, set max/value, assign nearby players
 EntityEvents.spawned(e => {
   const s = e.server
