@@ -3,7 +3,21 @@ const randomActionSelector = (entity) => {
         return 'idle'
     }
     // randomizer here when more attacks are added
-    return 'blue'
+    function getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive
+    }
+    let randomAttack = getRandomIntInclusive(1, 3)
+    if (randomAttack === 1) {
+        return 'blue'
+    }
+    if (randomAttack === 2) {
+        return 'yellow'
+    }
+    if (randomAttack === 3) {
+        return 'red'
+    }
 }
 
 // calculates a position relative to the current position and rotation of a mob / boss / player. Usually for spawning attack entities
