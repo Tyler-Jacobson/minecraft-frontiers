@@ -328,8 +328,8 @@ StartupEvents.registry('entity_type', event => {
                 let roundedX = Math.round(x)
                 let roundedY = Math.round(y)
                 let roundedZ = Math.round(z)
-                console.log(`setblock ${x} ${y} ${z} frontiers:tick_logger_block`)
-                Utils.server.runCommandSilent(`setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:tick_logger_block`)
+                console.log(`setblock ${x} ${y} ${z} frontiers:kraken_aura`)
+                Utils.server.runCommandSilent(`setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:kraken_aura`)
             }
             // function placeObsidianAt(x, y, z) {
             //     console.log(`setblock ${x} ${y} ${z} minecraft:obsidian destroy`)
