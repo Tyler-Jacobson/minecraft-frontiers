@@ -7,16 +7,17 @@ const runIdle = (entity) => {
     entity.triggerAnimation('krakenBossController', 'k_idle') // play animations
     entity.persistentData.actionQueue = [] // clear the action queue
     // movement function here
+    summonMinions(entity)
     moveToLocation(entity)
 }
 
 function adjustDestinationAboveGround(level, targetDestination) {
     console.log(`x ${targetDestination.x()}`)
-  let blockX = Math.floor(targetDestination.x())
-  let blockY = Math.floor(targetDestination.y())
-  let blockZ = Math.floor(targetDestination.z())
-  while (level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:air") blockY++
-  return new Vec3d(targetDestination.x(), blockY + 5, targetDestination.z())
+    let blockX = Math.floor(targetDestination.x())
+    let blockY = Math.floor(targetDestination.y())
+    let blockZ = Math.floor(targetDestination.z())
+    while (level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:air") blockY++
+    return new Vec3d(targetDestination.x(), blockY + 5, targetDestination.z())
 }
 
 const moveToLocation = (entity) => {
@@ -32,4 +33,17 @@ const moveToLocation = (entity) => {
     const vel = destinationAngle.scale(KRAKEN_MOVESPEED)
     entity.setMotion(vel.x(), vel.y(), vel.z())
 
+}
+
+const summonMinions = (entity) => {
+    let targetPlayer = getPriorityTarget(entity)
+    let distanceFromTargetPlayer = 10
+    let yOffsetFromTargetPlayer = 1
+    let randomAngleFromPlayer = getRandomIntInclusive(0, 360)
+    let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomAngleFromPlayer, yOffsetFromTargetPlayer)
+    let aboveGroundTargetDestination = adjustDestinationAboveGround(entity.level, targetDestination)
+    let minionEntity = entity.level.createEntity('block_factorys_bosses:soul_skeleton');
+    minionEntity.setPos(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y(), aboveGroundTargetDestination.z()); 
+    minionEntity.spawn();
+    minionEntity.setTarget(targetPlayer);
 }
