@@ -10,20 +10,26 @@ const runIdle = (entity) => {
     moveToLocation(entity)
 }
 
+function adjustDestinationAboveGround(level, targetDestination) {
+    console.log(`x ${targetDestination.x()}`)
+  let blockX = Math.floor(targetDestination.x())
+  let blockY = Math.floor(targetDestination.y())
+  let blockZ = Math.floor(targetDestination.z())
+  while (level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:air") blockY++
+  return new Vec3d(targetDestination.x(), blockY + 5, targetDestination.z())
+}
+
 const moveToLocation = (entity) => {
     let targetPlayer = getPriorityTarget(entity)
-    let currentMovement = entity.getDeltaMovement()
 
     let distanceFromTargetPlayer = 20
-    let yOffsetFromTargetPlayer = 5
+    let yOffsetFromTargetPlayer = 1
     let randomMovementAngle = getRandomIntInclusive(0, 360)
 
     let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomMovementAngle, yOffsetFromTargetPlayer)
-    let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), targetDestination)
+    let aboveGroundTargetDestination = adjustDestinationAboveGround(entity.level, targetDestination)
+    let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), aboveGroundTargetDestination)
     const vel = destinationAngle.scale(KRAKEN_MOVESPEED)
     entity.setMotion(vel.x(), vel.y(), vel.z())
-    // entity.setDeltaMovement(targetPlayer.getEyePosition())
-    // entity.setMotion(currentMovement.x(), currentMovement.y(), currentMovement.z())
-    // entity.setDeltaMovement(currentMovement)
 
 }
