@@ -1,4 +1,5 @@
 const KRAKEN_MOVESPEED = 5
+const KRAKEN_MOVEMENT_DESTINATION_Y_OFFSET = 5
 
 const runIdle = (entity) => {
     let actionDuration = 100 // how long will the action take (in ticks)
@@ -11,15 +12,6 @@ const runIdle = (entity) => {
     moveToLocation(entity)
 }
 
-function adjustDestinationAboveGround(level, targetDestination) {
-    console.log(`x ${targetDestination.x()}`)
-    let blockX = Math.floor(targetDestination.x())
-    let blockY = Math.floor(targetDestination.y())
-    let blockZ = Math.floor(targetDestination.z())
-    while (level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:air") blockY++
-    return new Vec3d(targetDestination.x(), blockY + 5, targetDestination.z())
-}
-
 const moveToLocation = (entity) => {
     let targetPlayer = getPriorityTarget(entity)
 
@@ -28,8 +20,9 @@ const moveToLocation = (entity) => {
     let randomMovementAngle = getRandomIntInclusive(0, 360)
 
     let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomMovementAngle, yOffsetFromTargetPlayer)
-    let aboveGroundTargetDestination = adjustDestinationAboveGround(entity.level, targetDestination)
-    let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), aboveGroundTargetDestination)
+    let aboveGroundTargetDestination = global.adjustDestinationAboveGround(entity.level, targetDestination)
+    let targetPlusYOffset = new Vec3d(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y() + KRAKEN_MOVEMENT_DESTINATION_Y_OFFSET, aboveGroundTargetDestination.z())
+    let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), targetPlusYOffset)
     const vel = destinationAngle.scale(KRAKEN_MOVESPEED)
     entity.setMotion(vel.x(), vel.y(), vel.z())
 
@@ -41,7 +34,7 @@ const summonMinions = (entity) => {
     let yOffsetFromTargetPlayer = 1
     let randomAngleFromPlayer = getRandomIntInclusive(0, 360)
     let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomAngleFromPlayer, yOffsetFromTargetPlayer)
-    let aboveGroundTargetDestination = adjustDestinationAboveGround(entity.level, targetDestination)
+    let aboveGroundTargetDestination = global.adjustDestinationAboveGround(entity.level, targetDestination)
     let minionEntity = entity.level.createEntity('block_factorys_bosses:soul_skeleton');
     minionEntity.setPos(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y(), aboveGroundTargetDestination.z()); 
     minionEntity.spawn();
