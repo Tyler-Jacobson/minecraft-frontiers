@@ -22,7 +22,7 @@ const runBlueAttack = (uuid, event) => {
     let entity = event.level.getEntity(uuid)
     console.log(`entity2 ${entity.type}`)
     if (entity && entity.isAlive()) {
-        let attackStartingLocation = mobRelativeLocation(entity, 10, 45, -8)
+        let attackStartingLocation = mobRelativeLocation(entity, 10, 60, -5)
 
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
         let nearestPlayerEyePos = nearestPlayer.getEyePosition()

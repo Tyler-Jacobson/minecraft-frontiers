@@ -213,6 +213,7 @@ StartupEvents.registry('entity_type', event => {
             // // 'entity' in this context is the projectile that is spawned
             // // 'result.entity' in this context is the target that is hit by the projectile
             const { entity, result } = context;
+            if (result.entity.type === 'frontiers:custom_kraken') return
 
             // // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
             // // to set the player as the source of damage, we choose .playerAttack() as the damage source,
@@ -220,7 +221,7 @@ StartupEvents.registry('entity_type', event => {
             // // This can be any player reference, in this case we're using entity.getOwner(), 
             // // which is a value we set to be the player with this line in global.exampleFinishUsing below when spawning the projectile:
             const kraken = entity.getOwner()
-            const damageSource = entity.damageSources().indirectMagic(entity, kraken)
+            const damageSource = entity.damageSources().mobProjectile(entity, kraken)
             const world = kraken.level
 
             // const randomFireballCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
