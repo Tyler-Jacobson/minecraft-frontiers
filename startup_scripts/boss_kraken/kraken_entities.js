@@ -270,10 +270,17 @@ StartupEvents.registry('entity_type', event => {
             // const randomFireballBlockCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
 
             // world.playSound(entity, entity.block.pos, randomFireballBlockCollisionSound, "players", 3, 1)
+            
 
             const collisionX = entity.x
             const collisionY = entity.y
             const collisionZ = entity.z
+            if (entity.level.getBlock(collisionX, collisionY, collisionZ).id === 'minecraft:water' 
+                || entity.level.getBlock(collisionX, collisionY, collisionZ).id === 'minecraft:lava') return
+            if (entity.age <= 10) return
+
+
+
             function placeObsidianAt(x, y, z) {
                 let roundedX = Math.round(x)
                 let roundedY = Math.round(y)
@@ -287,7 +294,10 @@ StartupEvents.registry('entity_type', event => {
             // }
             console.log(`hit block at ${collisionX} ${collisionY} ${collisionZ}`)
             try {
-                placeObsidianAt(collisionX, collisionY, collisionZ)
+                let targetLocation = new Vec3d(collisionX, collisionY, collisionZ)
+                let aboveGroundDestination = global.adjustDestinationAboveGround(entity.level, targetLocation)
+                console.log(`target ${targetLocation} adjusted ${aboveGroundDestination}`)
+                placeObsidianAt(aboveGroundDestination.x(), aboveGroundDestination.y(), aboveGroundDestination.z())
 
             } catch (err) {
                 console.log(`failed to place obsidian ${err}`)
