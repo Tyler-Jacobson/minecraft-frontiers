@@ -2,13 +2,15 @@ const KRAKEN_MOVESPEED = 5
 const KRAKEN_MOVEMENT_DESTINATION_Y_OFFSET = 5
 
 const runIdle = (entity) => {
+    console.log('running idle')
+
     let actionDuration = 100 // how long will the action take (in ticks)
     entity.persistentData.startNextActionAge = entity.age + actionDuration // set persistent data to run new action after this one finishes
-    entity.persistentData.putBoolean('lastActionWasIdle', true) // set persistent data to know that our last action was 'idle'
-    entity.triggerAnimation('krakenBossController', 'k_idle') // play animations
+    // entity.persistentData.putBoolean('lastActionWasIdle', true) // set persistent data to know that our last action was 'idle'
+    // entity.triggerAnimation('krakenBossController', 'k_idle') // play animations
     entity.persistentData.actionQueue = [] // clear the action queue
     // movement function here
-    summonMinions(entity)
+    // summonMinions(entity)
     moveToLocation(entity)
 }
 

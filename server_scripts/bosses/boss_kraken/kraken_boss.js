@@ -13,6 +13,12 @@ LevelEvents.tick(event => {
                 startNewAction(krakenEntity, event)
                 // add here: kraken code that should run at the start of each new action
             }
+            if (krakenEntity.age >= krakenEntity.persistentData.startNextSummonActionAge) {
+                console.log('running summon for action age')
+                runSummon(krakenEntity, event)
+                moveToLocation(krakenEntity)
+                // add here: kraken code that should run at the start of each new summon action
+            }
             // add here: kraken code that should run every tick
 
             let lookAtTarget = getPriorityTarget(krakenEntity)
@@ -40,12 +46,15 @@ const startNewAction = (entity, event) => {
             break;
         case 'red':
             runRed(entity, event)
+            moveToLocation(entity)
             break;
         case 'yellow':
             runYellow(entity, event)
+            moveToLocation(entity)
             break;
         case 'blue':
             runBlue(entity, event)
+            moveToLocation(entity)
             break;
         case 'white':
             runWhite(entity, event) // giga laser
