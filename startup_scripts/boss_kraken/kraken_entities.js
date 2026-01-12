@@ -5,64 +5,64 @@ let YELLOW_LASER_MOVE_SPEED = 0.3
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
     event.create("frontiers:kraken_red_projectile", "entityjs:geckolib_projectile")
-    .onHitEntity(context => {
-        // 'entity' in this context is the projectile that is spawned
-        // 'result.entity' in this context is the target that is hit by the projectile
-        const { entity, result } = context;
+        .onHitEntity(context => {
+            // 'entity' in this context is the projectile that is spawned
+            // 'result.entity' in this context is the target that is hit by the projectile
+            const { entity, result } = context;
 
-        // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
-        // to set the player as the source of damage, we choose .playerAttack() as the damage source,
-        // which requires a reference to the player be passed to it.
-        // This can be any player reference, in this case we're using entity.getOwner(), 
-        // which is a value we set to be the player with this line in global.exampleFinishUsing below when spawning the projectile:
-        const kraken = entity.getOwner()
-        const damageSource = entity.damageSources().mobProjectile(entity, kraken)
-        const world = kraken.level
+            // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
+            // to set the player as the source of damage, we choose .playerAttack() as the damage source,
+            // which requires a reference to the player be passed to it.
+            // This can be any player reference, in this case we're using entity.getOwner(), 
+            // which is a value we set to be the player with this line in global.exampleFinishUsing below when spawning the projectile:
+            const kraken = entity.getOwner()
+            const damageSource = entity.damageSources().mobProjectile(entity, kraken)
+            const world = kraken.level
 
 
-        const hitEntity = result.entity
-        console.log(`hitEntity ${hitEntity}`)
-        
-        if (hitEntity.isPlayer() && hitEntity.isBlocking()) {
+            const hitEntity = result.entity
+            // console.log(`hitEntity ${hitEntity}`)
 
-            hitEntity.attack(damageSource, 5)
+            if (hitEntity.isPlayer() && hitEntity.isBlocking()) {
 
-            let lookAngle = hitEntity.lookAngle
-            const vel = lookAngle.scale(1.5)
-            entity.setMotion(vel.x(), vel.y(), vel.z())
-        } else {
-            hitEntity.attack(damageSource, 5)
-            entity.kill()
-        }
+                hitEntity.attack(damageSource, 5)
 
-        // we now get rid of the projectile entity
-        
-    }).onHitBlock(context => {
-        // const { entity } = context
-        // entity.kill()
-    }).tick(entity => {
-        const world = entity.level
-        const collisionX = entity.x
-        const collisionY = entity.y
-        const collisionZ = entity.z
+                let lookAngle = hitEntity.lookAngle
+                const vel = lookAngle.scale(1.5)
+                entity.setMotion(vel.x(), vel.y(), vel.z())
+            } else {
+                hitEntity.attack(damageSource, 5)
+                entity.kill()
+            }
 
-        if (entity.age === 3) {
-            world.playSound(entity, entity.block.pos, 'frontiers:fire_staff_fireball_projectile_whoosh', "players", 1, 1)
-        }
+            // we now get rid of the projectile entity
 
-        const smokeParticleYOffset = 0.3
-        const smokeParticleCountPerTick = 1
-        const smokeParticleSpeedPerTick = 0
+        }).onHitBlock(context => {
+            // const { entity } = context
+            // entity.kill()
+        }).tick(entity => {
+            const world = entity.level
+            const collisionX = entity.x
+            const collisionY = entity.y
+            const collisionZ = entity.z
 
-        const lavaParticleCountPerTick = 1
-        const lavaParticleSpeedPerTick = 20
+            if (entity.age === 3) {
+                world.playSound(entity, entity.block.pos, 'frontiers:fire_staff_fireball_projectile_whoosh', "players", 1, 1)
+            }
 
-        world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
-        world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
-        if (entity.age > 60) {
-            entity.kill()
-        }
-    }).noItem()
+            const smokeParticleYOffset = 0.3
+            const smokeParticleCountPerTick = 1
+            const smokeParticleSpeedPerTick = 0
+
+            const lavaParticleCountPerTick = 1
+            const lavaParticleSpeedPerTick = 20
+
+            world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
+            world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
+            if (entity.age > 60) {
+                entity.kill()
+            }
+        }).noItem()
 })
 
 StartupEvents.registry('entity_type', event => {
@@ -106,7 +106,7 @@ StartupEvents.registry('entity_type', event => {
             // const RADIUS = 3
 
             const hitEntity = result.entity
-            console.log(`hitEntity ${hitEntity}`)
+            // console.log(`hitEntity ${hitEntity}`)
             hitEntity.attack(damageSource, 15)
             // const { xsize, ysize, zsize } = hitEntity.boundingBox
 
@@ -241,7 +241,7 @@ StartupEvents.registry('entity_type', event => {
             // const RADIUS = 3
 
             const hitEntity = result.entity
-            console.log(`hitEntity ${hitEntity}`)
+            // console.log(`hitEntity ${hitEntity}`)
             hitEntity.attack(damageSource, 15)
             // const { xsize, ysize, zsize } = hitEntity.boundingBox
 
@@ -270,15 +270,17 @@ StartupEvents.registry('entity_type', event => {
             // const randomFireballBlockCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
 
             // world.playSound(entity, entity.block.pos, randomFireballBlockCollisionSound, "players", 3, 1)
-            
+
 
             const collisionX = entity.x
             const collisionY = entity.y
             const collisionZ = entity.z
-            if (entity.level.getBlock(collisionX, collisionY, collisionZ).id === 'minecraft:water' 
+            if (entity.level.getBlock(collisionX, collisionY, collisionZ).id === 'minecraft:water'
                 || entity.level.getBlock(collisionX, collisionY, collisionZ).id === 'minecraft:lava') return
-            if (entity.age <= 10) return
-
+            if (entity.age <= 7) return
+            if (entity.level === 'ClientLevel') return
+            console.log(`entityLevel ${entity.level}`)
+            
 
 
             function placeObsidianAt(x, y, z) {
