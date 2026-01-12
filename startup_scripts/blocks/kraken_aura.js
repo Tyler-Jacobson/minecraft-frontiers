@@ -54,7 +54,6 @@ StartupEvents.registry("block", event => {
 
               })
             }
-            console.log(`entities near block ${filteredEntities}`)
           }
           // let nearestPlayer = entity.level.getNearestPlayer(entity, 128)
           // let nearestPlayerEyePos = nearestPlayer.getEyePosition()
