@@ -29,14 +29,16 @@ const moveToLocation = (entity) => {
 }
 
 const summonMinions = (entity) => {
-    let targetPlayer = getPriorityTarget(entity)
-    let distanceFromTargetPlayer = 10
-    let yOffsetFromTargetPlayer = 1
-    let randomAngleFromPlayer = getRandomIntInclusive(0, 360)
-    let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomAngleFromPlayer, yOffsetFromTargetPlayer)
-    let aboveGroundTargetDestination = global.adjustDestinationAboveGround(entity.level, targetDestination)
-    let minionEntity = entity.level.createEntity('block_factorys_bosses:soul_skeleton');
-    minionEntity.setPos(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y(), aboveGroundTargetDestination.z()); 
-    minionEntity.spawn();
-    minionEntity.setTarget(targetPlayer);
+    let nearbyPlayers = getNearbyPlayers(entity, 200)
+    nearbyPlayers.forEach((targetPlayer) => {
+        let distanceFromTargetPlayer = 10
+        let yOffsetFromTargetPlayer = 1
+        let randomAngleFromPlayer = getRandomIntInclusive(0, 360)
+        let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomAngleFromPlayer, yOffsetFromTargetPlayer)
+        let aboveGroundTargetDestination = global.adjustDestinationAboveGround(entity.level, targetDestination)
+        let minionEntity = entity.level.createEntity('block_factorys_bosses:soul_skeleton');
+        minionEntity.setPos(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y(), aboveGroundTargetDestination.z());
+        minionEntity.spawn();
+        minionEntity.setTarget(targetPlayer);
+    })
 }
