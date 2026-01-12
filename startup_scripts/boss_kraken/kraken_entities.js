@@ -38,8 +38,8 @@ StartupEvents.registry('entity_type', event => {
         // we now get rid of the projectile entity
         
     }).onHitBlock(context => {
-        const { entity } = context
-        entity.kill()
+        // const { entity } = context
+        // entity.kill()
     }).tick(entity => {
         const world = entity.level
         const collisionX = entity.x
