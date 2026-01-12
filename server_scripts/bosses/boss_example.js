@@ -4,7 +4,7 @@
 const BOSS_ENTITY_ID = 'frontiers:custom_kraken'        // or 'yourmod:ancient_titan' if using EntityJS
 const BOSSBAR_ID = 'frontiers:custom_kraken'       // namespaced id for /bossbar
 const BOSS_NAME = 'Void Kraken'
-const MAX_HEALTH = 100
+const KRAKEN_MAX_HEALTH = 200
 
 // Utility to (silently) run vanilla commands
 function cmd(server, str) { server.runCommandSilent(str) }
@@ -31,10 +31,10 @@ EntityEvents.spawned(e => {
   const s = e.server
   const entity = e.entity
   if (e.entity.type !== BOSS_ENTITY_ID) return
-  entity.setMaxHealth(MAX_HEALTH)
-  entity.setHealth(MAX_HEALTH)
+  entity.setMaxHealth(KRAKEN_MAX_HEALTH)
+  entity.setHealth(KRAKEN_MAX_HEALTH)
 
-  const max = Math.floor(MAX_HEALTH)
+  const max = Math.floor(KRAKEN_MAX_HEALTH)
   const hp = Math.max(0, Math.floor(e.entity.health))
 
   cmd(s, `bossbar set ${BOSSBAR_ID} max ${max}`)
