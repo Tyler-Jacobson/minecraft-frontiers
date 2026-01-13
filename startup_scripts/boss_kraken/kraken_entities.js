@@ -279,7 +279,6 @@ StartupEvents.registry('entity_type', event => {
                 || entity.level.getBlock(collisionX, collisionY, collisionZ).id === 'minecraft:lava') return
             if (entity.age <= 7) return
             if (entity.level === 'ClientLevel') return
-            console.log(`entityLevel ${entity.level}`)
             
 
 
@@ -288,7 +287,9 @@ StartupEvents.registry('entity_type', event => {
                 let roundedY = Math.round(y)
                 let roundedZ = Math.round(z)
                 console.log(`setblock ${x} ${y} ${z} frontiers:kraken_aura`)
-                Utils.server.runCommandSilent(`setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:kraken_aura`)
+                // Utils.server.runCommandSilent(`setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:kraken_aura`)
+                Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:kraken_aura`)
+
             }
             // function placeObsidianAt(x, y, z) {
             //     console.log(`setblock ${x} ${y} ${z} minecraft:obsidian destroy`)
