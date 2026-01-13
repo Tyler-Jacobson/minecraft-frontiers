@@ -86,8 +86,10 @@ StartupEvents.registry('entity_type', event => {
             // // This can be any player reference, in this case we're using entity.getOwner(), 
             // // which is a value we set to be the player with this line in global.exampleFinishUsing below when spawning the projectile:
             const kraken = entity.getOwner()
+            if (!kraken) {
+                entity.kill()
+            }
             const damageSource = entity.damageSources().indirectMagic(entity, kraken) // this is where we change the damage type
-            const world = kraken.level
 
             // const randomFireballCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
 
@@ -174,8 +176,9 @@ StartupEvents.registry('entity_type', event => {
             // let MOVE_SPEED = 0.1
             // const moveTo = new Vec3d((target.x - entity.getX()) * MOVE_SPEED, (target.y - entity.getY()) * MOVE_SPEED, (target.z - entity.getZ()) * MOVE_SPEED)
             // entity.setDeltaMovement(moveTo)
+            let destinationWithYOffset = new Vec3d(target.getEyePosition().x(), target.getEyePosition().y() - 0.5, target.getEyePosition().z())
 
-            let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), target.getEyePosition())
+            let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), destinationWithYOffset)
             const vel = destinationAngle.scale(YELLOW_LASER_MOVE_SPEED)
             entity.setMotion(vel.x(), vel.y(), vel.z())
 
@@ -279,7 +282,7 @@ StartupEvents.registry('entity_type', event => {
                 || entity.level.getBlock(collisionX, collisionY, collisionZ).id === 'minecraft:lava') return
             if (entity.age <= 7) return
             if (entity.level === 'ClientLevel') return
-            
+
 
 
             function placeObsidianAt(x, y, z) {
