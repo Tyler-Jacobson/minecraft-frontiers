@@ -1,7 +1,7 @@
 const SUMMON_MINION_COUNT = 4
 
 const runSummon = (entity, event) => {
-    console.log('running summon')
+    // console.log('running summon')
     let actionDuration = 400
     entity.persistentData.startNextSummonActionAge = entity.age + actionDuration
     let uuid = entity.uuid
@@ -29,6 +29,8 @@ const multiSummonMinions = (entity, summonMinionCount) => {
             let aboveGroundTargetDestination = global.adjustDestinationAboveGround(entity.level, targetDestination)
             let minionEntity = entity.level.createEntity('block_factorys_bosses:soul_skeleton');
             minionEntity.setPos(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y(), aboveGroundTargetDestination.z());
+            minionEntity.persistentData.putBoolean('isKrakenSummon', true)
+            minionEntity.potionEffects.add("minecraft:speed", 200, 1, false, true)
             minionEntity.spawn();
             minionEntity.setTarget(targetPlayer);
         }
