@@ -38,7 +38,7 @@ const spawnKrakenBlueProjectile = (mob, level, attackStartingLocation, lookAngle
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
 
     projectile.setOwner(mob)
-    const vel = lookAngle.scale(1.5)
+    const vel = lookAngle.scale(1)
     projectile.setMotion(vel.x(), vel.y(), vel.z())
     projectile.setPosition(attackStartingLocation.x(), attackStartingLocation.y(), attackStartingLocation.z())
     projectile.setNoGravity(false)

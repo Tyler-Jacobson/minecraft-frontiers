@@ -4,7 +4,7 @@
 const BOSS_ENTITY_ID = 'frontiers:custom_kraken'        // or 'yourmod:ancient_titan' if using EntityJS
 const BOSSBAR_ID = 'frontiers:custom_kraken'       // namespaced id for /bossbar
 const BOSS_NAME = 'Void Kraken'
-const KRAKEN_MAX_HEALTH = 200
+const KRAKEN_MAX_HEALTH = 300
 
 // Utility to (silently) run vanilla commands
 function cmd(server, str) { server.runCommandSilent(str) }

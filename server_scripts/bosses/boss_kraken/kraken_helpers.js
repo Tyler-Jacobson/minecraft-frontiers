@@ -18,7 +18,7 @@ const randomActionSelector = (entity) => {
     if (randomAttack === 3) {
         return 'red'
     }
-    // return 'yellow'
+    // return 'blue'
 }
 
 // calculates a position relative to the current position and rotation of a mob / boss / player. Usually for spawning attack entities
