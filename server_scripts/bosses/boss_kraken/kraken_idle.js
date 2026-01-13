@@ -2,7 +2,7 @@ const KRAKEN_MOVESPEED = 5
 const KRAKEN_MOVEMENT_DESTINATION_Y_OFFSET = 5
 
 const runIdle = (entity) => {
-    console.log('running idle')
+    // console.log('running idle')
 
     let actionDuration = 100 // how long will the action take (in ticks)
     entity.persistentData.startNextActionAge = entity.age + actionDuration // set persistent data to run new action after this one finishes
@@ -11,23 +11,23 @@ const runIdle = (entity) => {
     entity.persistentData.actionQueue = [] // clear the action queue
     // movement function here
     // summonMinions(entity)
-    moveToLocation(entity)
+    moveToLocation(entity, 20, 1)
 }
 
-const moveToLocation = (entity) => {
+const moveToLocation = (entity, distanceFromTargetPlayer, yOffsetFromTargetPlayer) => {
     let targetPlayer = getPriorityTarget(entity)
 
-    let distanceFromTargetPlayer = 20
-    let yOffsetFromTargetPlayer = 1
     let randomMovementAngle = getRandomIntInclusive(0, 360)
 
     let targetDestination = mobRelativeLocation(targetPlayer, distanceFromTargetPlayer, randomMovementAngle, yOffsetFromTargetPlayer)
     let aboveGroundTargetDestination = global.adjustDestinationAboveGround(entity.level, targetDestination)
     let targetPlusYOffset = new Vec3d(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y() + KRAKEN_MOVEMENT_DESTINATION_Y_OFFSET, aboveGroundTargetDestination.z())
     let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), targetPlusYOffset)
+    
     const vel = destinationAngle.scale(KRAKEN_MOVESPEED)
-    entity.setMotion(vel.x(), vel.y(), vel.z())
-
+    let heightDifferential = Math.abs(targetPlusYOffset.y() - entity.getEyePosition().y())
+    let yMotionMultiplier = heightDifferential > 10 ? 1 : 0.01 // prevents the kraken from making large changes in vertical elevation when already at the same general elevation as the player
+    entity.setMotion(vel.x(), vel.y() * yMotionMultiplier, vel.z())
 }
 
 const summonMinions = (entity) => {
