@@ -1,7 +1,7 @@
 const randomActionSelector = (entity) => {
-    if (!entity.persistentData.getBoolean('lastActionWasIdle')) {
-        return 'idle'
-    }
+    // if (!entity.persistentData.getBoolean('lastActionWasIdle')) {
+    //     return 'idle'
+    // }
     // randomizer here when more attacks are added
     function getRandomIntInclusive(min, max) { // replace with global
         min = Math.ceil(min);
@@ -18,7 +18,7 @@ const randomActionSelector = (entity) => {
     if (randomAttack === 3) {
         return 'red'
     }
-    // return 'blue'
+    // return 'yellow'
 }
 
 // calculates a position relative to the current position and rotation of a mob / boss / player. Usually for spawning attack entities

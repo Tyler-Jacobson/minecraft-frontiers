@@ -59,7 +59,7 @@ StartupEvents.registry('entity_type', event => {
       entity.noCulling = true
       entity.noPhysics = true
       let spawnedEntity = entity
-      spawnedEntity.persistentData.actionQueue = ['idle']
+      spawnedEntity.persistentData.actionQueue = ['blue']
       spawnedEntity.persistentData.startNextActionAge = 100
       spawnedEntity.persistentData.startNextSummonActionAge = 400
       entity.setYaw(0) // needed?

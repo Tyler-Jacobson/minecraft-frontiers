@@ -1,4 +1,5 @@
 const runBlue = (entity, event) => {
+    console.log('running blue')
     let actionDuration = 100
     entity.persistentData.startNextActionAge = entity.age + actionDuration
     entity.persistentData.putBoolean('lastActionWasIdle', false)
