@@ -112,7 +112,11 @@ StartupEvents.registry('entity_type', event => {
 
             const hitEntity = result.entity
             // console.log(`hitEntity ${hitEntity}`)
-            hitEntity.attack(damageSource, 15)
+            if (hitEntity.isFallFlying()) {
+                hitEntity.attack(damageSource, 30)
+            } else {
+                hitEntity.attack(damageSource, 15)
+            }
             // const { xsize, ysize, zsize } = hitEntity.boundingBox
 
             // let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
@@ -173,17 +177,30 @@ StartupEvents.registry('entity_type', event => {
             entity.kill()
         }).tick(entity => {
             const world = entity.level
-            const target = world.getNearestPlayer(entity, 64)
+            const target = world.getNearestPlayer(entity, 128)
 
             // let destinationAngle = angleVecFromAToB(entity.getEyePosition(), target)
             // let MOVE_SPEED = 0.1
             // const moveTo = new Vec3d((target.x - entity.getX()) * MOVE_SPEED, (target.y - entity.getY()) * MOVE_SPEED, (target.z - entity.getZ()) * MOVE_SPEED)
             // entity.setDeltaMovement(moveTo)
-            let destinationWithYOffset = new Vec3d(target.getEyePosition().x(), target.getEyePosition().y() - 0.5, target.getEyePosition().z())
+            if (!target) {
+                console.log(`no target found for ${entity}`)
+                entity.kill()
+                return
+            }
 
-            let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), destinationWithYOffset)
-            const vel = destinationAngle.scale(YELLOW_LASER_MOVE_SPEED)
-            entity.setMotion(vel.x(), vel.y(), vel.z())
+            if (target.isFallFlying()) {
+                let destinationWithYOffset = new Vec3d(target.getEyePosition().x(), target.getEyePosition().y(), target.getEyePosition().z())
+                let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), destinationWithYOffset)
+                const elytraSpeedMultiplier = Math.log(entity.age) * 0.5
+                const vel = destinationAngle.scale(YELLOW_LASER_MOVE_SPEED + elytraSpeedMultiplier)
+                entity.setMotion(vel.x(), vel.y(), vel.z())
+            } else {
+                let destinationWithYOffset = new Vec3d(target.getEyePosition().x(), target.getEyePosition().y() - 0.5, target.getEyePosition().z())
+                let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), destinationWithYOffset)
+                const vel = destinationAngle.scale(YELLOW_LASER_MOVE_SPEED)
+                entity.setMotion(vel.x(), vel.y(), vel.z())
+            }
 
             const collisionX = entity.x
             const collisionY = entity.y
@@ -395,11 +412,25 @@ StartupEvents.registry('entity_type', event => {
             const world = entity.level
             const target = world.getNearestPlayer(entity, 64)
 
-            let destinationWithYOffset = new Vec3d(target.getEyePosition().x(), target.getEyePosition().y() - 0.5, target.getEyePosition().z())
+            if (!target) {
+                console.log(`no target found for ${entity}`)
+                entity.kill()
 
-            let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), destinationWithYOffset)
-            const vel = destinationAngle.scale(AURA_LASER_MOVE_SPEED + (Math.log(entity.age) * 0.1))
-            entity.setMotion(vel.x(), vel.y(), vel.z())
+                return
+            }
+            if (target.isFallFlying()) {
+                let destinationWithYOffset = new Vec3d(target.getEyePosition().x(), target.getEyePosition().y(), target.getEyePosition().z())
+                let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), destinationWithYOffset)
+                const elytraSpeedMultiplier = Math.log(entity.age) * 0.5
+                const vel = destinationAngle.scale(AURA_LASER_MOVE_SPEED + elytraSpeedMultiplier)
+                entity.setMotion(vel.x(), vel.y(), vel.z())
+            } else {
+                let destinationWithYOffset = new Vec3d(target.getEyePosition().x(), target.getEyePosition().y() - 0.5, target.getEyePosition().z())
+
+                let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), destinationWithYOffset)
+                const vel = destinationAngle.scale(AURA_LASER_MOVE_SPEED + (Math.log(entity.age) * 0.1))
+                entity.setMotion(vel.x(), vel.y(), vel.z())
+            }
 
             const collisionX = entity.x
             const collisionY = entity.y

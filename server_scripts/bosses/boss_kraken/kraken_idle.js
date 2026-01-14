@@ -25,8 +25,9 @@ const moveToLocation = (entity, distanceFromTargetPlayer, yOffsetFromTargetPlaye
     let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), targetPlusYOffset)
     
     const vel = destinationAngle.scale(KRAKEN_MOVESPEED)
-    let heightDifferential = Math.abs(targetPlusYOffset.y() - entity.getEyePosition().y())
-    let yMotionMultiplier = heightDifferential > 10 ? 1 : 0.01 // prevents the kraken from making large changes in vertical elevation when already at the same general elevation as the player
+    let heightDifferential = Math.abs(targetPlayer.getEyePosition().y() - entity.getEyePosition().y())
+    console.log(`heightDifferential ${heightDifferential}`)
+    let yMotionMultiplier = heightDifferential > 20 ? 1 : 0.01 // prevents the kraken from making large changes in vertical elevation when already at the same general elevation as the player
     entity.setMotion(vel.x(), vel.y() * yMotionMultiplier, vel.z())
 }
 

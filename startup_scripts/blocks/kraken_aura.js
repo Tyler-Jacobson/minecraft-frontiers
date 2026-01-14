@@ -2,6 +2,7 @@ const KRAKEN_AURA_DISPLAY_RADIUS = 2
 const KRAKEN_AURA_Y_OFFSET = 1
 const KRAKEN_AURA_TICK_DELAY = true
 const KRAKEN_AURA_ATTACK_RADIUS = 20
+const KRAKEN_AURA_ELYTRA_ATTACK_RADIUS = 60
 
 StartupEvents.registry("block", event => {
   event.create("frontiers:aura_projector").displayName("Aura Projector")
@@ -13,7 +14,7 @@ function findEntitiesWithinBlocks(level, coordinateX, coordinateY, coordinateZ, 
 
 StartupEvents.registry("block", event => {
   event.create("frontiers:kraken_aura")
-    .displayName("Kraken Aura Block")    
+    .displayName("Kraken Aura Block")
     .hardness(2.0)
     .tagBlock("minecraft:mineable/pickaxe")
     .blockEntity(entityInfo => { // also has tick and serverTick methods
@@ -42,14 +43,26 @@ StartupEvents.registry("block", event => {
           }
         }
         if (level.time % 100 === 0) {
-          let entitiesNearBlock = findEntitiesWithinBlocks(level, posX, posY, posZ, KRAKEN_AURA_ATTACK_RADIUS)
           if (!(level === 'ClientLevel')) {
-            if (!entitiesNearBlock.length) return
+            let entitiesNearBlock = findEntitiesWithinBlocks(level, posX, posY, posZ, KRAKEN_AURA_ATTACK_RADIUS)
+            let flyingEntitiesNearBlock = findEntitiesWithinBlocks(level, posX, posY, posZ, KRAKEN_AURA_ELYTRA_ATTACK_RADIUS)
+            if (!entitiesNearBlock.length || !flyingEntitiesNearBlock.length) return
             let filteredEntities = entitiesNearBlock.filter(entity => {
+              return entity.isPlayer()
+            })
+            let filteredFlyingEntities = entitiesNearBlock.filter(entity => {
               return entity.isPlayer()
             })
             if (filteredEntities.length) {
               filteredEntities.forEach(player => {
+                let playerEyePos = player.getEyePosition()
+                let attackStartingLocation = new Vec3d(posX, posY + 2, posZ)
+                let attackAngle = global.angleVecFromAToB(attackStartingLocation, playerEyePos)
+                spawnKrakenAuraProjectile(player, level, attackStartingLocation, attackAngle) // need to change the owner of the projectile from player -> kraken. Or at least nothing
+              })
+            }
+            if (filteredFlyingEntities.length) {
+              filteredFlyingEntities.forEach(player => {
                 let playerEyePos = player.getEyePosition()
                 let attackStartingLocation = new Vec3d(posX, posY + 2, posZ)
                 let attackAngle = global.angleVecFromAToB(attackStartingLocation, playerEyePos)
@@ -72,13 +85,13 @@ StartupEvents.registry("block", event => {
 })
 
 const spawnKrakenAuraProjectile = (mob, level, attackStartingLocation, lookAngle) => {
-    // const { level } = mob
-    const projectile = level.createEntity("frontiers:kraken_aura_laser");
-    // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
-    projectile.setOwner(mob)
-    const vel = lookAngle.scale(0.5)
-    projectile.setMotion(vel.x(), vel.y(), vel.z())
-    projectile.setPosition(attackStartingLocation.x(), attackStartingLocation.y(), attackStartingLocation.z())
-    projectile.setNoGravity(true)
-    projectile.spawn()
+  // const { level } = mob
+  const projectile = level.createEntity("frontiers:kraken_aura_laser");
+  // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
+  projectile.setOwner(mob)
+  const vel = lookAngle.scale(0.5)
+  projectile.setMotion(vel.x(), vel.y(), vel.z())
+  projectile.setPosition(attackStartingLocation.x(), attackStartingLocation.y(), attackStartingLocation.z())
+  projectile.setNoGravity(true)
+  projectile.spawn()
 }
