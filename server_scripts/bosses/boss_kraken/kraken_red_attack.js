@@ -1,4 +1,5 @@
 const runRed = (entity, event) => {
+    console.log('running red')
     let actionDuration = 100
     entity.persistentData.startNextActionAge = entity.age + actionDuration
     entity.persistentData.putBoolean('lastActionWasIdle', false)
@@ -21,9 +22,10 @@ const runRed = (entity, event) => {
 const runRedAttack = (uuid, event) => {
     let entity = event.level.getEntity(uuid)
     if (entity && entity.isAlive()) {
-        let attackStartingLocation = mobRelativeLocation(entity, 30, 0, 20)
+        let attackStartingLocation = mobRelativeLocation(entity, 28, 0, 5)
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
-        let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
+        let nearestPlayerCenterMass = new Vec3d(nearestPlayer.getEyePosition().x(), nearestPlayer.getEyePosition().y() -1, nearestPlayer.getEyePosition().z())
+        let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayerCenterMass)
         spawnKrakenRedProjectile(entity, entity.level, attackStartingLocation, attackAngle)
     }
 

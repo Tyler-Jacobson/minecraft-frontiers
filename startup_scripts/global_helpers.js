@@ -52,3 +52,15 @@ global.angleVecFromAToB = (positionA, positionB) => {
     let directionZ = deltaZ / length
     return new Vec3d(directionX, directionY, directionZ)
 }
+
+global.adjustDestinationAboveGround = (level, targetDestination) => {
+    let blockX = Math.floor(targetDestination.x())
+    let blockY = Math.floor(targetDestination.y())
+    let blockZ = Math.floor(targetDestination.z())
+    while (level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:air" &&
+        level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:chorus_plant") {
+        console.log(`while loop: ${level.getBlock(blockX, blockY + 1, blockZ).id}`)
+        blockY++
+    }
+    return new Vec3d(targetDestination.x(), blockY, targetDestination.z())
+}

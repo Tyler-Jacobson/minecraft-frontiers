@@ -1,9 +1,24 @@
 const randomActionSelector = (entity) => {
-    if (!entity.persistentData.getBoolean('lastActionWasIdle')) {
-        return 'idle'
-    }
+    // if (!entity.persistentData.getBoolean('lastActionWasIdle')) {
+    //     return 'idle'
+    // }
     // randomizer here when more attacks are added
-    return 'blue'
+    function getRandomIntInclusive(min, max) { // replace with global
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive
+    }
+    let randomAttack = getRandomIntInclusive(1, 3)
+    if (randomAttack === 1) {
+        return 'blue'
+    }
+    if (randomAttack === 2) {
+        return 'yellow'
+    }
+    if (randomAttack === 3) {
+        return 'red'
+    }
+    // return 'blue'
 }
 
 // calculates a position relative to the current position and rotation of a mob / boss / player. Usually for spawning attack entities
@@ -45,11 +60,11 @@ const getRandomIntInclusive = (min, max) => {
     return Math.floor(Math.random() * (maxFloored - minCeiled + 1)) + minCeiled;
 }
 
-const getNearbyPlayers = (entity) => {
+const getNearbyPlayers = (entity, radius) => {
     // whenever we need to find all nearby players we run this
-    let nearbyEntities = entity.level.getEntitiesWithin(entity.boundingBox.inflate(500))
+    let nearbyEntities = entity.level.getEntitiesWithin(entity.boundingBox.inflate(radius))
     // let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer() && !entity.creative && !entity.spectator) // switch the below to this
-    let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer())
+    let nearbyPlayers = nearbyEntities.filter(entity => entity.isPlayer() || entity.type === 'minecraft:pig')
     return nearbyPlayers
 }
 

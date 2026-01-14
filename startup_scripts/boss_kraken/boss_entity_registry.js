@@ -9,14 +9,6 @@ const BOSS_NAME = 'custom_kraken'
 const BOSS_WIDTH = 10
 const BOSS_HEIGHT = 5
 
-EntityJSEvents.modifyEntity(event => {
-  event.modify(BOSS_ID, modifyBuilder => {
-    modifyBuilder.defineSyncedData(entity => {
-      entity.addSyncedData("string", "Idle", false)
-      entity.addSyncedData("string", "Rotation", 0)
-    })
-  })
-})
 
 StartupEvents.registry('entity_type', event => {
   /** @type {Internal.GhastJSBuilder} */
@@ -67,8 +59,9 @@ StartupEvents.registry('entity_type', event => {
       entity.noCulling = true
       entity.noPhysics = true
       let spawnedEntity = entity
-      spawnedEntity.persistentData.actionQueue = ['idle']
+      spawnedEntity.persistentData.actionQueue = ['blue']
       spawnedEntity.persistentData.startNextActionAge = 100
+      spawnedEntity.persistentData.startNextSummonActionAge = 100
       entity.setYaw(0) // needed?
     })
     .tick(entity => {
