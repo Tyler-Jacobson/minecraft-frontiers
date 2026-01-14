@@ -10,6 +10,8 @@ StartupEvents.registry('entity_type', event => {
             // 'entity' in this context is the projectile that is spawned
             // 'result.entity' in this context is the target that is hit by the projectile
             const { entity, result } = context;
+            if (entity.level === 'ClientLevel') return
+
 
             // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
             // to set the player as the source of damage, we choose .playerAttack() as the damage source,
@@ -81,6 +83,8 @@ StartupEvents.registry('entity_type', event => {
             // // 'result.entity' in this context is the target that is hit by the projectile
             const { entity, result } = context;
             if (result.entity.type === 'frontiers:custom_kraken' || result.entity.type === 'block_factorys_bosses:soul_skeleton') return
+            if (entity.level === 'ClientLevel') return
+
 
 
             // // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
@@ -237,6 +241,8 @@ StartupEvents.registry('entity_type', event => {
             // // 'result.entity' in this context is the target that is hit by the projectile
             const { entity, result } = context;
             if (result.entity.type === 'frontiers:custom_kraken' || result.entity.type === 'block_factorys_bosses:soul_skeleton') return
+            if (entity.level === 'ClientLevel') return
+
 
             // // The 'entity' (projectile) has a list of possible damage sources on it, accessed through damageSources()
             // // to set the player as the source of damage, we choose .playerAttack() as the damage source,
@@ -393,6 +399,8 @@ StartupEvents.registry('entity_type', event => {
             // 'result.entity' in this context is the target that is hit by the projectile
             const { entity, result } = context;
             if (result.entity.type === 'frontiers:custom_kraken' || result.entity.type === 'block_factorys_bosses:soul_skeleton') return
+            if (entity.level === 'ClientLevel') return
+
 
 
             const kraken = entity.getOwner()
@@ -415,7 +423,6 @@ StartupEvents.registry('entity_type', event => {
             if (!target) {
                 console.log(`no target found for ${entity}`)
                 entity.kill()
-
                 return
             }
             if (target.isFallFlying()) {
