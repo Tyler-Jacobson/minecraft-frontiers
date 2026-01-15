@@ -9,26 +9,27 @@ const runRed = (entity, event) => {
     // target = getTarget() // set target player into storage as current look / move around target
 
     event.server.scheduleInTicks(50, () => {
-        runRedAttack(uuid, event)
+        runRedAttack(uuid, event, "play_kraken_red_laser1")
     })
     event.server.scheduleInTicks(60, () => {
-        runRedAttack(uuid, event)
+        runRedAttack(uuid, event, "play_kraken_red_laser2")
     })
     event.server.scheduleInTicks(70, () => {
-        runRedAttack(uuid, event)
+        runRedAttack(uuid, event, "play_kraken_red_laser3")
     })
 }
 
-const runRedAttack = (uuid, event) => {
+const runRedAttack = (uuid, event, soundVariant) => {
     let entity = event.level.getEntity(uuid)
     if (entity && entity.isAlive()) {
         let attackStartingLocation = mobRelativeLocation(entity, 28, 0, 5)
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
-        let nearestPlayerCenterMass = new Vec3d(nearestPlayer.getEyePosition().x(), nearestPlayer.getEyePosition().y() -1, nearestPlayer.getEyePosition().z())
+        nearestPlayer.sendData(soundVariant, {})
+        
+        let nearestPlayerCenterMass = new Vec3d(nearestPlayer.getEyePosition().x(), nearestPlayer.getEyePosition().y() - 1, nearestPlayer.getEyePosition().z())
         let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayerCenterMass)
         spawnKrakenRedProjectile(entity, entity.level, attackStartingLocation, attackAngle)
     }
-
 }
 
 const spawnKrakenRedProjectile = (mob, level, attackStartingLocation, lookAngle) => {

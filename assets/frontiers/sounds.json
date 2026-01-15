@@ -160,5 +160,26 @@
         "stream": true
       }
     ]
+  },
+    "kraken_red_laser1": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:kraken_red_laser1"
+    ]
+  },
+    "kraken_red_laser2": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:kraken_red_laser2"
+    ]
+  },
+    "kraken_red_laser3": {
+    "category": "neutral",
+    "subtitle": "You catch something unnatural",
+    "sounds": [
+      "frontiers:kraken_red_laser3"
+    ]
   }
 }
