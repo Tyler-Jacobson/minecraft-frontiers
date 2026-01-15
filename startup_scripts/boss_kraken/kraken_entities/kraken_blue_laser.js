@@ -145,14 +145,9 @@ StartupEvents.registry('entity_type', event => {
                 world.playSound(entity, entity.block.pos, 'frontiers:fire_staff_fireball_projectile_whoosh', "players", 1, 1)
             }
 
-            const smokeParticleYOffset = 0.3
-            const smokeParticleCountPerTick = 1
-            const smokeParticleSpeedPerTick = 0
+            const particleCountPerTick = 1
+            const particleSpeedPerTick = 0
+            world.spawnParticles("galosphere:allurite_rain", false, collisionX, collisionY, collisionZ, 0.5, 0.5, 0.5, particleCountPerTick, particleSpeedPerTick)
 
-            const lavaParticleCountPerTick = 1
-            const lavaParticleSpeedPerTick = 20
-
-            world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
-            world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
         }).noItem()
 })
