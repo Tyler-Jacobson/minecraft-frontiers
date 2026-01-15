@@ -33,7 +33,7 @@ const runRedAttack = (uuid, event) => {
 
 const spawnKrakenRedProjectile = (mob, level, attackStartingLocation, lookAngle) => {
     // const { level } = mob
-    const projectile = level.createEntity("frontiers:kraken_red_projectile");
+    const projectile = level.createEntity("frontiers:kraken_red_laser");
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     projectile.setOwner(mob)
     const vel = lookAngle.scale(3)

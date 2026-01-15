@@ -4,7 +4,7 @@ const RED_LASER_MAX_LIFETIME = 60
 
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
-    event.create("frontiers:kraken_red_projectile", "entityjs:geckolib_projectile")
+    event.create("frontiers:kraken_red_laser", "entityjs:geckolib_projectile")
         .onHitEntity(context => {
             // 'entity' in this context is the projectile that is spawned
             // 'result.entity' in this context is the target that is hit by the projectile

@@ -28,6 +28,7 @@ StartupEvents.registry('entity_type', event => {
     .setDeathSound('minecraft:entity.generic.death')
     .setAmbientSound('minecraft:entity.ghast.ambient')
     .ambientSoundInterval(100)
+    .fireImmune(true)
     .eggItem(item => {
       item.backgroundColor(0x1b1b1b)
       item.highlightColor(0x9c2f2f)
