@@ -152,5 +152,13 @@
     "sounds": [
       "frontiers:fire_staff_fireball_projectile_whoosh"
     ]
+  },
+  "kraken_boss_theme": {
+    "sounds": [
+      {
+        "name": "frontiers:kraken_boss_theme",
+        "stream": true
+      }
+    ]
   }
 }
