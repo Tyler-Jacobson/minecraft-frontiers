@@ -23,6 +23,7 @@ const runYellowAttack = (uuid, event) => {
     if (entity && entity.isAlive()) {
         let attackStartingLocation = mobRelativeLocation(entity, 10, -45, 20)
         let nearestPlayer = entity.level.getNearestPlayer(entity, 128) // temporary. Replace with 'target' or 'each'
+        nearestPlayer.sendData("play_kraken_yellow_laser", {})
         let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayer.getEyePosition())
         spawnKrakenYellowProjectile(entity, entity.level, attackStartingLocation, attackAngle)
     }

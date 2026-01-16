@@ -146,8 +146,9 @@ StartupEvents.registry('entity_type', event => {
             const collisionY = entity.y
             const collisionZ = entity.z
 
-            if (entity.age === 3) {
-                world.playSound(entity, entity.block.pos, 'frontiers:fire_staff_fireball_projectile_whoosh', "players", 1, 1)
+            const playSoundInterval = 20
+            if (entity.age % playSoundInterval === 0) {
+                world.playSound(entity, entity.block.pos, 'call_of_yucutan:light_beam', "players", 0.5, 0)
             }
 
             const particleCountPerTick = 1
