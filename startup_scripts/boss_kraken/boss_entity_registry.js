@@ -26,7 +26,9 @@ StartupEvents.registry('entity_type', event => {
     .setSummonable(true)
     .saves(true)
     .setDeathSound('minecraft:entity.generic.death')
-    .setAmbientSound('minecraft:entity.ghast.ambient')
+    .setAmbientSound('block_factorys_bosses:sandworm_ambient')
+    .setHurtSound(() => 'block_factorys_bosses:sandworm_hurt')
+    .setSoundVolume(1)
     .ambientSoundInterval(100)
     .fireImmune(true)
     .eggItem(item => {
