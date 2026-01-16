@@ -62,10 +62,6 @@ StartupEvents.registry('entity_type', event => {
             const collisionY = entity.y
             const collisionZ = entity.z
 
-            if (entity.age === 3) {
-                world.playSound(entity, entity.block.pos, 'frontiers:fire_staff_fireball_projectile_whoosh', "players", 1, 1)
-            }
-
             const particleCountPerTick = 1
             const ParticleSpeedPerTick = 0
             const forceParticleDisplay = false

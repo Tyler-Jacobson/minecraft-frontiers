@@ -90,6 +90,7 @@ StartupEvents.registry('entity_type', event => {
                 let roundedZ = Math.round(z)
                 console.log(`setblock ${x} ${y} ${z} frontiers:kraken_aura`)
                 // Utils.server.runCommandSilent(`setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:kraken_aura`)
+                
                 Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${roundedX} ${roundedY} ${roundedZ} frontiers:kraken_aura`)
 
             }
@@ -103,6 +104,7 @@ StartupEvents.registry('entity_type', event => {
                 let aboveGroundDestination = global.adjustDestinationAboveGround(entity.level, targetLocation)
                 console.log(`target ${targetLocation} adjusted ${aboveGroundDestination}`)
                 placeObsidianAt(aboveGroundDestination.x(), aboveGroundDestination.y(), aboveGroundDestination.z())
+                entity.level.playSound(entity, entity.block.pos, 'minecraft:entity.warden.heartbeat', "players", 5, 1)
 
             } catch (err) {
                 console.log(`failed to place obsidian ${err}`)
