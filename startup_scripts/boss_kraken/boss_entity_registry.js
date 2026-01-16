@@ -1,11 +1,11 @@
 // startup_scripts/boss_entity_registry.js
-// Registers custom_kraken as a Ghast-based entity, but we *do not* let
+// Registers void_kraken as a Ghast-based entity, but we *do not* let
 // the builder install default goals. Instead, we replicate initGoals()
 // in KubeJS using vanilla goal classes.
 
-const BOSS_ID = 'frontiers:custom_kraken'
-const BOSS_EGG_ID = 'frontiers:custom_kraken_spawn_egg'
-const BOSS_NAME = 'custom_kraken'
+const BOSS_ID = 'frontiers:void_kraken'
+const BOSS_EGG_ID = 'frontiers:void_kraken_spawn_egg'
+const BOSS_NAME = 'void_kraken'
 const BOSS_WIDTH = 10
 const BOSS_HEIGHT = 5
 
@@ -32,8 +32,8 @@ StartupEvents.registry('entity_type', event => {
     .ambientSoundInterval(100)
     .fireImmune(true)
     .eggItem(item => {
-      item.backgroundColor(0x1b1b1b)
-      item.highlightColor(0x9c2f2f)
+      item.backgroundColor(0x3b5532)
+      item.highlightColor(0x84a675)
     })
     .addAnimationController('krakenBossController', 1, event => {
 
@@ -88,7 +88,7 @@ StartupEvents.registry('entity_type', event => {
   // .addAnimationController("krakenBossController", 5, e => global.addKrakenAnimationController(e, new ResourceLocation(BOSS_ID)))
 
   const RenderType = Java.loadClass("net.minecraft.client.renderer.RenderType")
-  builder.renderType(entity => RenderType.entityTranslucent("frontiers:textures/entity/custom_kraken.png"))
+  builder.renderType(entity => RenderType.entityTranslucent("frontiers:textures/entity/void_kraken.png"))
   builder.addPartEntity("one", 10, 12, builder => {
     // Adds an additional hitbox to the entity with builder support
     builder

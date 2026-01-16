@@ -4,7 +4,7 @@ let lastKrakenAction = false
 LevelEvents.tick(event => {
     let levelEntities = event.level.entities
     let krakenEntities = levelEntities.filter(entity => {
-        return entity.type === 'frontiers:custom_kraken'
+        return entity.type === 'frontiers:void_kraken'
     })
 
     if (krakenEntities.length) {

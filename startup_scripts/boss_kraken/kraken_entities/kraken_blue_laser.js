@@ -13,7 +13,7 @@ StartupEvents.registry('entity_type', event => {
             // // 'entity' in this context is the projectile that is spawned
             // // 'result.entity' in this context is the target that is hit by the projectile
             const { entity, result } = context;
-            if (result.entity.type === 'frontiers:custom_kraken' || result.entity.type === 'block_factorys_bosses:soul_skeleton') return
+            if (result.entity.type === 'frontiers:void_kraken' || result.entity.type === 'block_factorys_bosses:soul_skeleton') return
             if (entity.level === 'ClientLevel') return
 
 

@@ -8,7 +8,7 @@
 
 //   // Find all kraken in all loaded dimensions
 //   server.entities
-//     .filterSelector('@e[type=frontiers:custom_kraken]')
+//     .filterSelector('@e[type=frontiers:void_kraken]')
 //     .forEach(kraken => {
 //       // Kraken are mobs, so they have a goalSelector
 //       const mob = /** @type {Internal.Mob} */ (kraken);

@@ -1,8 +1,8 @@
 // server_scripts/boss_example.js
 
 // CONFIG — change these to match your boss
-const BOSS_ENTITY_ID = 'frontiers:custom_kraken'        // or 'yourmod:ancient_titan' if using EntityJS
-const BOSSBAR_ID = 'frontiers:custom_kraken'       // namespaced id for /bossbar
+const BOSS_ENTITY_ID = 'frontiers:void_kraken'        // or 'yourmod:ancient_titan' if using EntityJS
+const BOSSBAR_ID = 'frontiers:void_kraken'       // namespaced id for /bossbar
 const BOSS_NAME = 'Void Kraken'
 const KRAKEN_MAX_HEALTH = 300
 
