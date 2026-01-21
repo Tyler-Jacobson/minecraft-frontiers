@@ -57,8 +57,12 @@ StartupEvents.registry('entity_type', event => {
     builder.aiStep(entity => {
         // builder.aiStep runs on the entity every tick
         entity.tickPart("head", 0, 1, 0)
-        entity.goalSelector.setNewGoalRate(100)
+        // entity.goalSelector.setNewGoalRate(100)
         // console.log(`goal selector newGoalRate ${entity.goalSelector.newGoalRate}`)
+        let mappedReturn = entity.goalSelector.getRunningGoals().toList()
+        mappedReturn.forEach(mappedGoal => {
+            console.log(`current goal: ${mappedGoal.getGoal().toString()}`)
+        })
     })
 })
 
