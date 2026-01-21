@@ -1,9 +1,23 @@
+let Vector3 = Java.loadClass("org.joml.Vector3f")
+let Vector3d = Java.loadClass("net.minecraft.world.phys.Vec3")
+
+
 
 const HUNTABLE_DEER_ID = 'frontiers:huntable_deer_test'
 const HUNTABLE_DEER_EGG_ID = 'frontiers:huntable_deer_test_spawn_egg'
-const HUNTABLE_DEER_NAME = 'void_kraken'
 const HUNTABLE_DEER_WIDTH = 2
 const HUNTABLE_DEER_HEIGHT = 1
+
+EntityJSEvents.modifyEntity(event => {
+    event.modify('frontiers:huntable_deer_test', modifyBuilder => {
+        modifyBuilder.defineSyncedData(entity => {
+            entity.addSyncedData("int", "ownerBlockLocationX", 0)
+            entity.addSyncedData("int", "ownerBlockLocationY", 0)
+            entity.addSyncedData("int", "ownerBlockLocationZ", 0)
+            // entity.addSyncedData("uuid", "ParentUUID", UUID.fromString("ef1e3ec3-cf9e-48c0-bef4-21aae262a7b2"))
+        })
+    })
+})
 
 StartupEvents.registry('entity_type', event => {
     const builder = event.create(HUNTABLE_DEER_ID, 'entityjs:tamable')
@@ -13,12 +27,15 @@ StartupEvents.registry('entity_type', event => {
             item.backgroundColor(0xff0000)
             item.highlightColor(0xffbe8f)
         })
-        .onAddedToWorld(entity => {
-            console.log(`added ${entity} to world`)
-        })
+
         .tick(entity => {
 
         })
+    builder.onAddedToWorld(entity => {
+        console.log(`added ${entity} to world`)
+        // console.log(`owner block ${entity.getSyncedData('ownerBlockLocationX')}`)
+
+    })
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))
         builder.textureResource(e => `frontiers:textures/entity/huntable_deer_test.png`)
@@ -32,14 +49,16 @@ StartupEvents.registry('entity_type', event => {
                 // Custom logic for determining how the parts of the entity should relay damage
                 // To the entity. For example, relay double the damage to the entity when this hitbox is hit
                 entity.attack(source, amount * 2)
-                console.log("source: " + source + " amount: " + amount + " part name: " + part.name)
+                // console.log("source: " + source + " amount: " + amount + " part name: " + part.name)
+                console.log(`damaged owner block ${entity.getSyncedData('ownerBlockLocationX')} ${entity.getSyncedData('ownerBlockLocationY')} ${entity.getSyncedData('ownerBlockLocationZ')}`)
+
             })
     })
     builder.aiStep(entity => {
-        // Custom logic to be executed during the living entity's AI step
-        // Access information about the entity
-        // Tick the previously registered part entity/hitbox to be 1 square y-offset to the entity
+        // builder.aiStep runs on the entity every tick
         entity.tickPart("head", 0, 1, 0)
+        entity.goalSelector.setNewGoalRate(100)
+        // console.log(`goal selector newGoalRate ${entity.goalSelector.newGoalRate}`)
     })
 })
 
