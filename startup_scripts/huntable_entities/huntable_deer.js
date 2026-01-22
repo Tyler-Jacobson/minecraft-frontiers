@@ -5,7 +5,7 @@ let Vector3d = Java.loadClass("net.minecraft.world.phys.Vec3")
 
 const HUNTABLE_DEER_ID = 'frontiers:huntable_deer_test'
 const HUNTABLE_DEER_EGG_ID = 'frontiers:huntable_deer_test_spawn_egg'
-const HUNTABLE_DEER_WIDTH = 1.5
+const HUNTABLE_DEER_WIDTH = 0.9
 const HUNTABLE_DEER_HEIGHT = 0.9
 
 EntityJSEvents.createAttributes(event => {
@@ -14,7 +14,7 @@ EntityJSEvents.createAttributes(event => {
      * Existing attributes are preserved, and new ones are merged in.
      */
     event.create(HUNTABLE_DEER_ID, attribute => {
-        attribute.add("minecraft:generic.max_health", 5)
+        attribute.add("minecraft:generic.max_health", 15)
         attribute.add("minecraft:generic.movement_speed", 0.5)
     })
 })
@@ -26,6 +26,10 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "ownerBlockLocationY", 0)
             entity.addSyncedData("int", "ownerBlockLocationZ", 0)
             // entity.addSyncedData("uuid", "ParentUUID", UUID.fromString("ef1e3ec3-cf9e-48c0-bef4-21aae262a7b2"))
+            entity.addSyncedData("int", "lastTickLocationX", 0)
+            entity.addSyncedData("int", "lastTickLocationY", 0)
+            entity.addSyncedData("int", "lastTickLocationZ", 0)
+            entity.addSyncedData("int", "timeSpentAtCurrentLocation", 0)
         })
     })
 })
@@ -40,7 +44,7 @@ StartupEvents.registry('entity_type', event => {
         })
 
         .tick(entity => {
-        
+
         })
     builder.onAddedToWorld(entity => {
         console.log(`added ${entity} to world`)
@@ -71,9 +75,29 @@ StartupEvents.registry('entity_type', event => {
         // entity.goalSelector.setNewGoalRate(100)
         // console.log(`goal selector newGoalRate ${entity.goalSelector.newGoalRate}`)
         let mappedReturn = entity.goalSelector.getRunningGoals().toList()
-        mappedReturn.forEach(mappedGoal => {
-            console.log(`current goal: ${mappedGoal.getGoal().toString()}`)
-        })
+        // mappedReturn.forEach(mappedGoal => {
+        //     console.log(`current goal: ${mappedGoal.getGoal().toString()}`)
+        // })
+        if (!(entity.level === 'ClientLevel')) {
+            let lastTickX = entity.getSyncedData("lastTickLocationX")
+            let lastTickY = entity.getSyncedData("lastTickLocationY")
+            let lastTickZ = entity.getSyncedData("lastTickLocationZ")
+            let currentTickX = Math.floor(entity.x)
+            let currentTickY = Math.floor(entity.y)
+            let currentTickZ = Math.floor(entity.z)
+            if (currentTickX === lastTickX && currentTickZ === lastTickZ) {
+                let timeAtLocation = entity.getSyncedData("timeSpentAtCurrentLocation")
+                entity.setSyncedData("timeSpentAtCurrentLocation", timeAtLocation + 1)
+            } else {
+                entity.setSyncedData("timeSpentAtCurrentLocation", 0)
+            }
+            entity.setSyncedData("lastTickLocationX", Math.floor(entity.x))
+            entity.setSyncedData("lastTickLocationY", Math.floor(entity.y))
+            entity.setSyncedData("lastTickLocationZ", Math.floor(entity.z))
+            console.log(`timeSpentAtCurrentLocation ${entity.getSyncedData("timeSpentAtCurrentLocation")}`)
+        }
+
+
     })
     builder.createNavigation(context => EntityJSUtils.createGroundPathNavigation(context.entity, context.level))
 })
