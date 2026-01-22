@@ -5,11 +5,22 @@ let Vector3d = Java.loadClass("net.minecraft.world.phys.Vec3")
 
 const HUNTABLE_DEER_ID = 'frontiers:huntable_deer_test'
 const HUNTABLE_DEER_EGG_ID = 'frontiers:huntable_deer_test_spawn_egg'
-const HUNTABLE_DEER_WIDTH = 2
-const HUNTABLE_DEER_HEIGHT = 1
+const HUNTABLE_DEER_WIDTH = 1.5
+const HUNTABLE_DEER_HEIGHT = 0.9
+
+EntityJSEvents.createAttributes(event => {
+    /**
+     * Add or update default attributes for the entity type.
+     * Existing attributes are preserved, and new ones are merged in.
+     */
+    event.create(HUNTABLE_DEER_ID, attribute => {
+        attribute.add("minecraft:generic.max_health", 5)
+        attribute.add("minecraft:generic.movement_speed", 0.5)
+    })
+})
 
 EntityJSEvents.modifyEntity(event => {
-    event.modify('frontiers:huntable_deer_test', modifyBuilder => {
+    event.modify(HUNTABLE_DEER_ID, modifyBuilder => {
         modifyBuilder.defineSyncedData(entity => {
             entity.addSyncedData("int", "ownerBlockLocationX", 0)
             entity.addSyncedData("int", "ownerBlockLocationY", 0)
@@ -29,7 +40,7 @@ StartupEvents.registry('entity_type', event => {
         })
 
         .tick(entity => {
-
+        
         })
     builder.onAddedToWorld(entity => {
         console.log(`added ${entity} to world`)
@@ -40,23 +51,23 @@ StartupEvents.registry('entity_type', event => {
         // builder.render(context => global.geoLayerRender(context))
         builder.textureResource(e => `frontiers:textures/entity/huntable_deer_test.png`)
     })
-    builder.addPartEntity("head", 1, 1, builder => {
-        // Adds an additional hitbox to the entity with builder support
-        builder
-            .isPickable(true)
-            .onPartHurt(context => {
-                const { entity, part, source, amount } = context
-                // Custom logic for determining how the parts of the entity should relay damage
-                // To the entity. For example, relay double the damage to the entity when this hitbox is hit
-                entity.attack(source, amount * 2)
-                // console.log("source: " + source + " amount: " + amount + " part name: " + part.name)
-                console.log(`damaged owner block ${entity.getSyncedData('ownerBlockLocationX')} ${entity.getSyncedData('ownerBlockLocationY')} ${entity.getSyncedData('ownerBlockLocationZ')}`)
+    // builder.addPartEntity("head", 1, 1, builder => {
+    //     // Adds an additional hitbox to the entity with builder support
+    //     builder
+    //         .isPickable(true)
+    //         .onPartHurt(context => {
+    //             const { entity, part, source, amount } = context
+    //             // Custom logic for determining how the parts of the entity should relay damage
+    //             // To the entity. For example, relay double the damage to the entity when this hitbox is hit
+    //             entity.attack(source, amount * 2)
+    //             // console.log("source: " + source + " amount: " + amount + " part name: " + part.name)
+    //             console.log(`damaged owner block ${entity.getSyncedData('ownerBlockLocationX')} ${entity.getSyncedData('ownerBlockLocationY')} ${entity.getSyncedData('ownerBlockLocationZ')}`)
 
-            })
-    })
+    //         })
+    // })
     builder.aiStep(entity => {
         // builder.aiStep runs on the entity every tick
-        entity.tickPart("head", 0, 1, 0)
+        // entity.tickPart("head", 0, 1, 0)
         // entity.goalSelector.setNewGoalRate(100)
         // console.log(`goal selector newGoalRate ${entity.goalSelector.newGoalRate}`)
         let mappedReturn = entity.goalSelector.getRunningGoals().toList()
@@ -64,6 +75,7 @@ StartupEvents.registry('entity_type', event => {
             console.log(`current goal: ${mappedGoal.getGoal().toString()}`)
         })
     })
+    builder.createNavigation(context => EntityJSUtils.createGroundPathNavigation(context.entity, context.level))
 })
 
 

@@ -1,5 +1,5 @@
 
-const BAIT_SPAWN_RADIUS = 5
+const BAIT_SPAWN_RADIUS = 50
 
 function getRandomIntInclusive(min, max) { // replace with global
   min = Math.ceil(min);
