@@ -42,50 +42,23 @@ StartupEvents.registry('entity_type', event => {
             item.backgroundColor(0xff0000)
             item.highlightColor(0xffbe8f)
         })
+        .tick(entity => { })
 
-        .tick(entity => {
-
-        })
     builder.onAddedToWorld(entity => {
-        console.log(`added ${entity} to world`)
-        // console.log(`owner block ${entity.getSyncedData('ownerBlockLocationX')}`)
-
+        entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
+        entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
     })
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))
         builder.textureResource(e => `frontiers:textures/entity/huntable_deer_test.png`)
     })
-    // builder.addPartEntity("head", 1, 1, builder => {
-    //     // Adds an additional hitbox to the entity with builder support
-    //     builder
-    //         .isPickable(true)
-    //         .onPartHurt(context => {
-    //             const { entity, part, source, amount } = context
-    //             // Custom logic for determining how the parts of the entity should relay damage
-    //             // To the entity. For example, relay double the damage to the entity when this hitbox is hit
-    //             entity.attack(source, amount * 2)
-    //             // console.log("source: " + source + " amount: " + amount + " part name: " + part.name)
-    //             console.log(`damaged owner block ${entity.getSyncedData('ownerBlockLocationX')} ${entity.getSyncedData('ownerBlockLocationY')} ${entity.getSyncedData('ownerBlockLocationZ')}`)
-
-    //         })
-    // })
     builder.aiStep(entity => {
-        // builder.aiStep runs on the entity every tick
-        // entity.tickPart("head", 0, 1, 0)
-        // entity.goalSelector.setNewGoalRate(100)
-        // console.log(`goal selector newGoalRate ${entity.goalSelector.newGoalRate}`)
-        let mappedReturn = entity.goalSelector.getRunningGoals().toList()
-        // mappedReturn.forEach(mappedGoal => {
-        //     console.log(`current goal: ${mappedGoal.getGoal().toString()}`)
-        // })
         if (!(entity.level === 'ClientLevel')) {
             let lastTickX = entity.getSyncedData("lastTickLocationX")
-            let lastTickY = entity.getSyncedData("lastTickLocationY")
             let lastTickZ = entity.getSyncedData("lastTickLocationZ")
             let currentTickX = Math.floor(entity.x)
-            let currentTickY = Math.floor(entity.y)
             let currentTickZ = Math.floor(entity.z)
-            if (currentTickX === lastTickX && currentTickZ === lastTickZ) {
+            if (currentTickX === lastTickX && currentTickZ === lastTickZ) { // used for unstuck check
                 let timeAtLocation = entity.getSyncedData("timeSpentAtCurrentLocation")
                 entity.setSyncedData("timeSpentAtCurrentLocation", timeAtLocation + 1)
             } else {
@@ -94,12 +67,9 @@ StartupEvents.registry('entity_type', event => {
             entity.setSyncedData("lastTickLocationX", Math.floor(entity.x))
             entity.setSyncedData("lastTickLocationY", Math.floor(entity.y))
             entity.setSyncedData("lastTickLocationZ", Math.floor(entity.z))
-            console.log(`timeSpentAtCurrentLocation ${entity.getSyncedData("timeSpentAtCurrentLocation")}`)
         }
-
-
     })
-    builder.createNavigation(context => EntityJSUtils.createGroundPathNavigation(context.entity, context.level))
+    builder.createNavigation(context => EntityJSUtils.createAmphibiousPathNavigation(context.entity, context.level))
 })
 
 

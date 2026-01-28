@@ -3,18 +3,58 @@ let CustomGoal = Java.loadClass("net.liopyu.entityjs.util.ai.CustomGoal")
 let $MoveGoalFlag = Java.loadClass("net.minecraft.world.entity.ai.goal.Goal$Flag")
 let BlockPos = Java.loadClass("net.minecraft.core.BlockPos");
 let DefaultRandomPos = Java.loadClass("net.minecraft.world.entity.ai.util.DefaultRandomPos")
+let BlockPathTypes = Java.loadClass("net.minecraft.world.level.pathfinder.BlockPathTypes")
+
 
 EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // goal selectors
     console.log('goal selector registry code')
-    event.floatSwim(1)
+    // event.floatSwim(1)
     // event.meleeAttack(2, 1.5, true)
+    event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
+        "dampedSwim",
+        1,
+        canUseEvent => {
+            if (canUseEvent.wasEyeInWater) {
+                return true
+            }
+            return false
+        },
+        canContinueToUseEvent => {
+            // return true
+            if (canContinueToUseEvent.wasEyeInWater) {
+                return true
+            }
+            return false
+        },
+        true, // isInterruptable
+        goalOnStartedEvent => { },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => {
+            global.runDampedSwim(goalOnTickEvent)
+
+        }
+    )
+    event.customGoal(
+        "navigateToBait",
+        5,
+        canUseEvent => true,
+        canContinueToUseEvent => true,
+        true, // isInterruptable
+        goalOnStartedEvent => { },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => {
+            global.runNavigateToBait(goalOnTickEvent)
+        }
+    )
     event.panic(2, 1)
     event.customGoal(
         "unstuck",
-        3,
+        20,
         canUseEvent => {
             // return true
-            if (canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100) {
+            if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100) && !canUseEvent.isInWater()) {
                 console.log(`entity is stuck`)
                 return true
             }
@@ -54,26 +94,11 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
 
         } // maybe this is the entity?
     )
-    event.customGoal(
-        "navigateToBait",
-        5,
-        canUseEvent => true, // probably need to manually check flags here?
-        canContinueToUseEvent => true, // probably need to manually check flags here too
-        true, // isInterruptable
-        goalOnStartedEvent => {
-            console.log(`goal started ${Object.keys(goalOnStartedEvent)}`)
-            // global.runCustom(goalOnStartedEvent)
 
-        },
-        goalOnStoppedEvent => { },
-        true, // requiresUpdateEveryTick
-        goalOnTickEvent => {
-            global.runCustom(goalOnTickEvent)
-        } // maybe this is the entity?
-    )
 
     registerCustomGoalFlag(event, 'CustomGoal[unstuck]', $MoveGoalFlag.MOVE)
     registerCustomGoalFlag(event, 'CustomGoal[navigateToBait]', $MoveGoalFlag.MOVE)
+    registerCustomGoalFlag(event, 'CustomGoal[dampedSwim]', $MoveGoalFlag.JUMP)
 
     logRegisteredGoals(event)
 })
@@ -90,42 +115,43 @@ EntityJSEvents.addGoals('frontiers:huntable_deer_test', event => { // target sel
     // event.nearestAttackableTarget(2, LivingEntity, 10, true, false, t => global.canAttackNearbyTarget(mob, t), mob.boundingBox.inflate(followRange, 25, followRange))
 })
 
+global.runDampedSwim = entity => {
+    if (entity.isInWater()) {
+        let currentX = entity.getDeltaMovement().x()
+        let currentZ = entity.getDeltaMovement().z()
+        entity.setDeltaMovement(new Vec3d(currentX, 0.05, currentZ))
+    }
+}
 
-
-global.runCustom = entity => {
+global.runNavigateToBait = entity => {
     try {
-        // entity.goalSelector.setNewGoalRate(100) // this does not work
-        // console.log(`try run custom for entity2 ${Object.keys(entity.goalSelector)} ${entity.getTags()}`)
-        // let mappedReturn = entity.goalSelector.getRunningGoals().toList()
-        // mappedReturn.forEach(mappedGoal => {
-        //     console.log(`try run custom for entity3 ${mappedGoal.getGoal().toString()}`)
-        // })
         if (!(entity.level === 'ClientLevel')) {
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
-            let targetDestination = new BlockPos(targetX, targetY, targetZ)
-
-            // entity['moveTo(net.minecraft.core.BlockPos,float,float)'](targetDestination, 0.5, 16.0) // ambiguous apparently
-            // entity.moveTo(targetX, targetY, targetZ, 0.5, 16.0) // ambiguous apparently
-            // entity['moveTo(net.minecraft.core.BlockPos,float,float)'](targetDestination, 0.5, 16.0) // ambiguous apparently
-            // entity.moveTo(targetDestination, 0.5, 16.0) // ambiguous apparently
-            entity.getNavigation().moveTo(targetX, targetY, targetZ, 0.5)
-
-
-
-            // console.log(`navigating to bait ${Object.keys(entity)}`)
-            // console.log(`navigating to bait ${Object.keys(entity.getTarget())}`)
-            // entity.setTarget(new Vec3d(targetX, targetY, targetZ)) // nope. only accepts an entity
-            // MoveToBlockGoal is commented out in EJS code aka not implimented
-            // console.log(`navigating to bait ${entity}`)
-
-            // console.log(`navigating to bait ${entity.getTarget()}`)
+            if (entity.isInWater()) {
+                try {
+                    // entity.setNavigation(EntityJSUtils.createWaterBoundPathNavigation(entity, entity.level))
+                    // entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
+                    entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
+                    entity.setPathfindingMalus(BlockPathTypes.WALKABLE, 0.0)
+                    entity.getLookControl().setLookAt(targetX, targetY, targetZ)
+                    entity.getNavigation().moveTo(targetX, targetY, targetZ, 10)
+                    // entity.jump()
+                } catch (err) {
+                    console.log(`error setting pathfinding malice ${err}`)
+                }
+                console.log('water nav mode')
+            } else {
+                // entity.setNavigation(EntityJSUtils.createGroundPathNavigation(entity, entity.level))
+                entity.getNavigation().moveTo(targetX, targetY, targetZ, 0.5)
+                console.log('land nav mode')
+            }
         }
 
 
     } catch (err) {
-        console.log(`failed to runCustom ${err}`)
+        console.log(`failed to runNavigateToBait ${err}`)
     }
 }
 
