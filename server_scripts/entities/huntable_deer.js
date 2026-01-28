@@ -12,7 +12,7 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     // event.meleeAttack(2, 1.5, true)
     event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
         "dampedSwim",
-        1,
+        2,
         canUseEvent => {
             if (canUseEvent.wasEyeInWater) {
                 return true
@@ -51,10 +51,10 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     event.panic(2, 1)
     event.customGoal(
         "unstuck",
-        20,
+        1,
         canUseEvent => {
             // return true
-            if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100) && !canUseEvent.isInWater()) {
+            if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100)) {
                 console.log(`entity is stuck`)
                 return true
             }
@@ -80,7 +80,7 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
         }, // check if 'stuck' is greater than 20
         true, // isInterruptable
         goalOnStartedEvent => {
-            console.log(`goal started ${Object.keys(goalOnStartedEvent)}`)
+            console.log(`starting unstuck`)
             // global.runCustom(goalOnStartedEvent)
 
         },
@@ -89,8 +89,9 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
         goalOnTickEvent => {
             // global.mobUnstuck(goalOnTickEvent)
 
-            mobUnstuckPanic(goalOnTickEvent)
+            // mobUnstuckPanic(goalOnTickEvent)
             // console.log(`random pos ${randomPos}`)
+            goalOnTickEvent.getNavigation().recomputePath()
 
         } // maybe this is the entity?
     )
@@ -126,6 +127,7 @@ global.runDampedSwim = entity => {
 global.runNavigateToBait = entity => {
     try {
         if (!(entity.level === 'ClientLevel')) {
+            console.log(`entity.getSyncedData('timeSpentAtCurrentLocation') ${entity.getSyncedData('timeSpentAtCurrentLocation')}`)
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
@@ -133,15 +135,15 @@ global.runNavigateToBait = entity => {
                 try {
                     // entity.setNavigation(EntityJSUtils.createWaterBoundPathNavigation(entity, entity.level))
                     // entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
-                    entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
-                    entity.setPathfindingMalus(BlockPathTypes.WALKABLE, 0.0)
+                    // entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
+                    // entity.setPathfindingMalus(BlockPathTypes.WALKABLE, 0.0)
                     entity.getLookControl().setLookAt(targetX, targetY, targetZ)
                     entity.getNavigation().moveTo(targetX, targetY, targetZ, 10)
                     // entity.jump()
                 } catch (err) {
                     console.log(`error setting pathfinding malice ${err}`)
                 }
-                console.log('water nav mode')
+                // console.log('water nav mode')
             } else {
                 // entity.setNavigation(EntityJSUtils.createGroundPathNavigation(entity, entity.level))
                 entity.getNavigation().moveTo(targetX, targetY, targetZ, 0.5)
