@@ -45,8 +45,9 @@ StartupEvents.registry('entity_type', event => {
         .tick(entity => { })
 
     builder.onAddedToWorld(entity => {
-        entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
-        entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
+        // entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
+        // entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
+        // goalOnTickEvent.getNavigation().recomputePath()
     })
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))

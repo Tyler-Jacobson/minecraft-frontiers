@@ -12,7 +12,7 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     // event.meleeAttack(2, 1.5, true)
     event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
         "dampedSwim",
-        2,
+        1,
         canUseEvent => {
             if (canUseEvent.wasEyeInWater) {
                 return true
@@ -36,8 +36,60 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
         }
     )
     event.customGoal(
+        "recalculateNav",
+        1,
+        canUseEvent => {
+            if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 40)) {
+                return true
+            }
+            return false
+        },
+        canContinueToUseEvent => {
+            if (canContinueToUseEvent.getNavigation().isDone()) {
+                return false
+            }
+            return true
+        },
+        true, // isInterruptable
+        goalOnStartedEvent => {
+            goalOnStartedEvent.getNavigation().recomputePath()
+            console.log(`recalculating nav`)
+
+        },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => { }
+    )
+    event.panic(2, 1)
+    event.customGoal(
+        "unstuck",
+        2,
+        canUseEvent => {
+            if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100)) {
+                console.log(`entity is stuck`)
+                return true
+            }
+            return false
+        }, // check if 'stuck' is greater than 100
+        canContinueToUseEvent => {
+            if (canContinueToUseEvent.getNavigation().isDone()) {
+                return false
+            }
+            return true
+        },
+        true, // isInterruptable
+        goalOnStartedEvent => {
+            console.log(`starting unstuck`)
+        },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => {
+            global.runUnstuckPanic(goalOnTickEvent)
+        }
+    )
+    event.customGoal(
         "navigateToBait",
-        5,
+        10,
         canUseEvent => true,
         canContinueToUseEvent => true,
         true, // isInterruptable
@@ -48,54 +100,6 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
             global.runNavigateToBait(goalOnTickEvent)
         }
     )
-    event.panic(2, 1)
-    event.customGoal(
-        "unstuck",
-        1,
-        canUseEvent => {
-            // return true
-            if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100)) {
-                console.log(`entity is stuck`)
-                return true
-            }
-            return false
-        }, // check if 'stuck' is greater than 100
-        canContinueToUseEvent => {
-            // return true
-            if (canContinueToUseEvent.getNavigation().isDone()) {
-                return false
-            }
-            return true
-
-
-            // let timeStuck = canContinueToUseEvent.getSyncedData('timeSpentAtCurrentLocation')
-            // if (timeStuck > 200) {
-            //     console.log(`entity is ticking stuck ${timeStuck}`)
-            //     canContinueToUseEvent.setSyncedData('timeSpentAtCurrentLocation', timeStuck - 3)
-            //     return true
-            // }
-            // return false
-
-
-        }, // check if 'stuck' is greater than 20
-        true, // isInterruptable
-        goalOnStartedEvent => {
-            console.log(`starting unstuck`)
-            // global.runCustom(goalOnStartedEvent)
-
-        },
-        goalOnStoppedEvent => { },
-        true, // requiresUpdateEveryTick
-        goalOnTickEvent => {
-            // global.mobUnstuck(goalOnTickEvent)
-
-            // mobUnstuckPanic(goalOnTickEvent)
-            // console.log(`random pos ${randomPos}`)
-            goalOnTickEvent.getNavigation().recomputePath()
-
-        } // maybe this is the entity?
-    )
-
 
     registerCustomGoalFlag(event, 'CustomGoal[unstuck]', $MoveGoalFlag.MOVE)
     registerCustomGoalFlag(event, 'CustomGoal[navigateToBait]', $MoveGoalFlag.MOVE)
@@ -157,7 +161,7 @@ global.runNavigateToBait = entity => {
     }
 }
 
-const mobUnstuckPanic = entity => {
+global.runUnstuckPanic = entity => {
     let randomPos = DefaultRandomPos.getPos(entity, 5, 10);
     if (randomPos && entity.getNavigation().isDone()) {
         entity.getNavigation().moveTo(randomPos.x(), randomPos.y(), randomPos.z(), 1)
