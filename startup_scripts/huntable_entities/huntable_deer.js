@@ -1,12 +1,22 @@
 let Vector3 = Java.loadClass("org.joml.Vector3f")
 let Vector3d = Java.loadClass("net.minecraft.world.phys.Vec3")
-
-
+let VanillaGameEvent = Java.loadClass("net.minecraftforge.event.VanillaGameEvent")
+let GameEvent = Java.loadClass('net.minecraft.world.level.gameevent.GameEvent')
 
 const HUNTABLE_DEER_ID = 'frontiers:huntable_deer_test'
 const HUNTABLE_DEER_EGG_ID = 'frontiers:huntable_deer_test_spawn_egg'
 const HUNTABLE_DEER_WIDTH = 0.9
 const HUNTABLE_DEER_HEIGHT = 0.9
+
+NativeEvents.onEvent(VanillaGameEvent, event => {
+    let vanilla = event.getVanillaEvent(); // the GameEvent enum
+    if (vanilla == GameEvent.STEP) {
+        // Player (or entity) step event!
+        console.log(`stepped ${Object.keys(event)}`)
+        // console.log(`stepped ${Object.keys(event)}`)
+
+    }
+});
 
 EntityJSEvents.createAttributes(event => {
     /**
