@@ -7,12 +7,15 @@ const HUNTABLE_DEER_ID = 'frontiers:huntable_deer_test'
 const HUNTABLE_DEER_EGG_ID = 'frontiers:huntable_deer_test_spawn_egg'
 const HUNTABLE_DEER_WIDTH = 0.9
 const HUNTABLE_DEER_HEIGHT = 0.9
+const HUNTABLE_DEER_DETECTION_RADIUS = 100
+const RADIUS_SQ = HUNTABLE_DEER_DETECTION_RADIUS * HUNTABLE_DEER_DETECTION_RADIUS
 
 NativeEvents.onEvent(VanillaGameEvent, event => {
-    let vanilla = event.getVanillaEvent(); // the GameEvent enum
-    if (vanilla == GameEvent.STEP) {
+    let vanillaEventInstance = event.getVanillaEvent(); // the GameEvent enum
+    let entity = event.getCause()
+    if (vanillaEventInstance == GameEvent.STEP) {
         // Player (or entity) step event!
-        console.log(`stepped ${Object.keys(event)}`)
+        console.log(`stepped ${entity.isPlayer()}`)
         // console.log(`stepped ${Object.keys(event)}`)
 
     }
@@ -78,7 +81,23 @@ StartupEvents.registry('entity_type', event => {
             entity.setSyncedData("lastTickLocationX", Math.floor(entity.x))
             entity.setSyncedData("lastTickLocationY", Math.floor(entity.y))
             entity.setSyncedData("lastTickLocationZ", Math.floor(entity.z))
+
+            if (entity.age % 100 === 0) { // apply 'On the Hunt' status to nearby players every 5 seconds
+                let level = entity.level
+                try {
+                    let nearbyPlayers = level.getPlayers(p =>
+                        p.distanceToSqr(entity) <= RADIUS_SQ
+                    )
+                    nearbyPlayers.forEach((player) => {
+                        player.potionEffects.add("frontiers:on_the_hunt", 200, 0, false, true)
+                    })
+                } catch (err) {
+                    console.log(`error trying to apply on the hunt status to player ${err}`)
+                }
+            }
         }
+
+
     })
     builder.createNavigation(context => EntityJSUtils.createAmphibiousPathNavigation(context.entity, context.level))
 })
