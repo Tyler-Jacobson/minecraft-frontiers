@@ -10,13 +10,11 @@ const HUNTABLE_DEER_HEIGHT = 0.9
 const HUNTABLE_DEER_DETECTION_RADIUS = 100
 const RADIUS_SQ = HUNTABLE_DEER_DETECTION_RADIUS * HUNTABLE_DEER_DETECTION_RADIUS
 
-NativeEvents.onEvent(VanillaGameEvent, event => {
+NativeEvents.onEvent(VanillaGameEvent, event => { // here
     let vanillaEventInstance = event.getVanillaEvent(); // the GameEvent enum
     let entity = event.getCause()
-    if (vanillaEventInstance == GameEvent.STEP) {
-        // Player (or entity) step event!
-        console.log(`stepped ${entity.isPlayer()}`)
-        // console.log(`stepped ${Object.keys(event)}`)
+    if (entity.isPlayer() && vanillaEventInstance == GameEvent.STEP && entity.potionEffects.isActive('frontiers:on_the_hunt')) {
+        console.log(`HuntStep`)
 
     }
 });
