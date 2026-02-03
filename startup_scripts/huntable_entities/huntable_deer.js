@@ -13,9 +13,13 @@ const RADIUS_SQ = HUNTABLE_DEER_DETECTION_RADIUS * HUNTABLE_DEER_DETECTION_RADIU
 NativeEvents.onEvent(VanillaGameEvent, event => { // here
     let vanillaEventInstance = event.getVanillaEvent(); // the GameEvent enum
     let entity = event.getCause()
-    if (entity.isPlayer() && vanillaEventInstance == GameEvent.STEP && entity.potionEffects.isActive('frontiers:on_the_hunt')) {
-        console.log(`HuntStep`)
-
+    if (entity && entity.isPlayer() && vanillaEventInstance == GameEvent.STEP && entity.potionEffects.isActive('frontiers:on_the_hunt')) {
+        let box = entity.boundingBox.inflate(100)
+        let mobs = event.level.getEntitiesWithin(box)
+        let deer = mobs.filter(mob => {
+            return mob.type === HUNTABLE_DEER_ID
+        })
+        console.log(`HuntStep ${deer}`)
     }
 });
 
