@@ -13,13 +13,24 @@ const RADIUS_SQ = HUNTABLE_DEER_DETECTION_RADIUS * HUNTABLE_DEER_DETECTION_RADIU
 NativeEvents.onEvent(VanillaGameEvent, event => { // here
     let vanillaEventInstance = event.getVanillaEvent(); // the GameEvent enum
     let entity = event.getCause()
+    let level = event.level
     if (entity && entity.isPlayer() && vanillaEventInstance == GameEvent.STEP && entity.potionEffects.isActive('frontiers:on_the_hunt')) {
-        let box = entity.boundingBox.inflate(100)
-        let mobs = event.level.getEntitiesWithin(box)
-        let deer = mobs.filter(mob => {
+        let player = entity
+        let box = player.boundingBox.inflate(100)
+        let mobs = level.getEntitiesWithin(box)
+        let deerList = mobs.filter(mob => {
             return mob.type === HUNTABLE_DEER_ID
         })
-        console.log(`HuntStep ${deer}`)
+        let deerToDispatchSoundEventList = deerList.filter(deer => {
+            let playerDistanceToDeer = player.distanceToEntity(deer)
+            console.log(`HuntStep ${playerDistanceToDeer < 24} ${playerDistanceToDeer}`)
+            return playerDistanceToDeer < deer.getSyncedData('soundDetectionRange')
+        })
+        deerToDispatchSoundEventList.forEach(deer => {
+            // level.spawnParticles("minecraft:vibration", true, 1, 1, 1, 0, 0, 0, 1, 0)
+            Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} positioned ${player.x} ${player.y} ${player.z} run particle minecraft:vibration ${deer.x} ${deer.y + 1} ${deer.z} ${20}`)
+
+        })
     }
 });
 
@@ -45,6 +56,9 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "lastTickLocationY", 0)
             entity.addSyncedData("int", "lastTickLocationZ", 0)
             entity.addSyncedData("int", "timeSpentAtCurrentLocation", 0)
+
+            entity.addSyncedData("int", "soundDetectionRange", 24)
+            entity.addSyncedData("int", "alertness", 0)
         })
     })
 })
@@ -87,8 +101,8 @@ StartupEvents.registry('entity_type', event => {
             if (entity.age % 100 === 0) { // apply 'On the Hunt' status to nearby players every 5 seconds
                 let level = entity.level
                 try {
-                    let nearbyPlayers = level.getPlayers(p =>
-                        p.distanceToSqr(entity) <= RADIUS_SQ
+                    let nearbyPlayers = level.getPlayers(player =>
+                        player.distanceToSqr(entity) <= RADIUS_SQ
                     )
                     nearbyPlayers.forEach((player) => {
                         player.potionEffects.add("frontiers:on_the_hunt", 200, 0, false, true)
