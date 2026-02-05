@@ -120,6 +120,8 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     registerCustomGoalFlag(event, 'CustomGoal[unstuck]', $MoveGoalFlag.MOVE)
     registerCustomGoalFlag(event, 'CustomGoal[navigateToBait]', $MoveGoalFlag.MOVE)
     registerCustomGoalFlag(event, 'CustomGoal[dampedSwim]', $MoveGoalFlag.JUMP)
+    registerCustomGoalFlag(event, 'CustomGoal[startDespawn]', $MoveGoalFlag.JUMP)
+    registerCustomGoalFlag(event, 'CustomGoal[startDespawn]', $MoveGoalFlag.MOVE)
 
     logRegisteredGoals(event)
 })

@@ -10,6 +10,40 @@ const HUNTABLE_DEER_HEIGHT = 0.9
 const HUNTABLE_DEER_DETECTION_RADIUS = 100
 const RADIUS_SQ = HUNTABLE_DEER_DETECTION_RADIUS * HUNTABLE_DEER_DETECTION_RADIUS
 
+const STEALTH_TWO_ITEMS = [
+    'minecraft:leather_helmet',
+    'minecraft:leather_chestplate',
+    'minecraft:leather_leggings',
+    'minecraft:leather_boots'
+]
+
+const NOISE_TWO_ITEMS = [ // check back before release. need to add all armors to these
+    'minecraft:iron_helmet',
+    'minecraft:iron_chestplate',
+    'minecraft:iron_leggings',
+    'minecraft:iron_boots',
+
+    'minecraft:golden_helmet',
+    'minecraft:golden_chestplate',
+    'minecraft:golden_leggings',
+    'minecraft:golden_boots',
+
+    'minecraft:diamond_helmet',
+    'minecraft:diamond_chestplate',
+    'minecraft:diamond_leggings',
+    'minecraft:diamond_boots',
+
+    'minecraft:netherite_helmet',
+    'minecraft:netherite_chestplate',
+    'minecraft:netherite_leggings',
+    'minecraft:netherite_boots',
+
+    'dungeonnowloading:spawner_helmet',
+    'dungeonnowloading:spawner_chestplate',
+    'dungeonnowloading:spawner_leggings',
+    'dungeonnowloading:spawner_boots',
+]
+
 NativeEvents.onEvent(VanillaGameEvent, event => { // here
     let vanillaEventInstance = event.getVanillaEvent(); // the GameEvent enum
     let entity = event.getCause()
@@ -22,9 +56,44 @@ NativeEvents.onEvent(VanillaGameEvent, event => { // here
             return mob.type === HUNTABLE_DEER_ID
         })
         let deerToDispatchSoundEventList = deerList.filter(deer => {
+            // stealth and noise modifiers should be handled in here
+            let stealthScore = 0
+            let noiseScore = 0
+            let baseSoundDetectionRange = deer.getSyncedData('baseSoundDetectionRange')
             let playerDistanceToDeer = player.distanceToEntity(deer)
-            console.log(`HuntStep ${playerDistanceToDeer < 24} ${playerDistanceToDeer}`)
-            return playerDistanceToDeer < deer.getSyncedData('soundDetectionRange')
+            // console.log(`HuntStep ${}`)
+
+            let stealthTwoItemsCount = player.getArmorSlots().filter(armorSlot => {
+                // console.log(`armor slot ${Object.keys(armorSlot)}`)
+                console.log(`armor slot ${armorSlot.getItem().id}`)
+                return STEALTH_TWO_ITEMS.includes(armorSlot.getItem().id)
+            })
+
+            let noiseTwoItemsCount = player.getArmorSlots().filter(armorSlot => {
+                // console.log(`armor slot ${Object.keys(armorSlot)}`)
+                console.log(`armor slot ${armorSlot.getItem().id}`)
+                return NOISE_TWO_ITEMS.includes(armorSlot.getItem().id)
+            })
+            stealthScore += stealthTwoItemsCount.length * 2
+            noiseScore += noiseTwoItemsCount.length * 2
+
+
+
+            if (player.isCrouching()) {
+                console.log(`crouchstep`)
+                stealthScore += 8
+            }
+            if (player.isSprinting()) {
+                console.log(`sprintstep`)
+                noiseScore += 8
+            }
+
+            let dispatchSoundEventDistance = baseSoundDetectionRange + noiseScore - stealthScore
+
+            console.log(`noise/stealth ${playerDistanceToDeer} ${baseSoundDetectionRange} ${noiseScore} ${stealthScore}`)
+
+
+            return playerDistanceToDeer < dispatchSoundEventDistance
         })
         deerToDispatchSoundEventList.forEach(deer => {
             // level.spawnParticles("minecraft:vibration", true, 1, 1, 1, 0, 0, 0, 1, 0)
@@ -58,7 +127,7 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "lastTickLocationZ", 0)
             entity.addSyncedData("int", "timeSpentAtCurrentLocation", 0)
 
-            entity.addSyncedData("int", "soundDetectionRange", 24)
+            entity.addSyncedData("int", "baseSoundDetectionRange", 24)
             entity.addSyncedData("int", "alertness", 0)
         })
     })
