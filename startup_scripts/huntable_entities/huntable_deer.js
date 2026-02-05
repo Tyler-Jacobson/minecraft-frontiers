@@ -29,7 +29,8 @@ NativeEvents.onEvent(VanillaGameEvent, event => { // here
         deerToDispatchSoundEventList.forEach(deer => {
             // level.spawnParticles("minecraft:vibration", true, 1, 1, 1, 0, 0, 0, 1, 0)
             Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} positioned ${player.x} ${player.y} ${player.z} run particle minecraft:vibration ${deer.x} ${deer.y + 1} ${deer.z} ${20}`)
-
+            let currentDeerAlertness = deer.getSyncedData('alertness')
+            deer.setSyncedData('alertness', currentDeerAlertness + 10)
         })
     }
 });
@@ -107,6 +108,9 @@ StartupEvents.registry('entity_type', event => {
                     nearbyPlayers.forEach((player) => {
                         player.potionEffects.add("frontiers:on_the_hunt", 200, 0, false, true)
                     })
+                    let currentDeerAlertness = entity.getSyncedData('alertness')
+
+                    console.log(`currentDeerAlertness ${currentDeerAlertness}`)
                 } catch (err) {
                     console.log(`error trying to apply on the hunt status to player ${err}`)
                 }

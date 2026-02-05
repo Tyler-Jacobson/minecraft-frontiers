@@ -13,27 +13,20 @@ global.runDampedSwim = entity => {
 global.runNavigateToBait = entity => {
     try {
         if (!(entity.level === 'ClientLevel')) {
-            console.log(`entity.getSyncedData('timeSpentAtCurrentLocation') ${entity.getSyncedData('timeSpentAtCurrentLocation')}`)
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
-            if (entity.isInWater()) {
+            if (entity.isInWater()) { // now that amphib nav is working, is this necessary?
                 try {
-                    // entity.setNavigation(EntityJSUtils.createWaterBoundPathNavigation(entity, entity.level))
-                    // entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
-                    // entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
-                    // entity.setPathfindingMalus(BlockPathTypes.WALKABLE, 0.0)
+                    // water nav
                     entity.getLookControl().setLookAt(targetX, targetY, targetZ)
                     entity.getNavigation().moveTo(targetX, targetY, targetZ, 10)
-                    // entity.jump()
                 } catch (err) {
                     console.log(`error setting pathfinding malice ${err}`)
                 }
-                // console.log('water nav mode')
             } else {
-                // entity.setNavigation(EntityJSUtils.createGroundPathNavigation(entity, entity.level))
+                // ground navigation
                 entity.getNavigation().moveTo(targetX, targetY, targetZ, 0.5)
-                console.log('land nav mode')
             }
         }
 
@@ -48,5 +41,25 @@ global.runUnstuckPanic = entity => {
     if (randomPos && entity.getNavigation().isDone()) {
         entity.getNavigation().moveTo(randomPos.x(), randomPos.y(), randomPos.z(), 1)
         console.log(`running unstuck panic navigation`)
+    }
+}
+
+global.startDespawn = entity => {
+    // entity.kill()
+
+    // entity.remove('DISCARDED')
+    let uuid = entity.uuid
+    let level = entity.level
+
+    Utils.server.scheduleInTicks(20, () => {
+        global.runDespawn(uuid, level)
+    })
+}
+
+global.runDespawn = (uuid, level) => {
+    let entity = level.getEntity(uuid)
+    if (entity) {
+        entity.remove('DISCARDED')
+
     }
 }

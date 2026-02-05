@@ -9,8 +9,26 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     // event.floatSwim(1)
     // event.meleeAttack(2, 1.5, true)
     event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
-        "dampedSwim",
+        "startDespawn",
         1,
+        canUseEvent => {
+            if (canUseEvent.getSyncedData('alertness') >= 40) {
+                return true
+            }
+            return false
+        },
+        canContinueToUseEvent => true,
+        false, // isInterruptable
+        goalOnStartedEvent => { },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => {
+            global.startDespawn(goalOnTickEvent)
+        }
+    )
+    event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
+        "dampedSwim",
+        2,
         canUseEvent => {
             if (canUseEvent.wasEyeInWater) {
                 return true
@@ -35,7 +53,7 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     )
     event.customGoal(
         "recalculateNav",
-        1,
+        2,
         canUseEvent => {
             if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 40)) {
                 return true
@@ -58,10 +76,10 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
         true, // requiresUpdateEveryTick
         goalOnTickEvent => { }
     )
-    event.panic(2, 1)
+    event.panic(3, 1)
     event.customGoal(
         "unstuck",
-        2,
+        3,
         canUseEvent => {
             if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100)) {
                 console.log(`entity is stuck`)
