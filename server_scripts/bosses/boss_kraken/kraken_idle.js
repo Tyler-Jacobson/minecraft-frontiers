@@ -1,4 +1,4 @@
-const KRAKEN_MOVESPEED = 5
+const KRAKEN_MOVESPEED = 3
 const KRAKEN_MOVEMENT_DESTINATION_Y_OFFSET = 5
 
 const runIdle = (entity) => {
@@ -11,10 +11,10 @@ const runIdle = (entity) => {
     entity.persistentData.actionQueue = [] // clear the action queue
     // movement function here
     // summonMinions(entity)
-    moveToLocation(entity, 20, 1)
+    moveToLocation(entity, 20, 1, 0)
 }
 
-const moveToLocation = (entity, distanceFromTargetPlayer, yOffsetFromTargetPlayer) => {
+const moveToLocation = (entity, distanceFromTargetPlayer, yOffsetFromTargetPlayer, moveSpeedBonus) => {
     let targetPlayer = getPriorityTarget(entity)
 
     let randomMovementAngle = getRandomIntInclusive(0, 360)
@@ -24,7 +24,7 @@ const moveToLocation = (entity, distanceFromTargetPlayer, yOffsetFromTargetPlaye
     let targetPlusYOffset = new Vec3d(aboveGroundTargetDestination.x(), aboveGroundTargetDestination.y() + KRAKEN_MOVEMENT_DESTINATION_Y_OFFSET, aboveGroundTargetDestination.z())
     let destinationAngle = global.angleVecFromAToB(entity.getEyePosition(), targetPlusYOffset)
     
-    const vel = destinationAngle.scale(KRAKEN_MOVESPEED)
+    const vel = destinationAngle.scale(KRAKEN_MOVESPEED + moveSpeedBonus)
     let heightDifferential = Math.abs(targetPlayer.getEyePosition().y() - entity.getEyePosition().y())
     console.log(`heightDifferential ${heightDifferential}`)
     let yMotionMultiplier = heightDifferential > 20 ? 1 : 0.01 // prevents the kraken from making large changes in vertical elevation when already at the same general elevation as the player
