@@ -58,7 +58,7 @@ global.startDespawn = entity => {
 
 global.runDespawn = (uuid, level) => {
     let entity = level.getEntity(uuid)
-    if (entity) {
+    if (entity && entity.isAlive()) {
         entity.remove('DISCARDED')
 
     }

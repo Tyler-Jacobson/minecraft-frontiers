@@ -61,17 +61,17 @@ NativeEvents.onEvent(VanillaGameEvent, event => { // here
             let noiseScore = 0
             let baseSoundDetectionRange = deer.getSyncedData('baseSoundDetectionRange')
             let playerDistanceToDeer = player.distanceToEntity(deer)
-            // console.log(`HuntStep ${}`)
+            // console.log(`HuntStep is it true??`)
 
             let stealthTwoItemsCount = player.getArmorSlots().filter(armorSlot => {
                 // console.log(`armor slot ${Object.keys(armorSlot)}`)
-                console.log(`armor slot ${armorSlot.getItem().id}`)
+                // console.log(`armor slot ${armorSlot.getItem().id}`)
                 return STEALTH_TWO_ITEMS.includes(armorSlot.getItem().id)
             })
 
             let noiseTwoItemsCount = player.getArmorSlots().filter(armorSlot => {
                 // console.log(`armor slot ${Object.keys(armorSlot)}`)
-                console.log(`armor slot ${armorSlot.getItem().id}`)
+                // console.log(`armor slot ${armorSlot.getItem().id}`)
                 return NOISE_TWO_ITEMS.includes(armorSlot.getItem().id)
             })
             stealthScore += stealthTwoItemsCount.length * 2
@@ -80,11 +80,11 @@ NativeEvents.onEvent(VanillaGameEvent, event => { // here
 
 
             if (player.isCrouching()) {
-                console.log(`crouchstep`)
+                // console.log(`crouchstep`)
                 stealthScore += 8
             }
             if (player.isSprinting()) {
-                console.log(`sprintstep`)
+                // console.log(`sprintstep`)
                 noiseScore += 8
             }
 
@@ -152,6 +152,10 @@ StartupEvents.registry('entity_type', event => {
         // builder.render(context => global.geoLayerRender(context))
         builder.textureResource(e => `frontiers:textures/entity/huntable_deer_test.png`)
     })
+    builder.onHurt(context => {
+        // Log the amount of damage received by the entity
+        global.runOnHurt(context)
+    })
     builder.aiStep(entity => {
         if (!(entity.level === 'ClientLevel')) {
             let lastTickX = entity.getSyncedData("lastTickLocationX")
@@ -191,6 +195,12 @@ StartupEvents.registry('entity_type', event => {
     builder.createNavigation(context => EntityJSUtils.createAmphibiousPathNavigation(context.entity, context.level))
 })
 
+global.runOnHurt = context => {
+    if (context.damageSource.getPlayer()) {
+        // entity instantly becomes alert on damaged by player
+        context.entity.setSyncedData('alertness', 1000)
+    }
+}
 
 
 // StartupEvents.registry('entity_type', event => {
