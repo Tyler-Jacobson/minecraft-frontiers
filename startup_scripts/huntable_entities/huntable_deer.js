@@ -129,6 +129,9 @@ EntityJSEvents.modifyEntity(event => {
 
             entity.addSyncedData("int", "baseSoundDetectionRange", 24)
             entity.addSyncedData("int", "alertness", 0)
+
+            entity.addSyncedData("int", "timeSpentEating", 0)
+            
         })
     })
 })

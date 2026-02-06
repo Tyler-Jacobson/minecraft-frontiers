@@ -63,3 +63,13 @@ global.runDespawn = (uuid, level) => {
 
     }
 }
+const maxEatTimeBeforDespawn = 100
+global.runEatBait = entity => {
+    let timeSpentEating = entity.getSyncedData('timeSpentEating')
+    console.log(`timeSpentEating ${timeSpentEating}`)
+    if (timeSpentEating >= maxEatTimeBeforDespawn) {
+        global.startDespawn(entity)
+    }
+
+    entity.setSyncedData('timeSpentEating', timeSpentEating + 1)
+}

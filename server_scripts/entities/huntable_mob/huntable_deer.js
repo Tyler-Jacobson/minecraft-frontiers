@@ -9,26 +9,8 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     // event.floatSwim(1)
     // event.meleeAttack(2, 1.5, true)
     event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
-        "startDespawn",
-        1,
-        canUseEvent => {
-            if (canUseEvent.getSyncedData('alertness') >= 40) {
-                return true
-            }
-            return false
-        },
-        canContinueToUseEvent => true,
-        false, // isInterruptable
-        goalOnStartedEvent => { },
-        goalOnStoppedEvent => { },
-        true, // requiresUpdateEveryTick
-        goalOnTickEvent => {
-            global.startDespawn(goalOnTickEvent)
-        }
-    )
-    event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
         "dampedSwim",
-        2,
+        1,
         canUseEvent => {
             if (canUseEvent.wasEyeInWater) {
                 return true
@@ -51,9 +33,56 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
 
         }
     )
+    event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
+        "startDespawn",
+        1,
+        canUseEvent => {
+            if (canUseEvent.getSyncedData('alertness') >= 40) {
+                return true
+            }
+            return false
+        },
+        canContinueToUseEvent => true,
+        false, // isInterruptable
+        goalOnStartedEvent => { },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => {
+            global.startDespawn(goalOnTickEvent)
+        }
+    )
+    event.customGoal(
+        "eatBait",
+        3,
+        canUseEvent => {
+            let eatingRadius = 3
+            let entity = canUseEvent
+            let targetX = entity.getSyncedData('ownerBlockLocationX')
+            let targetZ = entity.getSyncedData('ownerBlockLocationZ')
+            // console.log(`eventX ${entity.getX()} ${targetX}`)
+            if (entity.getX() > (targetX - eatingRadius) && 
+                entity.getX() < (targetX + eatingRadius) && 
+                entity.getZ() > (targetZ - eatingRadius) && 
+                entity.getZ() < (targetZ + eatingRadius)) {
+                console.log('entity is near bait')
+                return true
+            }
+            return false
+        }, // check if 'stuck' is greater than 100
+        canContinueToUseEvent => true,
+        true, // isInterruptable
+        goalOnStartedEvent => {
+            console.log(`starting eat bait`)
+        },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => {
+            global.runEatBait(goalOnTickEvent)
+        }
+    )
     event.customGoal(
         "recalculateNav",
-        2,
+        4,
         canUseEvent => {
             if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 40)) {
                 return true
@@ -76,10 +105,11 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
         true, // requiresUpdateEveryTick
         goalOnTickEvent => { }
     )
-    event.panic(3, 1)
+
+    event.panic(5, 1)
     event.customGoal(
         "unstuck",
-        3,
+        5,
         canUseEvent => {
             if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 100)) {
                 console.log(`entity is stuck`)
@@ -122,6 +152,7 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     registerCustomGoalFlag(event, 'CustomGoal[dampedSwim]', $MoveGoalFlag.JUMP)
     registerCustomGoalFlag(event, 'CustomGoal[startDespawn]', $MoveGoalFlag.JUMP)
     registerCustomGoalFlag(event, 'CustomGoal[startDespawn]', $MoveGoalFlag.MOVE)
+    registerCustomGoalFlag(event, 'CustomGoal[eatBait]', $MoveGoalFlag.MOVE)
 
     logRegisteredGoals(event)
 })
@@ -137,3 +168,4 @@ EntityJSEvents.addGoals('frontiers:huntable_deer_test', event => { // target sel
     // console.log(`target selector ${Object.keys(mob.targetSelector)}`)
     // event.nearestAttackableTarget(2, LivingEntity, 10, true, false, t => global.canAttackNearbyTarget(mob, t), mob.boundingBox.inflate(followRange, 25, followRange))
 })
+
