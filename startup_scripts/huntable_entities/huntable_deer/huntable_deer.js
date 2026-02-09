@@ -131,7 +131,7 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "alertness", 0)
 
             entity.addSyncedData("int", "timeSpentEating", 0)
-            
+
         })
     })
 })
@@ -145,11 +145,12 @@ StartupEvents.registry('entity_type', event => {
             item.highlightColor(0xffbe8f)
         })
         .tick(entity => { })
-
     builder.onAddedToWorld(entity => {
         // entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
         // entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
         // goalOnTickEvent.getNavigation().recomputePath()
+        let bodyUUID = entity.uuid.toString()
+        
     })
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))
