@@ -1,10 +1,11 @@
 
 const BAIT_SPAWN_RADIUS = 50
+const DEER_SPAWN_COUNT = 3
 
 function getRandomIntInclusive(min, max) { // replace with global
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive
 }
 
 StartupEvents.registry("block", event => {
@@ -29,30 +30,31 @@ StartupEvents.registry("block", event => {
             let level = placementEvent.level
             let pos = placementEvent.getClickLocation()
             let placedBlockLocation = placementEvent.block
-            
+
             console.log(`placed block ${placementEvent.block.x} ${placementEvent.block.y} ${placementEvent.block.z}`)
             // console.log(`placed block ${Object.keys(placementEvent.getProperties())}`)
             console.log(`placed block ${Object.keys(placementEvent.block)}`)
             // console.log(`block placement state ${Object.keys(placementEvent)}`)
             if (!(level === 'ClientLevel')) {
-                level.server.scheduleInTicks(20, () => {
-                    try {
-                        let randomAngleFromBait = getRandomIntInclusive(0, 360)
-                        let angle = randomAngleFromBait * JavaMath.PI * 2 / 360
-                        let locationX = pos.x() + 0.5 + Math.cos(angle) * BAIT_SPAWN_RADIUS
-                        let locationZ = pos.z() + 0.5 + Math.sin(angle) * BAIT_SPAWN_RADIUS
-                        let targetDestination = new Vec3d(locationX, pos.y(), locationZ)
+                for (let index = 0; index < DEER_SPAWN_COUNT; index++) {
+                    level.server.scheduleInTicks(20, () => {
+                        try {
+                            let randomAngleFromBait = getRandomIntInclusive(0, 360)
+                            let angle = randomAngleFromBait * JavaMath.PI * 2 / 360
+                            let locationX = pos.x() + 0.5 + Math.cos(angle) * BAIT_SPAWN_RADIUS
+                            let locationZ = pos.z() + 0.5 + Math.sin(angle) * BAIT_SPAWN_RADIUS
+                            let targetDestination = new Vec3d(locationX, pos.y(), locationZ)
 
-                        let aboveGroundTargetDestination = global.adjustDestinationAboveGround(level, targetDestination)
-                        console.log(`aboveGroundTargetDestination ${aboveGroundTargetDestination}`)
-                        summonHuntableMobDeer(level, aboveGroundTargetDestination, placedBlockLocation)
+                            let aboveGroundTargetDestination = global.adjustDestinationAboveGround(level, targetDestination)
+                            console.log(`aboveGroundTargetDestination ${aboveGroundTargetDestination}`)
+                            summonHuntableMobDeer(level, aboveGroundTargetDestination, placedBlockLocation)
 
-                    } catch(err) {
-                        console.log(`err spawning deer ${err}`)
-                    }
-                })
+                        } catch (err) {
+                            console.log(`err spawning deer ${err}`)
+                        }
+                    })
+                }
             }
-
             // if this works, can just do level.server.scheduleInTicks
         })
 })
