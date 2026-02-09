@@ -1,6 +1,14 @@
 
 
 
+EntityJSEvents.modifyEntity(event => {
+    event.modify('frontiers:huntable_deer_head', modifyBuilder => {
+        modifyBuilder.defineSyncedData(entity => {
+            entity.addSyncedData("string", "bodyUUID", "default")
+        })
+    })
+})
+
 StartupEvents.registry('entity_type', event => {
     const builder = event.create('frontiers:huntable_deer_head', 'entityjs:tamable')
         .mobCategory('creature')
@@ -20,12 +28,65 @@ StartupEvents.registry('entity_type', event => {
     })
     builder.onHurt(context => {
         // Log the amount of damage received by the entity
-        global.runOnHurt(context)
+        // global.runOnHurt(context)
+        global.runDeerHeadOnHurt(context)
     })
     builder.aiStep(entity => {
-        if (!(entity.level === 'ClientLevel')) {
-
-        }
+        global.runTempAiStep(entity)
     })
     // builder.createNavigation(context => EntityJSUtils.createAmphibiousPathNavigation(context.entity, context.level))
 })
+
+global.runDeerHeadOnHurt = context => {
+    // console.log(`deer ${context.entity}`)
+
+    let headshotDamageTypes = [
+        'arrow',
+        'obsidian_arrow_damage',
+    ]
+
+    let deerHead = context.entity
+    let level = deerHead.level
+    let deerBodyUUID = deerHead.getSyncedData('bodyUUID')
+    let deerBody = level.getEntity(deerBodyUUID)
+
+    if (headshotDamageTypes.includes(context.damageSource.getType())) {
+        console.log(`deer head hit by arrow`)
+        deerBody.attack(context.damageAmount * 2)
+        let attackingPlayer = context.damageSource.getPlayer()
+        level.playSound(attackingPlayer, attackingPlayer.block.pos, 'entity.sheep.shear', "players", 1, 1)
+    } else {
+        // get deerbody health, then set health to health minus damage
+        // doing it this way instead of entity.attack() means damage won't be doubled on attacks that hit both body and head
+        // deerBody.attack(context.damageAmount)
+        deerBody.setHealth(deerBody.getHealth() - context.damageAmount)
+    }
+
+    deerBody.setSyncedData('alertness', 1000)
+
+}
+
+global.runTempAiStep = entity => {
+    let level = entity.level
+    let deerHead = entity
+    if (!(level === 'ClientLevel')) {
+        try {
+            let deerBodyUUID = deerHead.getSyncedData('bodyUUID')
+            let deerBody = level.getEntity(deerBodyUUID)
+            if (!deerBody || !deerBody.isAlive()) {
+                deerHead.remove('DISCARDED')
+            }
+
+            let lookVector = deerBody.getLookAngle()
+            let entityPosition = deerBody.position()
+            let targetLocation = entityPosition.add(lookVector)
+            // console.log(`deer body ${deerHead.x} ${targetLocation.x()} ${deerHead.y} ${targetLocation.y()} ${deerHead.z} ${targetLocation.z()}`)
+            // lerpTo(x: number, y: number, z: number, yaw: number, pitch: number, posRotationIncrements: number, teleport: boolean): void;
+            // deerHead.lerpTo(targetLocation.x(), targetLocation.y(), targetLocation.z(), 1, 1, 1, false) // apparently lerpTo is for client side only according to chat gipity
+            deerHead.setPos(targetLocation.x(), targetLocation.y() + 1, targetLocation.z())
+
+        } catch (err) {
+            console.error(`error lerping head ${err}`)
+        }
+    }
+}

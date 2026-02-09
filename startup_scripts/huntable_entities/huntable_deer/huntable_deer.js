@@ -132,6 +132,9 @@ EntityJSEvents.modifyEntity(event => {
 
             entity.addSyncedData("int", "timeSpentEating", 0)
 
+            entity.addSyncedData("string", "headUUID", "default")
+
+
         })
     })
 })
@@ -145,13 +148,8 @@ StartupEvents.registry('entity_type', event => {
             item.highlightColor(0xffbe8f)
         })
         .tick(entity => { })
-    builder.onAddedToWorld(entity => {
-        // entity.setPathfindingMalus(BlockPathTypes.WATER, 0.0)
-        // entity.setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0.0)
-        // goalOnTickEvent.getNavigation().recomputePath()
-        let bodyUUID = entity.uuid.toString()
-        
-    })
+        .onAddedToWorld(entity => { // onAddedToWorld never seems to run
+        })
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))
         builder.textureResource(e => `frontiers:textures/entity/huntable_deer_test.png`)
