@@ -60,9 +60,9 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
             // console.log(`eventX ${entity.getX()} ${targetX}`)
-            if (entity.getX() > (targetX - eatingRadius) && 
-                entity.getX() < (targetX + eatingRadius) && 
-                entity.getZ() > (targetZ - eatingRadius) && 
+            if (entity.getX() > (targetX - eatingRadius) &&
+                entity.getX() < (targetX + eatingRadius) &&
+                entity.getZ() > (targetZ - eatingRadius) &&
                 entity.getZ() < (targetZ + eatingRadius)) {
                 console.log('entity is near bait')
                 return true
@@ -169,3 +169,29 @@ EntityJSEvents.addGoals('frontiers:huntable_deer_test', event => { // target sel
     // event.nearestAttackableTarget(2, LivingEntity, 10, true, false, t => global.canAttackNearbyTarget(mob, t), mob.boundingBox.inflate(followRange, 25, followRange))
 })
 
+EntityEvents.spawned('frontiers:huntable_deer_test', event => {
+    console.log(`deer spawned`)
+    let deerBody = event.entity
+    try {
+        let lookVector = deerBody.getLookAngle()
+        let entityPosition = deerBody.position()
+        let targetLocation = entityPosition.add(lookVector)
+        console.log(`targetLocation ${targetLocation}`)
+
+        let deerHead = deerBody.level.createEntity('frontiers:huntable_deer_head');
+
+        let headUUID = deerHead.uuid.toString()
+        let bodyUUID = deerBody.uuid.toString()
+
+        deerHead.setSyncedData('bodyUUID', bodyUUID)
+        deerBody.setSyncedData('headUUID', headUUID)
+
+        deerHead.setPosition(targetLocation.x(), targetLocation.y() + 1, targetLocation.z())
+        deerHead.setNoGravity(true)
+        deerHead.noPhysics = true
+        deerHead.spawn()
+        console.log(`spawning deer head at ${deerBody.x} ${deerBody.y} ${deerBody.z}`)
+    } catch (err) {
+        console.error(`error spawning deer head ${err}`)
+    }
+})
