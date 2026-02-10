@@ -2,6 +2,7 @@ let Vector3 = Java.loadClass("org.joml.Vector3f")
 let Vector3d = Java.loadClass("net.minecraft.world.phys.Vec3")
 let VanillaGameEvent = Java.loadClass("net.minecraftforge.event.VanillaGameEvent")
 let GameEvent = Java.loadClass('net.minecraft.world.level.gameevent.GameEvent')
+let TameableMobJS = Java.loadClass('net.liopyu.entityjs.entities.living.entityjs.TameableMobJS')
 
 const HUNTABLE_DEER_ID = 'frontiers:huntable_deer_test'
 const HUNTABLE_DEER_EGG_ID = 'frontiers:huntable_deer_test_spawn_egg'
@@ -45,6 +46,10 @@ const NOISE_TWO_ITEMS = [ // check back before release. need to add all armors t
 ]
 
 NativeEvents.onEvent(VanillaGameEvent, event => { // here
+    global.runOnStepEvent(event)
+});
+
+global.runOnStepEvent = (event) => {
     let vanillaEventInstance = event.getVanillaEvent(); // the GameEvent enum
     let entity = event.getCause()
     let level = event.level
@@ -53,7 +58,7 @@ NativeEvents.onEvent(VanillaGameEvent, event => { // here
         let box = player.boundingBox.inflate(100)
         let mobs = level.getEntitiesWithin(box)
         let deerList = mobs.filter(mob => {
-            return mob.type === HUNTABLE_DEER_ID
+            return mob.type === HUNTABLE_DEER_ID && mob instanceof TameableMobJS
         })
         let deerToDispatchSoundEventList = deerList.filter(deer => {
             // stealth and noise modifiers should be handled in here
@@ -102,7 +107,7 @@ NativeEvents.onEvent(VanillaGameEvent, event => { // here
             deer.setSyncedData('alertness', currentDeerAlertness + 10)
         })
     }
-});
+}
 
 EntityJSEvents.createAttributes(event => {
     /**
@@ -159,43 +164,7 @@ StartupEvents.registry('entity_type', event => {
         global.runOnHurt(context)
     })
     builder.aiStep(entity => {
-
-
-        if (!(entity.level === 'ClientLevel')) {
-            let lastTickX = entity.getSyncedData("lastTickLocationX")
-            let lastTickZ = entity.getSyncedData("lastTickLocationZ")
-            let currentTickX = Math.floor(entity.x)
-            let currentTickZ = Math.floor(entity.z)
-            if (currentTickX === lastTickX && currentTickZ === lastTickZ) { // used for unstuck check
-                let timeAtLocation = entity.getSyncedData("timeSpentAtCurrentLocation")
-                entity.setSyncedData("timeSpentAtCurrentLocation", timeAtLocation + 1)
-            } else {
-                entity.setSyncedData("timeSpentAtCurrentLocation", 0)
-            }
-            entity.setSyncedData("lastTickLocationX", Math.floor(entity.x))
-            entity.setSyncedData("lastTickLocationY", Math.floor(entity.y))
-            entity.setSyncedData("lastTickLocationZ", Math.floor(entity.z))
-
-            if (entity.age % 100 === 0) { // apply 'On the Hunt' status to nearby players every 5 seconds
-                let level = entity.level
-                try {
-                    let nearbyPlayers = level.getPlayers(player =>
-                        player.distanceToSqr(entity) <= RADIUS_SQ
-                    )
-                    nearbyPlayers.forEach((player) => {
-                        player.potionEffects.add("frontiers:on_the_hunt", 200, 0, false, true)
-                    })
-                    let currentDeerAlertness = entity.getSyncedData('alertness')
-
-                    // console.log(`currentDeerAlertness ${currentDeerAlertness}`)
-                } catch (err) {
-                    console.log(`error trying to apply on the hunt status to player ${err}`)
-                }
-            }
-        }
-
-        entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z()) // can you just set this to look angle?
-
+        global.runHuntableDeerTick(entity)
     })
     builder.createNavigation(context => EntityJSUtils.createAmphibiousPathNavigation(context.entity, context.level))
     builder.dropCustomDeathLoot(context => {
@@ -219,5 +188,82 @@ global.runOnHurt = context => {
     if (context.damageSource.getPlayer()) {
         // entity instantly becomes alert on damaged by player
         context.entity.setSyncedData('alertness', 1000)
+    }
+}
+
+global.runHuntableDeerTick = entity => {
+    if (!(entity.level === 'ClientLevel')) {
+        let lastTickX = entity.getSyncedData("lastTickLocationX")
+        let lastTickZ = entity.getSyncedData("lastTickLocationZ")
+        let currentTickX = Math.floor(entity.x)
+        let currentTickZ = Math.floor(entity.z)
+        if (currentTickX === lastTickX && currentTickZ === lastTickZ) { // used for unstuck check
+            let timeAtLocation = entity.getSyncedData("timeSpentAtCurrentLocation")
+            entity.setSyncedData("timeSpentAtCurrentLocation", timeAtLocation + 1)
+        } else {
+            entity.setSyncedData("timeSpentAtCurrentLocation", 0)
+        }
+        entity.setSyncedData("lastTickLocationX", Math.floor(entity.x))
+        entity.setSyncedData("lastTickLocationY", Math.floor(entity.y))
+        entity.setSyncedData("lastTickLocationZ", Math.floor(entity.z))
+
+        if (entity.age % 20 === 0) { // apply 'On the Hunt' status to nearby players every 5 seconds
+            let level = entity.level
+            try {
+                let nearbyPlayers = level.getPlayers(player =>
+                    player.distanceToSqr(entity) <= RADIUS_SQ
+                )
+                nearbyPlayers.forEach((player) => {
+                    player.potionEffects.add("frontiers:on_the_hunt", 200, 0, false, true)
+                    global.spawnParticleTrail(entity, player)
+                })
+                // console.log(`currentDeerAlertness ${currentDeerAlertness}`)
+            } catch (err) {
+                console.log(`error trying to apply on the hunt status to player ${err}`)
+            }
+        }
+    }
+
+    entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z()) // can you just set this to look angle?
+}
+
+// global.spawnParticleTrail = (entity, player) => {
+//     let startPosition = player.position()
+//     let endPosition = entity.position()
+//     let stepCount = 10
+//     let stepVector = endPosition.subtract(startPosition).scale(1 / stepCount)
+
+//     for (let stepIndex = 0; stepIndex <= stepCount; stepIndex++) {
+//         let particlePosition = startPosition.add(stepVector.scale(stepIndex))
+//         // entity.level.spawnParticles("minecraft:crit", particlePosition.x, particlePosition.y, particlePosition.z, 1, 0, 0, 0, 0)
+//         player.level.spawnParticles("minecraft:smoke", false, particlePosition.x(), particlePosition.y(), particlePosition.z(), 0, 0, 0, 1, 0) // last 2 are count / speed
+
+//     }
+// }
+
+global.spawnParticleTrail = (entity, player) => {
+    let level = entity.level
+    let targetX = entity.getSyncedData('ownerBlockLocationX')
+    let targetY = entity.getSyncedData('ownerBlockLocationY')
+    let targetZ = entity.getSyncedData('ownerBlockLocationZ')
+
+    let startPosition = new Vec3d(targetX, targetY, targetZ)
+    let endPosition = new Vec3d(entity.x, entity.y + 2, entity.z)
+    let stepCount = 40
+    let directionVector = endPosition.subtract(startPosition)
+    let stepVector = directionVector.scale(1 / stepCount)
+
+    for (let stepIndex = 0; stepIndex <= stepCount; stepIndex++) {
+        let progress = stepIndex / stepCount
+        let angle = progress * 12
+        let radius = 3
+        let radiusY = 1
+        let offsetX = Math.cos(angle) * radius
+        let offsetY = Math.sin(angle) * radiusY
+        let particlePosition = startPosition.add(stepVector.scale(stepIndex)).add(offsetX, offsetY, 0)
+        level.server.scheduleInTicks(stepIndex * 1, () => {
+            level.spawnParticles("minecraft:smoke", false, particlePosition.x(), particlePosition.y() + 1, particlePosition.z(), 0, 0, 0, 1, 0) // last 2 are count / speed
+
+        })
     }
 }

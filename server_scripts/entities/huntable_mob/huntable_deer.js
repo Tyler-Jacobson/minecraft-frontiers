@@ -143,7 +143,7 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
         goalOnStoppedEvent => { },
         true, // requiresUpdateEveryTick
         goalOnTickEvent => {
-            global.runNavigateToBait(goalOnTickEvent)
+            // global.runNavigateToBait(goalOnTickEvent)
         }
     )
 
