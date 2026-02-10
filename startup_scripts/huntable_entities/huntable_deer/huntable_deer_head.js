@@ -12,7 +12,7 @@ EntityJSEvents.modifyEntity(event => {
 StartupEvents.registry('entity_type', event => {
     const builder = event.create('frontiers:huntable_deer_head', 'entityjs:tamable')
         .mobCategory('creature')
-        .sized(0.9, 0.9)
+        .sized(1.2, 1.2)
         .eggItem(item => {
             item.backgroundColor(0xff0000)
             item.highlightColor(0xffbe8f)
@@ -35,6 +35,8 @@ StartupEvents.registry('entity_type', event => {
         global.runTempAiStep(entity)
     })
     // builder.createNavigation(context => EntityJSUtils.createAmphibiousPathNavigation(context.entity, context.level))
+    // builder.createNavigation(context => EntityJSUtils.createFlyingPathNavigation(context.entity, context.level))
+
 })
 
 global.runDeerHeadOnHurt = context => {
@@ -59,7 +61,7 @@ global.runDeerHeadOnHurt = context => {
         // get deerbody health, then set health to health minus damage
         // doing it this way instead of entity.attack() means damage won't be doubled on attacks that hit both body and head
         // deerBody.attack(context.damageAmount)
-        deerBody.setHealth(deerBody.getHealth() - context.damageAmount)
+        deerBody.setHealth(deerBody.getHealth() - context.damageAmount) // note. this idea did not work
     }
 
     deerBody.setSyncedData('alertness', 1000)
@@ -75,6 +77,7 @@ global.runTempAiStep = entity => {
             let deerBody = level.getEntity(deerBodyUUID)
             if (!deerBody || !deerBody.isAlive()) {
                 deerHead.remove('DISCARDED')
+                return
             }
 
             let lookVector = deerBody.getLookAngle()
@@ -83,8 +86,12 @@ global.runTempAiStep = entity => {
             // console.log(`deer body ${deerHead.x} ${targetLocation.x()} ${deerHead.y} ${targetLocation.y()} ${deerHead.z} ${targetLocation.z()}`)
             // lerpTo(x: number, y: number, z: number, yaw: number, pitch: number, posRotationIncrements: number, teleport: boolean): void;
             // deerHead.lerpTo(targetLocation.x(), targetLocation.y(), targetLocation.z(), 1, 1, 1, false) // apparently lerpTo is for client side only according to chat gipity
-            deerHead.setPos(targetLocation.x(), targetLocation.y() + 1, targetLocation.z())
-
+            // deerHead.setPos(targetLocation.x(), targetLocation.y() + 0.8, targetLocation.z())
+            deerHead.getNavigation().moveTo(targetLocation.x(), targetLocation.y() + 0.8, targetLocation.z(), 0.5)
+            // let nearbyEntities = level.getEntitiesWithin(deerHead.boundingBox.inflate(0)).filter(entity => {
+            //     return !(entity.type === 'frontiers:huntable_deer_head') && !(entity.type === 'frontiers:huntable_deer_test')
+            // })            
+            // console.log(nearbyEntities)
         } catch (err) {
             console.error(`error lerping head ${err}`)
         }
