@@ -195,3 +195,17 @@ EntityEvents.spawned('frontiers:huntable_deer_test', event => {
         console.error(`error spawning deer head ${err}`)
     }
 })
+
+EntityEvents.hurt('minecraft:horse', event => { // this could actually work
+    let directEntity = event.source.getImmediate()
+    console.log(`entityHit ${directEntity}`)
+
+    if (!directEntity || directEntity.type != "minecraft:arrow") return
+    let movement = directEntity.getDeltaMovement()
+    console.log(`movement ${movement}`)
+    console.log(`movement ${directEntity.x} ${directEntity.y} ${directEntity.z}`)
+    // let fromDirection = Math.abs(movement.x) > Math.abs(movement.z)
+    //     ? (movement.x > 0 ? "WEST" : "EAST")
+    //     : (movement.z > 0 ? "NORTH" : "SOUTH")
+    // console.log(`fromDirection ${fromDirection}`)
+})
