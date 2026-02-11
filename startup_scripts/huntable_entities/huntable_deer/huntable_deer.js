@@ -107,8 +107,7 @@ global.runOnStepEvent = (event) => {
         deerToDispatchSoundEventList.forEach(deer => {
             // level.spawnParticles("minecraft:vibration", true, 1, 1, 1, 0, 0, 0, 1, 0)
             Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} positioned ${player.x} ${player.y} ${player.z} run particle minecraft:vibration ${deer.x} ${deer.y + 1} ${deer.z} ${20}`)
-            let currentDeerAlertness = deer.getSyncedData('alertness')
-            deer.setSyncedData('alertness', currentDeerAlertness + 10)
+            global.increaseAlertness(deer, player, 10)
         })
     }
 }
@@ -226,6 +225,16 @@ global.runHuntableDeerTick = entity => {
                 console.log(`error trying to apply on the hunt status to player ${err}`)
             }
         }
+        if (entity.age % 200 === 0) {
+            let lookAtDistance = 10
+            let randomAngleFromBait = getRandomIntInclusive(0, 360)
+            let angle = randomAngleFromBait * JavaMath.PI * 2 / 360
+            let locationX = entity.x + 0.5 + Math.cos(angle) * lookAtDistance
+            let locationZ = entity.z + 0.5 + Math.sin(angle) * lookAtDistance
+            let targetDestination = new Vec3d(locationX, entity.y, locationZ)
+            entity.lookAt("eyes", targetDestination)
+
+        }
 
         if (entity.age % 20 === 0) {
             let level = entity.level
@@ -241,7 +250,7 @@ global.runHuntableDeerTick = entity => {
                     let entityPosition = entity.position()
                     let targetLocation = entityPosition.add(lookVector)
 
-                    level.spawnParticles("call_of_yucutan:rain_wisp", true, targetLocation.x(), targetLocation.y(), targetLocation.z(), 1, 1, 1, 20, 1)
+                    // level.spawnParticles("call_of_yucutan:rain_wisp", true, targetLocation.x(), targetLocation.y(), targetLocation.z(), 1, 1, 1, 20, 1)
                     // console.log(targetLocation)
 
                     let distanceBetweenSqr = player.distanceToSqr(targetLocation)
@@ -271,10 +280,9 @@ global.runHuntableDeerTick = entity => {
                 })
                 if (playersEntityCanSee.length) {
                     global.increaseAlertness(entity, playersEntityCanSee[0], 10)
+                    console.log(`spotted player ${playersEntityCanSee[0]}`)
+
                 }
-
-
-                console.log(`playersInVisionCone ${playersInVisionCone}`)
                 // console.log(`currentDeerAlertness ${currentDeerAlertness}`)
             } catch (err) {
                 console.log(`error trying to apply on the hunt status to player ${err}`)
@@ -330,7 +338,10 @@ global.increaseAlertness = (entity, player, amount) => {
     if (entity && player && entity.isAlive() && player.isAlive()) {
         let currentAlertness = entity.getSyncedData('alertness')
         entity.setSyncedData('alertness', currentAlertness + amount)
-        entity.lookAt(player, 30, 30)
+        // entity.lookAt(player, 30, 30)
+        // entity.getLookControl().setLookAt(player.x, player.y, player.z)
+
+        entity.lookAt("eyes", new Vec3d(player.x, player.y, player.z))
         // may need to do some client side handling for smooth look at
     } else {
         console.warn(`unable to increase alertness, player or entity is null or dead`)
