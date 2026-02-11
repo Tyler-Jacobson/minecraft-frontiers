@@ -3,6 +3,9 @@ let Vector3d = Java.loadClass("net.minecraft.world.phys.Vec3")
 let VanillaGameEvent = Java.loadClass("net.minecraftforge.event.VanillaGameEvent")
 let GameEvent = Java.loadClass('net.minecraft.world.level.gameevent.GameEvent')
 let TameableMobJS = Java.loadClass('net.liopyu.entityjs.entities.living.entityjs.TameableMobJS')
+let ClipContext = Java.loadClass('net.minecraft.world.level.ClipContext')
+let HitResult = Java.loadClass('net.minecraft.world.phys.HitResult')
+// net/minecraft/world/level/ClipContext.java
 
 const HUNTABLE_DEER_ID = 'frontiers:huntable_deer_test'
 const HUNTABLE_DEER_EGG_ID = 'frontiers:huntable_deer_test_spawn_egg'
@@ -10,6 +13,7 @@ const HUNTABLE_DEER_WIDTH = 0.9
 const HUNTABLE_DEER_HEIGHT = 0.9
 const HUNTABLE_DEER_DETECTION_RADIUS = 100
 const RADIUS_SQ = HUNTABLE_DEER_DETECTION_RADIUS * HUNTABLE_DEER_DETECTION_RADIUS
+const VISION_CONE_WIDTH_BLOCKS = 10
 
 const STEALTH_TWO_ITEMS = [
     'minecraft:leather_helmet',
@@ -215,8 +219,62 @@ global.runHuntableDeerTick = entity => {
                 )
                 nearbyPlayers.forEach((player) => {
                     player.potionEffects.add("frontiers:on_the_hunt", 200, 0, false, true)
-                    global.spawnParticleTrail(entity, player)
                 })
+                global.spawnParticleTrail(entity) // sends particles from block to huntable mobs
+                // console.log(`currentDeerAlertness ${currentDeerAlertness}`)
+            } catch (err) {
+                console.log(`error trying to apply on the hunt status to player ${err}`)
+            }
+        }
+
+        if (entity.age % 20 === 0) {
+            let level = entity.level
+            try {
+                let nearbyHuntingPlayers = level.getPlayers(player => {
+                    return player.distanceToSqr(entity) <= RADIUS_SQ && player.potionEffects.isActive('frontiers:on_the_hunt')
+                })
+                let playersInVisionCone = nearbyHuntingPlayers.filter((player) => {
+                    let playerDistanceFromMob = player.distanceToEntity(entity)
+                    // console.log(`playerDistanceFromMob ${playerDistanceFromMob}`)
+
+                    let lookVector = entity.getLookAngle().scale(playerDistanceFromMob)
+                    let entityPosition = entity.position()
+                    let targetLocation = entityPosition.add(lookVector)
+
+                    level.spawnParticles("call_of_yucutan:rain_wisp", true, targetLocation.x(), targetLocation.y(), targetLocation.z(), 1, 1, 1, 20, 1)
+                    // console.log(targetLocation)
+
+                    let distanceBetweenSqr = player.distanceToSqr(targetLocation)
+                    let distanceBetween = Math.sqrt(distanceBetweenSqr)
+                    // console.log(`distanceBetweenSqr ${distanceBetween}`)
+                    return distanceBetween < VISION_CONE_WIDTH_BLOCKS
+                })
+                let playersEntityCanSee = playersInVisionCone.filter(player => {
+                    let start = player.getEyePosition()
+                    let end = entity.getEyePosition()
+                    let clipContext = new ClipContext(
+                        start,
+                        end,
+                        ClipContext.Block.COLLIDER,   // consider solid blocks
+                        ClipContext.Fluid.NONE,       // or Fluid.ANY if needed
+                        entity                       // entity to ignore
+                    );
+                    // draw a raycast between player eye pos and entity eye pos
+                    let result = level.clip(clipContext);
+
+                    // if raycast is stopped by a block, result.getType() will be HitResult.Type.BLOCK
+                    let blocked = result.getType() === HitResult.Type.BLOCK;
+
+                    // if the raycast isn't stopped by a block, return true, adding the player to the filtered list of visible players
+                    console.log(`can entity see player is ${!blocked}`)
+                    return !blocked
+                })
+                if (playersEntityCanSee.length) {
+                    global.increaseAlertness(entity, playersEntityCanSee[0], 10)
+                }
+
+
+                console.log(`playersInVisionCone ${playersInVisionCone}`)
                 // console.log(`currentDeerAlertness ${currentDeerAlertness}`)
             } catch (err) {
                 console.log(`error trying to apply on the hunt status to player ${err}`)
@@ -241,7 +299,7 @@ global.runHuntableDeerTick = entity => {
 //     }
 // }
 
-global.spawnParticleTrail = (entity, player) => {
+global.spawnParticleTrail = (entity) => {
     let level = entity.level
     let targetX = entity.getSyncedData('ownerBlockLocationX')
     let targetY = entity.getSyncedData('ownerBlockLocationY')
@@ -265,5 +323,16 @@ global.spawnParticleTrail = (entity, player) => {
             level.spawnParticles("minecraft:smoke", false, particlePosition.x(), particlePosition.y() + 1, particlePosition.z(), 0, 0, 0, 1, 0) // last 2 are count / speed
 
         })
+    }
+}
+
+global.increaseAlertness = (entity, player, amount) => {
+    if (entity && player && entity.isAlive() && player.isAlive()) {
+        let currentAlertness = entity.getSyncedData('alertness')
+        entity.setSyncedData('alertness', currentAlertness + amount)
+        entity.lookAt(player, 30, 30)
+        // may need to do some client side handling for smooth look at
+    } else {
+        console.warn(`unable to increase alertness, player or entity is null or dead`)
     }
 }
