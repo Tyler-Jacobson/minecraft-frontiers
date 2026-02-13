@@ -13,6 +13,8 @@ const HUNTABLE_DEER_WIDTH = 0.9
 const HUNTABLE_DEER_HEIGHT = 0.9
 const HUNTABLE_DEER_DETECTION_RADIUS = 100
 const RADIUS_SQ = HUNTABLE_DEER_DETECTION_RADIUS * HUNTABLE_DEER_DETECTION_RADIUS
+const HUNTABLE_DEER_VISION_RADIUS = 40
+const HUNTABLE_DEER_VISION_RADIUS_SQ = HUNTABLE_DEER_VISION_RADIUS * HUNTABLE_DEER_VISION_RADIUS
 const VISION_CONE_WIDTH_BLOCKS = 10
 
 const STEALTH_TWO_ITEMS = [
@@ -240,7 +242,7 @@ global.runHuntableDeerTick = entity => {
             let level = entity.level
             try {
                 let nearbyHuntingPlayers = level.getPlayers(player => {
-                    return player.distanceToSqr(entity) <= RADIUS_SQ && player.potionEffects.isActive('frontiers:on_the_hunt')
+                    return player.distanceToSqr(entity) <= HUNTABLE_DEER_VISION_RADIUS_SQ && player.potionEffects.isActive('frontiers:on_the_hunt')
                 })
                 let playersInVisionCone = nearbyHuntingPlayers.filter((player) => {
                     let playerDistanceFromMob = player.distanceToEntity(entity)
@@ -250,7 +252,6 @@ global.runHuntableDeerTick = entity => {
                     let entityPosition = entity.position()
                     let targetLocation = entityPosition.add(lookVector)
 
-                    // level.spawnParticles("call_of_yucutan:rain_wisp", true, targetLocation.x(), targetLocation.y(), targetLocation.z(), 1, 1, 1, 20, 1)
                     // console.log(targetLocation)
 
                     let distanceBetweenSqr = player.distanceToSqr(targetLocation)
@@ -258,7 +259,7 @@ global.runHuntableDeerTick = entity => {
                     // console.log(`distanceBetweenSqr ${distanceBetween}`)
                     return distanceBetween < VISION_CONE_WIDTH_BLOCKS
                 })
-                let playersEntityCanSee = playersInVisionCone.filter(player => {
+                let playersEntityCanSee = nearbyHuntingPlayers.filter(player => {
                     let start = player.getEyePosition()
                     let end = entity.getEyePosition()
                     let clipContext = new ClipContext(
@@ -274,14 +275,29 @@ global.runHuntableDeerTick = entity => {
                     // if raycast is stopped by a block, result.getType() will be HitResult.Type.BLOCK
                     let blocked = result.getType() === HitResult.Type.BLOCK;
 
+                    let startPlusOne = new Vec3d(start.x(), start.y() + 1, start.z())
+                    let endPlusOne = new Vec3d(end.x(), end.y() + 1, end.z())
+
+                    let clipContextPlusOne = new ClipContext(
+                        startPlusOne,
+                        endPlusOne,
+                        ClipContext.Block.COLLIDER,   // consider solid blocks
+                        ClipContext.Fluid.NONE,       // or Fluid.ANY if needed
+                        entity                       // entity to ignore
+                    );
+
+                    let resultPlusOne = level.clip(clipContextPlusOne);
+                    let blockedPlusOne = resultPlusOne.getType() === HitResult.Type.BLOCK;
+
                     // if the raycast isn't stopped by a block, return true, adding the player to the filtered list of visible players
-                    console.log(`can entity see player is ${!blocked}`)
-                    return !blocked
+                    console.log(`can entity see player is ${!blocked} ${!blockedPlusOne}`)
+                    return !blocked || !blockedPlusOne
                 })
                 if (playersEntityCanSee.length) {
-                    global.increaseAlertness(entity, playersEntityCanSee[0], 10)
-                    console.log(`spotted player ${playersEntityCanSee[0]}`)
-
+                    let player = playersEntityCanSee[0]
+                    global.increaseAlertness(entity, player, 10)
+                    console.log(`spotted player ${player}`)
+                    level.spawnParticles("call_of_yucutan:rain_wisp", true, player.x, player.y, player.z, 1, 1, 1, 20, 1)
                 }
                 // console.log(`currentDeerAlertness ${currentDeerAlertness}`)
             } catch (err) {

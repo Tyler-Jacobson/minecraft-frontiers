@@ -51,6 +51,9 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
             global.startDespawn(goalOnTickEvent)
         }
     )
+    // event.waterAvoidingRandomStroll(priority: number, speedModifier: number, probability: number): void;
+    // event.waterAvoidingRandomStroll(2, 0.5, 0.001)
+
     // event.customGoal(
     //     "eatBait",
     //     3,
