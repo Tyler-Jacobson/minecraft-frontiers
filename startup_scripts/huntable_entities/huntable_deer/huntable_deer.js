@@ -171,7 +171,7 @@ StartupEvents.registry('entity_type', event => {
     builder.aiStep(entity => {
         global.runHuntableDeerTick(entity)
     })
-    builder.createNavigation(context => EntityJSUtils.createAmphibiousPathNavigation(context.entity, context.level))
+    builder.createNavigation(context => EntityJSUtils.createFlyingPathNavigation(context.entity, context.level))
     builder.dropCustomDeathLoot(context => {
         context.entity.block.popItemFromFace('butchersdelight:dead_cow', 'up')
     })
@@ -234,7 +234,7 @@ global.runHuntableDeerTick = entity => {
             let locationX = entity.x + 0.5 + Math.cos(angle) * lookAtDistance
             let locationZ = entity.z + 0.5 + Math.sin(angle) * lookAtDistance
             let targetDestination = new Vec3d(locationX, entity.y, locationZ)
-            entity.lookAt("eyes", targetDestination)
+            // entity.lookAt("eyes", targetDestination)
 
         }
 
@@ -353,11 +353,11 @@ global.spawnParticleTrail = (entity) => {
 global.increaseAlertness = (entity, player, amount) => {
     if (entity && player && entity.isAlive() && player.isAlive()) {
         let currentAlertness = entity.getSyncedData('alertness')
-        entity.setSyncedData('alertness', currentAlertness + amount)
+        // entity.setSyncedData('alertness', currentAlertness + amount)
         // entity.lookAt(player, 30, 30)
         // entity.getLookControl().setLookAt(player.x, player.y, player.z)
 
-        entity.lookAt("eyes", new Vec3d(player.x, player.y, player.z))
+        // entity.lookAt("eyes", new Vec3d(player.x, player.y, player.z))
         // may need to do some client side handling for smooth look at
     } else {
         console.warn(`unable to increase alertness, player or entity is null or dead`)

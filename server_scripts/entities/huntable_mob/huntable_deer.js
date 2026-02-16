@@ -83,31 +83,31 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     //         global.runEatBait(goalOnTickEvent)
     //     }
     // )
-    // event.customGoal(
-    //     "recalculateNav",
-    //     4,
-    //     canUseEvent => {
-    //         if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 40)) {
-    //             return true
-    //         }
-    //         return false
-    //     },
-    //     canContinueToUseEvent => {
-    //         if (canContinueToUseEvent.getNavigation().isDone()) {
-    //             return false
-    //         }
-    //         return true
-    //     },
-    //     true, // isInterruptable
-    //     goalOnStartedEvent => {
-    //         goalOnStartedEvent.getNavigation().recomputePath()
-    //         console.log(`recalculating nav`)
+    event.customGoal(
+        "recalculateNav",
+        4,
+        canUseEvent => {
+            if ((canUseEvent.getSyncedData('timeSpentAtCurrentLocation') > 40)) {
+                return true
+            }
+            return false
+        },
+        canContinueToUseEvent => {
+            if (canContinueToUseEvent.getNavigation().isDone()) {
+                return false
+            }
+            return true
+        },
+        true, // isInterruptable
+        goalOnStartedEvent => {
+            goalOnStartedEvent.getNavigation().recomputePath()
+            console.log(`recalculating nav`)
 
-    //     },
-    //     goalOnStoppedEvent => { },
-    //     true, // requiresUpdateEveryTick
-    //     goalOnTickEvent => { }
-    // )
+        },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => { }
+    )
 
     // event.panic(5, 1)
     // event.customGoal(
@@ -136,22 +136,22 @@ EntityJSEvents.addGoalSelectors('frontiers:huntable_deer_test', event => { // go
     //         global.runUnstuckPanic(goalOnTickEvent)
     //     }
     // )
-    // event.customGoal(
-    //     "navigateToBait",
-    //     10,
-    //     canUseEvent => true,
-    //     canContinueToUseEvent => true,
-    //     true, // isInterruptable
-    //     goalOnStartedEvent => { },
-    //     goalOnStoppedEvent => { },
-    //     true, // requiresUpdateEveryTick
-    //     goalOnTickEvent => {
-    //         // global.runNavigateToBait(goalOnTickEvent)
-    //     }
-    // )
+    event.customGoal(
+        "navigateToBait",
+        0,
+        canUseEvent => true,
+        canContinueToUseEvent => true,
+        true, // isInterruptable
+        goalOnStartedEvent => { },
+        goalOnStoppedEvent => { },
+        true, // requiresUpdateEveryTick
+        goalOnTickEvent => {
+            global.runNavigateToBait(goalOnTickEvent)
+        }
+    )
 
     // registerCustomGoalFlag(event, 'CustomGoal[unstuck]', $MoveGoalFlag.MOVE)
-    // registerCustomGoalFlag(event, 'CustomGoal[navigateToBait]', $MoveGoalFlag.MOVE)
+    registerCustomGoalFlag(event, 'CustomGoal[navigateToBait]', $MoveGoalFlag.MOVE)
     registerCustomGoalFlag(event, 'CustomGoal[dampedSwim]', $MoveGoalFlag.JUMP)
     registerCustomGoalFlag(event, 'CustomGoal[startDespawn]', $MoveGoalFlag.JUMP)
     registerCustomGoalFlag(event, 'CustomGoal[startDespawn]', $MoveGoalFlag.MOVE)
