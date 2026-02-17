@@ -1,13 +1,11 @@
 const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
-
+const ORBIT_RADIUS = 10
 
 EntityJSEvents.modifyEntity(event => {
     event.modify(ZOMBIE_CROW_ID, modifyBuilder => {
         modifyBuilder.defineSyncedData(entity => {
-            entity.addSyncedData("int", "nextPointIndex ", 0)
-
             entity.addSyncedData("string", "headUUID", "default")
-            entity.addSyncedData("int", "lastTickLocationZ", 0)
+            entity.addSyncedData("int", "orbitalDestinationIndex", 0)
 
         })
     })
@@ -63,17 +61,14 @@ global.runZombieCrowTick = entity => {
         })
         // console.log(`nearest player ${nearestPlayer}`)
         if (!nearestPlayer) return
-        let pointIndex = entity.getSyncedData("lastTickLocationZ")
-        console.log(`fuck ${entity.getSyncedData("nextPointIndex")}`)
-        // let lastTickZ = entity.getSyncedData("lastTickLocationZ")
-        console.log(`fuck2 ${entity.getSyncedData("lastTickLocationZ")}`)
+        let pointIndex = entity.getSyncedData("orbitalDestinationIndex")
 
         // mob checkpoint debug:
         for (let index = 0; index < 8; index++) {
             let angle = (index % 8) * (JavaMath.PI / 4)
-            let targetX = nearestPlayer.x + Math.cos(angle) * 10
-            let targetY = nearestPlayer.y
-            let targetZ = nearestPlayer.z + Math.sin(angle) * 10
+            let targetX = nearestPlayer.x + Math.cos(angle) * ORBIT_RADIUS
+            let targetY = entity.y
+            let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
             // console.log(`running loop ${targetX} ${targetY} ${targetZ}`)
             if (pointIndex === index) {
                 entity.level.spawnParticles("minecraft:lava", false, targetX, targetY, targetZ, 0, 0, 0, 1, 0)
@@ -86,24 +81,27 @@ global.runZombieCrowTick = entity => {
         // actual movement logic:
         let angle = (pointIndex % 8) * (JavaMath.PI / 4)
 
-        let targetX = nearestPlayer.x + Math.cos(angle) * 10
-        let targetY = nearestPlayer.y
-        let targetZ = nearestPlayer.z + Math.sin(angle) * 10
+        let targetX = nearestPlayer.x + Math.cos(angle) * ORBIT_RADIUS
+        let targetY = entity.y
+        let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
 
         console.log(`moving to ${targetX} ${targetY} ${targetZ}`)
         entity.getNavigation().recomputePath()
         entity.getNavigation().moveTo(targetX, targetY, targetZ, 2)
 
-        let distanceBetweenSqr = entity.distanceToSqr(new Vec3d(targetX, targetY, targetZ))
-        let distanceBetween = Math.sqrt(distanceBetweenSqr)
-        if (distanceBetween < 1) {
+        let entityX = entity.x
+        let entityZ = entity.z
+
+        if (entityX > targetX - 1 && entityX < targetX + 1 && entityZ > targetZ - 1 && entityZ < targetZ + 1) {
+            console.log(`hit checkpoint`)
             if (pointIndex >= 7) {
-                entity.setSyncedData("lastTickLocationZ", 0) // for some reason naming this correctly fucks it
+                entity.setSyncedData("orbitalDestinationIndex", 0) // for some reason naming this correctly fucks it
             } else {
-                entity.setSyncedData("lastTickLocationZ", pointIndex + 1)
+                entity.setSyncedData("orbitalDestinationIndex", pointIndex + 1)
             }
         }
     }
 
     entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z()) // can you just set this to look angle?
 }
+
