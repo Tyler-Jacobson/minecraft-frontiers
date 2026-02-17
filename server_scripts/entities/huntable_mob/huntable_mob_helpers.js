@@ -26,7 +26,10 @@ global.runNavigateToBait = entity => {
                 }
             } else {
                 // ground navigation
-                entity.getNavigation().moveTo(targetX, targetY, targetZ, 0.5)
+                // entity.getLookControl().setLookAt(targetX, targetY, targetZ)
+                console.log(`running ground nav`)
+                entity.lookAt("eyes", new Vec3d(targetX, targetY, targetZ))
+                entity.getNavigation().moveTo(targetX, entity.y + 3, targetZ, 1)
             }
         }
 

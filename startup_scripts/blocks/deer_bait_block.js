@@ -47,7 +47,7 @@ StartupEvents.registry("block", event => {
 
                             let aboveGroundTargetDestination = global.adjustDestinationAboveGround(level, targetDestination)
                             console.log(`aboveGroundTargetDestination ${aboveGroundTargetDestination}`)
-                            summonHuntableMobDeer(level, aboveGroundTargetDestination, placedBlockLocation)
+                            global.summonHuntableMobDeer(level, aboveGroundTargetDestination, placedBlockLocation)
 
                         } catch (err) {
                             console.log(`err spawning deer ${err}`)
@@ -59,7 +59,7 @@ StartupEvents.registry("block", event => {
         })
 })
 
-const summonHuntableMobDeer = (level, startingPosition, baitLocation) => {
+global.summonHuntableMobDeer = (level, startingPosition, baitLocation) => {
     // const { level } = mob
     const huntableMob = level.createEntity("frontiers:huntable_deer_test");
     // it's crucial to set the huntableMob entity's owner here, since we're later going to reference this in order to get the damage source
