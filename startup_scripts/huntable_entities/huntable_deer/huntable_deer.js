@@ -200,6 +200,7 @@ global.runHuntableDeerTick = entity => {
     if (!(entity.level === 'ClientLevel')) {
         let lastTickX = entity.getSyncedData("lastTickLocationX")
         let lastTickZ = entity.getSyncedData("lastTickLocationZ")
+        console.log(`lastTickZ ${lastTickZ}`)
         let currentTickX = Math.floor(entity.x)
         let currentTickZ = Math.floor(entity.z)
         if (currentTickX === lastTickX && currentTickZ === lastTickZ) { // used for unstuck check
