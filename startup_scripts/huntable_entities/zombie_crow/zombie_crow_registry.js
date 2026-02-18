@@ -1,5 +1,15 @@
 const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
 const ORBIT_RADIUS = 10
+const CROW_PROJECTILE_DAMAGE = 5
+const ZOMBIE_CROW_PROJECTILE_RADIUS = 2
+
+EntityJSEvents.createAttributes(event => {
+    event.create(ZOMBIE_CROW_ID, attribute => {
+        attribute.add("minecraft:generic.max_health", 40)
+        attribute.add("minecraft:generic.movement_speed", 1)
+    })
+})
+
 
 EntityJSEvents.modifyEntity(event => {
     event.modify(ZOMBIE_CROW_ID, modifyBuilder => {
@@ -14,7 +24,7 @@ EntityJSEvents.modifyEntity(event => {
 StartupEvents.registry('entity_type', event => {
     const builder = event.create(ZOMBIE_CROW_ID, 'entityjs:tamable')
         .mobCategory('creature')
-        .sized(0.9, 0.9)
+        .sized(1.5, 1.5)
         .eggItem(item => {
             item.backgroundColor(0xff0000)
             item.highlightColor(0xffbe8f)
@@ -37,7 +47,7 @@ StartupEvents.registry('entity_type', event => {
     builder.dropCustomDeathLoot(context => {
         context.entity.block.popItemFromFace('butchersdelight:dead_cow', 'up')
     })
-    builder.addPartEntity("one", 1.2, 1.2, builder => {
+    builder.addPartEntity("one", 0.9, 0.9, builder => {
         // Adds an additional hitbox to the entity with builder support
         builder
             .isPickable(true)
@@ -85,7 +95,7 @@ global.runZombieCrowTick = entity => {
         let targetY = entity.y
         let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
 
-        console.log(`moving to ${targetX} ${targetY} ${targetZ}`)
+        // console.log(`moving to ${targetX} ${targetY} ${targetZ}`)
         entity.getNavigation().recomputePath()
         entity.getNavigation().moveTo(targetX, targetY, targetZ, 2)
 
@@ -102,10 +112,29 @@ global.runZombieCrowTick = entity => {
         }
 
 
-        if (entity.age % 40 === 0) {
-            global.spawnZombieCrowProjectile(entity, entity.level, entity.eyePosition, entity.lookAngle)
+        if (entity.age % 80 === 0) {
+            global.spawnZombieCrowProjectile(entity, nearestPlayer)
             // player, level, eyePosition, lookAngle
         }
+
+        try {
+            let attackingEntity = entity.eyePosition
+            let defendingEntity = nearestPlayer.eyePosition
+            if (!attackingEntity || !defendingEntity) return
+            let attackAngle = global.angleVecFromAToB(attackingEntity, defendingEntity)
+            let length = Math.sqrt(attackAngle.x() * attackAngle.x() + attackAngle.z() * attackAngle.z())
+            let leftX = -attackAngle.z() / length * 3
+            let leftZ = attackAngle.x() / length * 3
+            let targetXModified = defendingEntity.x() + leftX
+            let targetYModified = defendingEntity.y()
+            let targetZModified = defendingEntity.z() + leftZ
+            entity.level.spawnParticles("minecraft:smoke", false, targetXModified, targetYModified, targetZModified, 0, 0, 0, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
+
+            console.log(`leftside ${targetXModified} ${targetYModified} ${targetZModified}`)
+        } catch (err) {
+            console.error(`failed ${err}`)
+        }
+
     }
 
     entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z()) // can you just set this to look angle?
@@ -115,15 +144,15 @@ StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
     event.create("frontiers:zombie_crow_projectile", "entityjs:geckolib_projectile")
         .onHitEntity(context => {
-            global.zombieCrowOnHitEntity(context)
+            global.zombieCrowProjectileOnHitEntity(context)
         }).onHitBlock(context => {
-            global.zombieCrowOnHitBlock(context)
+            global.zombieCrowProjectileOnHitBlock(context)
         }).tick(entity => {
-            global.zombieCrowOnTick(entity)
+            global.zombieCrowProjectileOnTick(entity)
         }).noItem()
 })
 
-global.zombieCrowOnHitBlock = (context) => {
+global.zombieCrowProjectileOnHitBlock = (context) => {
     const { entity } = context
 
     const player = entity.getOwner()
@@ -142,31 +171,31 @@ global.zombieCrowOnHitBlock = (context) => {
     world.spawnParticles("explosiveenhancement:smoke", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
     world.spawnParticles("explosiveenhancement:blastwave", false, collisionX, collisionY + 1, collisionZ, 1, 1, 1, 3, 1) // some of the particles from explosive enhancements require speed of 1 in order to display
 
-    const RADIUS = 3
+    const RADIUS = 1
 
     const hitEntity = entity
 
     const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
 
 
     let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
-    let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+    // let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
     // if (hasKindnessEnchant(itemStack)) {
     //     nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
     // }
 
     nearbyEntities.forEach((nearbyEntity) => {
         nearbyEntity.setRemainingFireTicks(100)
-        nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage) // this should be explosive attack or fire damage attack
+        nearbyEntity.attack(damageSource, CROW_PROJECTILE_DAMAGE) // this should be explosive attack or fire damage attack
 
     })
 
     entity.kill()
 }
 
-global.zombieCrowOnHitEntity = (context) => {
+global.zombieCrowProjectileOnHitEntity = (context) => {
     // 'entity' in this context is the projectile that is spawned
     // 'result.entity' in this context is the target that is hit by the projectile
     const { entity, result } = context;
@@ -177,7 +206,14 @@ global.zombieCrowOnHitEntity = (context) => {
     // This can be any player reference, in this case we're using entity.getOwner(), 
     // which is a value we set to be the player with this line in global.exampleFinishUsing below when spawning the projectile:
     const player = entity.getOwner()
-    const damageSource = entity.damageSources().playerAttack(player)
+    const hitEntity = result.entity
+
+    if (hitEntity.type === player.type) {
+        console.log(`hitself`)
+        return
+    }
+
+    const damageSource = entity.damageSources().mobProjectile(entity, player)
     const world = player.level
 
     const randomFireballCollisionSound = getRandomSound(fireballCollisionSounds, threeMostRecentFireCollisionSoundSelections)
@@ -194,18 +230,18 @@ global.zombieCrowOnHitEntity = (context) => {
 
 
 
-    const RADIUS = 3
+    const RADIUS = 1
 
-    const hitEntity = result.entity
+
 
     const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(RADIUS)).filter(entity => entity.living)
+    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
     if (!nearbyEntities.contains(hitEntity)) {
         nearbyEntities.push(hitEntity)
     }
-    let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
-    let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
+    // let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
+    // let powerEnchantBonusDamage = getFireStaffPowerEnchantmentBonusDamage(itemStack)
     // console.info(`hasKindnessEnchant ${hasKindnessEnchant(itemStack)}`)
     // if (hasKindnessEnchant(itemStack)) {
     //     nearbyEntities = nearbyEntities.filter(entity => !entity.isPlayer())
@@ -213,14 +249,14 @@ global.zombieCrowOnHitEntity = (context) => {
 
     nearbyEntities.forEach((nearbyEntity) => {
         nearbyEntity.setRemainingFireTicks(100)
-        nearbyEntity.attack(damageSource, FIRESTAFF_BASE_DAMAGE + powerEnchantBonusDamage)
+        nearbyEntity.attack(damageSource, CROW_PROJECTILE_DAMAGE)
     })
 
     // we now get rid of the projectile entity
     entity.kill()
 }
 
-global.zombieCrowOnTick = (entity) => {
+global.zombieCrowProjectileOnTick = (entity) => {
     const world = entity.level
 
     const collisionX = entity.x
@@ -240,23 +276,27 @@ global.zombieCrowOnTick = (entity) => {
 
     world.spawnParticles("minecraft:smoke", false, collisionX, collisionY + smokeParticleYOffset, collisionZ, 0, 0, 0, smokeParticleCountPerTick, smokeParticleSpeedPerTick)
     world.spawnParticles("minecraft:lava", false, collisionX, collisionY, collisionZ, 0, 0, 0, lavaParticleCountPerTick, lavaParticleSpeedPerTick)
+
+    if (entity.age >= 100) {
+        entity.kill()
+    }
 }
 
-global.spawnZombieCrowProjectile = (player, level, eyePosition, lookAngle) => {
-    
+global.spawnZombieCrowProjectile = (entity, target) => {
+    const { level, eyePosition } = entity
 
     const projectile = level.createEntity("frontiers:zombie_crow_projectile");
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
-    console.log(`player ${player}`)
-    projectile.setOwner(player)
+    // console.log(`player ${player}`)
+    projectile.setOwner(entity)
     console.log(`owner ${projectile.getOwner()}`)
 
-    const vel = lookAngle.scale(1.5)
+    // const vel = lookAngle.scale(1.5)
 
-    let attackAngle = global.angleVecFromAToB(attackStartingLocation, nearestPlayerCenterMass)
+    let attackAngle = global.angleVecFromAToB(eyePosition, target.eyePosition)
 
-    projectile.setMotion(vel.x(), vel.y() + 0.1, vel.z())
-    projectile.setPosition(eyePosition.x(), eyePosition.y() - 0.5, eyePosition.z())
-    projectile.setNoGravity(false)
+    projectile.setMotion(attackAngle.x(), attackAngle.y(), attackAngle.z())
+    projectile.setPosition(eyePosition.x(), eyePosition.y(), eyePosition.z())
+    projectile.setNoGravity(true)
     projectile.spawn()
 }
