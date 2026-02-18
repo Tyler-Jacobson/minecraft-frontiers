@@ -40,7 +40,7 @@ EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal sele
         goalOnStoppedEvent => { },
         true, // requiresUpdateEveryTick
         goalOnTickEvent => {
-            global.zombieCrowRunFlee(goalOnTickEvent)
+            global.zombieCrowRunFleeTick(goalOnTickEvent)
         }
     )
 
@@ -60,33 +60,24 @@ EntityJSEvents.addGoals('frontiers:zombie_crow', event => { // target selectors
     event.hurtByTarget(1, [], true, [])
 })
 
-global.zombieCrowRunFlee = entity => {
+global.zombieCrowRunFleeTick = entity => {
     try {
         if (!(entity.level === 'ClientLevel')) {
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
+            let clampedY = global.clampY(targetY, entity.y - 3, entity.y + 3)
             console.log(`fleeing to ${targetX} ${targetY} ${targetZ}`)
-
-            if (entity.isInWater()) { // now that amphib nav is working, is this necessary?
-                try {
-                    // water nav
-                    entity.getLookControl().setLookAt(targetX, targetY, targetZ)
-                    entity.getNavigation().moveTo(targetX, targetY, targetZ, 10)
-                } catch (err) {
-                    console.log(`error setting pathfinding malice ${err}`)
-                }
+            if (entity.isInWater()) {
+                entity.getLookControl().setLookAt(targetX, clampedY, targetZ)
+                entity.getNavigation().moveTo(targetX, clampedY, targetZ, 10)
             } else {
-                // air navigation
-                // entity.getLookControl().setLookAt(targetX, targetY, targetZ)
                 console.log(`running ground nav`)
-                entity.lookAt("eyes", new Vec3d(targetX, targetY, targetZ))
-                entity.getNavigation().moveTo(targetX, entity.y + 3, targetZ, 1)
+                entity.lookAt("eyes", new Vec3d(targetX, clampedY, targetZ))
+                entity.getNavigation().moveTo(targetX, clampedY, targetZ, 1)
             }
         }
-    } catch (err) {
-        console.log(`failed to run zombieCrowRunFlee ${err}`)
-    }
+    } catch (err) { console.log(`failed to run zombieCrowRunFleeTick ${err}`) }
 }
 
 global.zombieCrowRunFight = entity => {
@@ -100,7 +91,6 @@ global.zombieCrowRunFight = entity => {
 
 global.zombieCrowStartFlee = entity => {
     let level = entity.level
-
     for (let tries = 0; tries < 10; tries++) {
         console.log(`trying to find destination ${tries}`)
         let randomAngleFromBait = getRandomIntInclusive(0, 360)
@@ -108,30 +98,27 @@ global.zombieCrowStartFlee = entity => {
         let locationX = entity.x + 0.5 + Math.cos(angle) * 50
         let locationZ = entity.z + 0.5 + Math.sin(angle) * 50
         let targetDestination = new Vec3d(locationX, entity.y, locationZ)
-
-        let nearestPlayer = null
-        let nearestDistance = 999999
-        entity.level.players.forEach(player => {
-            let distance = entity.distanceToSqr(new Vec3d(player.x, player.y, player.z))
-            if (distance < nearestDistance) { nearestDistance = distance; nearestPlayer = player }
-        })
-
         let start = entity.getEyePosition()
-        let end = targetDestination
-        let clipContext = new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)
-        // console.log(`clipContext ${targetDestination} ${nearestPlayer.getEyePosition()}`)
-
-
+        let clipContext = new ClipContext(start, targetDestination, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)
         let result = level.clip(clipContext)
-        let blocked = result.getType() === HitResult.Type.BLOCK
-
-        if (!blocked) {
-            console.log(`starting flee to ${locationX} ${entity.y} ${locationZ}`)
-            // entity.getNavigation().moveTo(locationX, entity.y, locationZ, 1)
+        if (result.getType() !== HitResult.Type.BLOCK) {
+            let blockX = Math.floor(locationX), blockY = Math.floor(entity.y), blockZ = Math.floor(locationZ)
+            while (level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:air") { blockY++ }
+            let newYValue = blockY + 15
+            console.log(`starting flee to ${locationX} ${newYValue} ${locationZ}`)
             entity.setSyncedData('ownerBlockLocationX', locationX)
-            entity.setSyncedData('ownerBlockLocationY', entity.y)
+            entity.setSyncedData('ownerBlockLocationY', newYValue)
             entity.setSyncedData('ownerBlockLocationZ', locationZ)
             break
         }
     }
+}
+
+global.clampY = (y, minY, maxY) => {
+    if (y < minY) {
+        return minY
+    } else if (y > maxY) {
+        return maxY
+    }
+    return y
 }
