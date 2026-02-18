@@ -63,11 +63,41 @@ EntityJSEvents.addGoals('frontiers:zombie_crow', event => { // target selectors
 global.zombieCrowRunFleeTick = entity => {
     try {
         if (!(entity.level === 'ClientLevel')) {
+
+            let level = entity.level
+
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
-            let clampedY = global.clampY(targetY, entity.y - 3, entity.y + 3)
-            console.log(`fleeing to ${targetX} ${targetY} ${targetZ}`)
+
+            // -------- RAYCAST CHECK BELOW ENTITY --------
+            let start = entity.getEyePosition()
+            let end = start.add(0, -15, 0)
+
+            let clipContext = new ClipContext(
+                start,
+                end,
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                entity
+            )
+
+            let result = level.clip(clipContext)
+            let blockBelow = result.getType() === HitResult.Type.BLOCK
+            let desiredY = targetY
+
+            if (!blockBelow) {
+                // nothing below, allow descent only
+                if (desiredY > entity.y)
+                    desiredY = entity.y
+            } else {
+                // ground below, allow ascent only
+                if (desiredY < entity.y)
+                    desiredY = entity.y
+            }
+
+            let clampedY = global.clampY(desiredY, entity.y - 3, entity.y + 3)
+
             if (entity.isInWater()) {
                 entity.getLookControl().setLookAt(targetX, clampedY, targetZ)
                 entity.getNavigation().moveTo(targetX, clampedY, targetZ, 10)
@@ -75,9 +105,13 @@ global.zombieCrowRunFleeTick = entity => {
                 console.log(`running ground nav`)
                 entity.lookAt("eyes", new Vec3d(targetX, clampedY, targetZ))
                 entity.getNavigation().moveTo(targetX, clampedY, targetZ, 1)
+
+                global.applyVerticalSteering(entity, clampedY, 0.15, 0.2)
             }
         }
-    } catch (err) { console.log(`failed to run zombieCrowRunFleeTick ${err}`) }
+    } catch (err) {
+        console.log(`failed to run zombieCrowRunFleeTick ${err}`)
+    }
 }
 
 global.zombieCrowRunFight = entity => {
@@ -122,4 +156,16 @@ global.clampY = (y, minY, maxY) => {
         return maxY
     }
     return y
+}
+
+global.applyVerticalSteering = (entity, targetY, strength, maxSpeed) => {
+    if (!entity || !entity.isAlive()) return
+
+    let dy = targetY - entity.y
+    if (Math.abs(dy) < 0.05) return
+
+    let motion = entity.getDeltaMovement()
+    let yVel = Math.max(-maxSpeed, Math.min(maxSpeed, dy * strength))
+
+    entity.setMotion(motion.x(), yVel, motion.z())
 }
