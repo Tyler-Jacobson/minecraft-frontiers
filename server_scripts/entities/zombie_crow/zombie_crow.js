@@ -104,6 +104,7 @@ global.zombieCrowStartFlee = entity => {
         if (result.getType() !== HitResult.Type.BLOCK) {
             let blockX = Math.floor(locationX), blockY = Math.floor(entity.y), blockZ = Math.floor(locationZ)
             while (level.getBlock(blockX, blockY + 1, blockZ).id != "minecraft:air") { blockY++ }
+            while (blockY > 0 && level.getBlock(blockX, blockY, blockZ).id == "minecraft:air") { blockY-- }
             let newYValue = blockY + 15
             console.log(`starting flee to ${locationX} ${newYValue} ${locationZ}`)
             entity.setSyncedData('ownerBlockLocationX', locationX)
