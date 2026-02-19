@@ -20,6 +20,9 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "ownerBlockLocationX", 0)
             entity.addSyncedData("int", "ownerBlockLocationY", 0)
             entity.addSyncedData("int", "ownerBlockLocationZ", 0)
+
+            entity.addSyncedData("int", "currentPhase", 0)
+
         })
     })
 })

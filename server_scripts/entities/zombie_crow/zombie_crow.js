@@ -9,38 +9,38 @@ let HitResult = Java.loadClass('net.minecraft.world.phys.HitResult')
 
 
 EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal selectors
-    event.customGoal( // the default floatSwim goal was causing the mob to launch multiple blocks into the air while trying to float
+    event.customGoal(
         "fight",
         1,
-        canUseEvent => {
-            if (canUseEvent.getSyncedData('alertness') >= 40) {
+        entity => { // this is canUse. return true here if the entity can start the goal during this tick.
+            if (entity.getSyncedData('alertness') >= 40) {
                 return true
             }
             return false
         },
-        canContinueToUseEvent => true,
+        entity => true,
         false, // isInterruptable
-        goalOnStartedEvent => { },
-        goalOnStoppedEvent => { },
+        entity => { }, // goalOnStartedEvent. this runs once when the goal starts
+        entity => { }, // goalOnEndedEvent. this runs once when the goal ends
         true, // requiresUpdateEveryTick
-        goalOnTickEvent => {
-            global.zombieCrowRunFight(goalOnTickEvent)
+        entity => { // goalOnTickEvent. this runs once every tick while the goal is running
+            global.zombieCrowRunFight(entity)
         }
     )
     event.customGoal(
         "flee",
         2,
-        canUseEvent => true,
-        canContinueToUseEvent => true,
+        entity => true, // this is canUse. return true here if the entity can start the goal during this tick.
+        entity => true, // this is canContinueToUse. return true here if the entity can continue to use the goal during this tick
         true, // isInterruptable
-        goalOnStartedEvent => {
+        entity => { // goalOnStartedEvent. this runs once when the goal starts
             console.log(`started flee`)
-            global.zombieCrowStartFlee(goalOnStartedEvent)
+            global.zombieCrowStartFlee(entity)
         },
-        goalOnStoppedEvent => { },
+        entity => { }, // goalOnEndedEvent. this runs once when the goal ends
         true, // requiresUpdateEveryTick
-        goalOnTickEvent => {
-            global.zombieCrowRunFleeTick(goalOnTickEvent)
+        entity => { // goalOnTickEvent. this runs once every tick while the goal is running
+            global.zombieCrowRunFleeTick(entity)
         }
     )
 
