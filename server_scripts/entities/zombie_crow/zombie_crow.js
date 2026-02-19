@@ -63,49 +63,47 @@ EntityJSEvents.addGoals('frontiers:zombie_crow', event => { // target selectors
 global.zombieCrowRunFleeTick = entity => {
     try {
         if (!(entity.level === 'ClientLevel')) {
-
             let level = entity.level
-
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
+            if (Math.abs(entity.x - targetX) < 1 && Math.abs(entity.z - targetZ) < 1) {
+                let start = entity.getEyePosition()
+                let end = start.add(0, -99, 0)
+                let result = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
+                if (result.getType() === HitResult.Type.BLOCK) {
+                    let hit = result.getBlockPos()
+                    // level.setBlock(hit.x, hit.y, hit.z, "frontiers:zombie_crow_egg")
+                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} frontiers:zombie_crow_egg`)
 
-            // -------- RAYCAST CHECK BELOW ENTITY --------
+                    let steps = Math.floor(entity.y - hit.y)
+                    for (let step = 0; step <= steps; step++) {
+                        let particleY = entity.y - step
+                        level.server.scheduleInTicks(step, () => { level.spawnParticles("call_of_yucutan:rain_wisp", true, entity.x, particleY, entity.z, 0, 0, 0, 1, 0) })
+                    }
+                    entity.remove('DISCARDED')
+                }
+            }
+
             let start = entity.getEyePosition()
             let end = start.add(0, -15, 0)
-
-            let clipContext = new ClipContext(
-                start,
-                end,
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE,
-                entity
-            )
-
-            let result = level.clip(clipContext)
+            let result = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
             let blockBelow = result.getType() === HitResult.Type.BLOCK
             let desiredY = targetY
 
             if (!blockBelow) {
-                // nothing below, allow descent only
-                if (desiredY > entity.y)
-                    desiredY = entity.y
+                if (desiredY > entity.y) desiredY = entity.y
             } else {
-                // ground below, allow ascent only
-                if (desiredY < entity.y)
-                    desiredY = entity.y
+                if (desiredY < entity.y) desiredY = entity.y
             }
 
             let clampedY = global.clampY(desiredY, entity.y - 3, entity.y + 3)
-
             if (entity.isInWater()) {
-                entity.getLookControl().setLookAt(targetX, clampedY, targetZ)
-                entity.getNavigation().moveTo(targetX, clampedY, targetZ, 10)
+                entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, 10)
             } else {
-                console.log(`running ground nav`)
+                console.log(`running ground nav`);
                 entity.lookAt("eyes", new Vec3d(targetX, clampedY, targetZ))
                 entity.getNavigation().moveTo(targetX, clampedY, targetZ, 1)
-
                 global.applyVerticalSteering(entity, clampedY, 0.15, 0.2)
             }
         }

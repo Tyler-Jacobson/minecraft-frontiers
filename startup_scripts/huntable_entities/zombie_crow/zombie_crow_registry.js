@@ -302,3 +302,14 @@ global.spawnZombieCrowProjectile = (entity, target) => {
     projectile.setNoGravity(true)
     projectile.spawn()
 }
+
+StartupEvents.registry("block", event => {
+    event.create("frontiers:zombie_crow_egg")
+        .displayName("Zombie Crow Egg")
+        .blockEntity(entityInfo => { // also has tick and serverTick methods
+            console.log(`ticking egg`)
+        })
+        .placementState(placementEvent => {
+            console.log(`placed egg`)
+        })
+})
