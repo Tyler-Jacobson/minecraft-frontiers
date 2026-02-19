@@ -17,6 +17,9 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("string", "headUUID", "default")
             entity.addSyncedData("int", "orbitalDestinationIndex", 0)
 
+            entity.addSyncedData("int", "ownerBlockLocationX", 0)
+            entity.addSyncedData("int", "ownerBlockLocationY", 0)
+            entity.addSyncedData("int", "ownerBlockLocationZ", 0)
         })
     })
 })
@@ -95,9 +98,8 @@ global.runZombieCrowTick = entity => {
         let targetY = entity.y
         let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
 
-        // console.log(`moving to ${targetX} ${targetY} ${targetZ}`)
-        entity.getNavigation().recomputePath()
-        entity.getNavigation().moveTo(targetX, targetY, targetZ, 2)
+        // entity.getNavigation().recomputePath()
+        // entity.getNavigation().moveTo(targetX, targetY, targetZ, 2)
 
         let entityX = entity.x
         let entityZ = entity.z

@@ -364,3 +364,4 @@ global.increaseAlertness = (entity, player, amount) => {
         console.warn(`unable to increase alertness, player or entity is null or dead`)
     }
 }
+
