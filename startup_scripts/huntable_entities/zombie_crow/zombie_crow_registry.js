@@ -1,3 +1,6 @@
+let $BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
+let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
+
 const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
 const ORBIT_RADIUS = 10
 const CROW_PROJECTILE_DAMAGE = 5
@@ -309,10 +312,18 @@ global.spawnZombieCrowProjectile = (entity, target) => {
 StartupEvents.registry("block", event => {
     event.create("frontiers:zombie_crow_egg")
         .displayName("Zombie Crow Egg")
-        .blockEntity(entityInfo => { // also has tick and serverTick methods
-            console.log(`ticking egg`)
+        .property(IntegerProperty.create("current_health", 0, 1000))
+        .blockEntity(entityInfo => {
+            entityInfo.serverTick(1, 0, entity => {
+                global.zombieCrowEggBlockTick(entity)
+            })
         })
-        .placementState(placementEvent => {
+        .placementState(event => {
             console.log(`placed egg`)
         })
 })
+
+global.zombieCrowEggBlockTick = (entity) => {
+    let freshInstance = entity.level.getBlock(entity.blockPos)
+    console.log(`ticking egg ${freshInstance.properties}`)
+}

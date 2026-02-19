@@ -4,9 +4,7 @@ let $MoveGoalFlag = Java.loadClass("net.minecraft.world.entity.ai.goal.Goal$Flag
 let DefaultRandomPos = Java.loadClass("net.minecraft.world.entity.ai.util.DefaultRandomPos")
 let ClipContext = Java.loadClass('net.minecraft.world.level.ClipContext')
 let HitResult = Java.loadClass('net.minecraft.world.phys.HitResult')
-
-
-
+let CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
 
 EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal selectors
     event.customGoal(
@@ -73,8 +71,16 @@ global.zombieCrowRunFleeTick = entity => {
                 let result = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
                 if (result.getType() === HitResult.Type.BLOCK) {
                     let hit = result.getBlockPos()
-                    // level.setBlock(hit.x, hit.y, hit.z, "frontiers:zombie_crow_egg")
-                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} frontiers:zombie_crow_egg`)
+                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} frontiers:zombie_crow_egg[current_health=3]`)
+
+                    try {
+                        let block = level.getBlock(new BlockPos(hit.x, hit.y + 1, hit.z))
+                        console.log(`getting block at test ${block.properties}`)
+
+
+                    } catch (err) {
+                        console.error(`error trying to set nbt data ${err}`)
+                    }
 
                     let steps = Math.floor(entity.y - hit.y)
                     for (let step = 0; step <= steps; step++) {
@@ -101,7 +107,7 @@ global.zombieCrowRunFleeTick = entity => {
             if (entity.isInWater()) {
                 entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, 10)
             } else {
-                console.log(`running ground nav`);
+                // console.log(`running ground nav`);
                 entity.lookAt("eyes", new Vec3d(targetX, clampedY, targetZ))
                 entity.getNavigation().moveTo(targetX, clampedY, targetZ, 1)
                 global.applyVerticalSteering(entity, clampedY, 0.15, 0.2)
