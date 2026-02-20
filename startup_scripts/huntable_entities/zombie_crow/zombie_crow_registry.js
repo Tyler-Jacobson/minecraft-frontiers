@@ -1,3 +1,6 @@
+let $BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
+let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
+
 const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
 const ORBIT_RADIUS = 10
 const CROW_PROJECTILE_DAMAGE = 5
@@ -20,6 +23,9 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "ownerBlockLocationX", 0)
             entity.addSyncedData("int", "ownerBlockLocationY", 0)
             entity.addSyncedData("int", "ownerBlockLocationZ", 0)
+
+            entity.addSyncedData("int", "currentPhase", 0)
+
         })
     })
 })
@@ -301,4 +307,23 @@ global.spawnZombieCrowProjectile = (entity, target) => {
     projectile.setPosition(eyePosition.x(), eyePosition.y(), eyePosition.z())
     projectile.setNoGravity(true)
     projectile.spawn()
+}
+
+StartupEvents.registry("block", event => {
+    event.create("frontiers:zombie_crow_egg")
+        .displayName("Zombie Crow Egg")
+        .property(IntegerProperty.create("current_health", 0, 1000))
+        .blockEntity(entityInfo => {
+            entityInfo.serverTick(1, 0, entity => {
+                global.zombieCrowEggBlockTick(entity)
+            })
+        })
+        .placementState(event => {
+            console.log(`placed egg`)
+        })
+})
+
+global.zombieCrowEggBlockTick = (entity) => {
+    let freshInstance = entity.level.getBlock(entity.blockPos)
+    console.log(`ticking egg ${freshInstance.properties}`)
 }
