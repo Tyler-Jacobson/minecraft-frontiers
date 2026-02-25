@@ -38,6 +38,9 @@ global.spawnZombieCrow = (player, level, eyePosition) => {
     let targetLocation = playerPosition.add(lookVector)
     // projectile.setMotion(vel.x(), vel.y() + 0.1, vel.z())
     entity.setPosition(targetLocation.x(), targetLocation.y() + 15, targetLocation.z())
+    entity.setSyncedData('currentPhase', 0)
+    entity.setSyncedData('isFleeing', 0)
+    entity.setSyncedData('orbitalDestinationIndex', 0)
     entity.setNoGravity(true)
     entity.spawn()
 }

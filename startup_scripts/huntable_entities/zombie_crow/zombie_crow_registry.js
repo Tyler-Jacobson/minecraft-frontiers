@@ -25,6 +25,7 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "ownerBlockLocationZ", 0)
 
             entity.addSyncedData("int", "currentPhase", 0)
+            entity.addSyncedData("int", "isFleeing", 0)
 
         })
     })
@@ -71,81 +72,14 @@ StartupEvents.registry('entity_type', event => {
 })
 
 global.runZombieCrowTick = entity => {
-    if (!(entity.level === 'ClientLevel')) {
-        let nearestPlayer = null
-        let nearestDistance = 999999
-        entity.level.players.forEach(player => {
-            let distance = entity.distanceToSqr(new Vec3d(player.x, player.y, player.z))
-            if (distance < nearestDistance) { nearestDistance = distance; nearestPlayer = player }
-        })
-        // console.log(`nearest player ${nearestPlayer}`)
-        if (!nearestPlayer) return
-        let pointIndex = entity.getSyncedData("orbitalDestinationIndex")
-
-        // mob checkpoint debug:
-        for (let index = 0; index < 8; index++) {
-            let angle = (index % 8) * (JavaMath.PI / 4)
-            let targetX = nearestPlayer.x + Math.cos(angle) * ORBIT_RADIUS
-            let targetY = entity.y
-            let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
-            // console.log(`running loop ${targetX} ${targetY} ${targetZ}`)
-            if (pointIndex === index) {
-                entity.level.spawnParticles("minecraft:lava", false, targetX, targetY, targetZ, 0, 0, 0, 1, 0)
-
-            } else {
-                entity.level.spawnParticles("call_of_yucutan:rain_wisp", true, targetX, targetY, targetZ, 0, 0, 0, 1, 0)
-            }
-        }
-
-        // actual movement logic:
-        let angle = (pointIndex % 8) * (JavaMath.PI / 4)
-
-        let targetX = nearestPlayer.x + Math.cos(angle) * ORBIT_RADIUS
-        let targetY = entity.y
-        let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
-
-        // entity.getNavigation().recomputePath()
-        // entity.getNavigation().moveTo(targetX, targetY, targetZ, 2)
-
-        let entityX = entity.x
-        let entityZ = entity.z
-
-        if (entityX > targetX - 1 && entityX < targetX + 1 && entityZ > targetZ - 1 && entityZ < targetZ + 1) {
-            console.log(`hit checkpoint`)
-            if (pointIndex >= 7) {
-                entity.setSyncedData("orbitalDestinationIndex", 0) // for some reason naming this correctly fucks it
-            } else {
-                entity.setSyncedData("orbitalDestinationIndex", pointIndex + 1)
-            }
-        }
-
-
-        if (entity.age % 80 === 0) {
-            global.spawnZombieCrowProjectile(entity, nearestPlayer)
-            // player, level, eyePosition, lookAngle
-        }
-
-        try {
-            let attackingEntity = entity.eyePosition
-            let defendingEntity = nearestPlayer.eyePosition
-            if (!attackingEntity || !defendingEntity) return
-            let attackAngle = global.angleVecFromAToB(attackingEntity, defendingEntity)
-            let length = Math.sqrt(attackAngle.x() * attackAngle.x() + attackAngle.z() * attackAngle.z())
-            let leftX = -attackAngle.z() / length * 3
-            let leftZ = attackAngle.x() / length * 3
-            let targetXModified = defendingEntity.x() + leftX
-            let targetYModified = defendingEntity.y()
-            let targetZModified = defendingEntity.z() + leftZ
-            entity.level.spawnParticles("minecraft:smoke", false, targetXModified, targetYModified, targetZModified, 0, 0, 0, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
-
-            console.log(`leftside ${targetXModified} ${targetYModified} ${targetZModified}`)
-        } catch (err) {
-            console.error(`failed ${err}`)
-        }
-
+    // Part entity tick only — fight/flee logic lives in server-script goals
+    if (entity.age % 20 === 0) {
+        console.log(`[ZC-TRACE] 66 runZombieCrowTick aiStep hook age=${entity.age} uuid=${entity.uuid}`)
     }
-
-    entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z()) // can you just set this to look angle?
+    entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z())
+    if (entity.age % 20 === 0) {
+        console.log(`[ZC-TRACE] 67 runZombieCrowTick part ticked`)
+    }
 }
 
 StartupEvents.registry('entity_type', event => {
