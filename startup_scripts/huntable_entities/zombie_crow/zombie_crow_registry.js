@@ -317,19 +317,25 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
         interceptingArrow.kill()
     }
 
-    let originalCrowOwner = entity.getOwner()
-    if (originalCrowOwner && originalCrowOwner.isAlive()) {
-        let projectileStartPosition = entity.getEyePosition()
-        let returnTargetPosition = originalCrowOwner.getEyePosition()
-        let returnDirection = global.angleVecFromAToB(projectileStartPosition, returnTargetPosition)
-
-        entity.setMotion(returnDirection.x(), returnDirection.y(), returnDirection.z())
-
-        let reflectedByEntity = interceptingArrow ? interceptingArrow.getOwner() : null
-        if (reflectedByEntity && reflectedByEntity.isAlive()) {
-            entity.setOwner(reflectedByEntity)
+    let reflectedByEntity = interceptingArrow ? interceptingArrow.getOwner() : null
+    if (reflectedByEntity && reflectedByEntity.isAlive() && reflectedByEntity.isPlayer()) {
+        let currentMotion = entity.getDeltaMovement()
+        let currentSpeed = Math.sqrt(
+            (currentMotion.x() * currentMotion.x()) +
+            (currentMotion.y() * currentMotion.y()) +
+            (currentMotion.z() * currentMotion.z())
+        )
+        if (!Number.isFinite(currentSpeed) || currentSpeed <= 0.05) {
+            currentSpeed = 1
         }
 
+        let reflectorLookAngle = reflectedByEntity.getLookAngle()
+        entity.setMotion(
+            reflectorLookAngle.x() * currentSpeed,
+            reflectorLookAngle.y() * currentSpeed,
+            reflectorLookAngle.z() * currentSpeed
+        )
+        entity.setOwner(reflectedByEntity)
         return
     }
 
