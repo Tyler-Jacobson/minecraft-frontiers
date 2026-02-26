@@ -353,7 +353,54 @@ global.zombieCrowRunFight = entity => {
     // Fire projectile every 80 ticks
     if (entity.age % 80 === 0) {
         console.log(`[ZC-TRACE] 38 runFight firing projectile`)
-        global.spawnZombieCrowProjectile(entity, nearestPlayer)
+
+        let attackingPos = entity.eyePosition
+        let defendingPos = nearestPlayer.eyePosition
+        if (attackingPos && defendingPos) {
+            let attackAngle = global.angleVecFromAToB(attackingPos, defendingPos)
+            let horizontalLength = Math.sqrt(attackAngle.x() * attackAngle.x() + attackAngle.z() * attackAngle.z())
+            if (horizontalLength !== 0) {
+                let forwardX = attackAngle.x() / horizontalLength
+                let forwardZ = attackAngle.z() / horizontalLength
+                let leftX = -forwardZ
+                let leftZ = forwardX
+
+                let attackMatrix = [
+                    [0, 0, 1, 0, 0],
+                    [0, 1, 0, 1, 0],
+                    [1, 0, 1, 0, 1],
+                    [0, 1, 0, 1, 0],
+                    [0, 0, 1, 0, 0]
+                ]
+                let attackMatrixSpacing = 3
+
+                for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
+                    let row = attackMatrix[rowIndex]
+                    if (!row) {
+                        continue
+                    }
+                    for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
+                        let cellValue = Number(row[columnIndex])
+                        if (cellValue !== 1) {
+                            continue
+                        }
+
+                        let forwardFactor = 2 - rowIndex
+                        let sideFactor = 2 - columnIndex
+
+                        let targetMatrixX = defendingPos.x() + (forwardX * forwardFactor * attackMatrixSpacing) + (leftX * sideFactor * attackMatrixSpacing)
+                        let targetMatrixY = defendingPos.y()
+                        let targetMatrixZ = defendingPos.z() + (forwardZ * forwardFactor * attackMatrixSpacing) + (leftZ * sideFactor * attackMatrixSpacing)
+
+                        global.spawnZombieCrowProjectile(entity, {
+                            x: targetMatrixX,
+                            y: targetMatrixY,
+                            z: targetMatrixZ
+                        })
+                    }
+                }
+            }
+        }
     }
 
     // Left-side smoke debug particles

@@ -231,7 +231,17 @@ global.spawnZombieCrowProjectile = (entity, target) => {
 
     // const vel = lookAngle.scale(1.5)
 
-    let attackAngle = global.angleVecFromAToB(eyePosition, target.eyePosition)
+    let targetPosition = null
+    if (target && target.eyePosition) {
+        targetPosition = target.eyePosition
+    } else if (target && Number.isFinite(target.x) && Number.isFinite(target.y) && Number.isFinite(target.z)) {
+        targetPosition = new Vec3d(target.x, target.y, target.z)
+    }
+    if (!targetPosition) {
+        return
+    }
+
+    let attackAngle = global.angleVecFromAToB(eyePosition, targetPosition)
 
     projectile.setMotion(attackAngle.x(), attackAngle.y(), attackAngle.z())
     projectile.setPosition(eyePosition.x(), eyePosition.y(), eyePosition.z())
