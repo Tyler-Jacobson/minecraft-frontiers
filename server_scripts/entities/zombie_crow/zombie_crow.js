@@ -19,6 +19,48 @@ global.zombieCrowGetFleeState = entity => {
     return normalizedFleeState
 }
 
+global.spawnZombieCrowDebugSmoke = (level, defendingPos, attackAngle, smokeMatrix, smokeSpacing) => {
+    let horizontalLength = Math.sqrt(attackAngle.x() * attackAngle.x() + attackAngle.z() * attackAngle.z())
+    if (horizontalLength === 0) {
+        return
+    }
+
+    let forwardX = attackAngle.x() / horizontalLength
+    let forwardZ = attackAngle.z() / horizontalLength
+    let leftX = -forwardZ
+    let leftZ = forwardX
+    let smokeY = defendingPos.y()
+    let spacing = Number(smokeSpacing)
+    if (!Number.isFinite(spacing) || spacing <= 0) {
+        spacing = 1
+    }
+
+    // Matrix layout:
+    // 5x5 matrix:
+    // row 0 = far forward, row 2 = center, row 4 = far backward
+    // col 0 = far left,    col 2 = center, col 4 = far right
+    for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
+        let row = smokeMatrix[rowIndex]
+        if (!row) {
+            continue
+        }
+        for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
+            let cellValue = Number(row[columnIndex])
+            if (cellValue !== 1) {
+                continue
+            }
+
+            let forwardFactor = 2 - rowIndex
+            let sideFactor = 2 - columnIndex
+
+            let smokeX = defendingPos.x() + (forwardX * forwardFactor * spacing) + (leftX * sideFactor * spacing)
+            let smokeZ = defendingPos.z() + (forwardZ * forwardFactor * spacing) + (leftZ * sideFactor * spacing)
+
+            level.spawnParticles('minecraft:smoke', false, smokeX, smokeY, smokeZ, 0, 0, 0, 10, 0.1)
+        }
+    }
+}
+
 EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal selectors
     event.customGoal(
         "fight",
@@ -326,12 +368,15 @@ global.zombieCrowRunFight = entity => {
         if (length === 0) {
             return
         }
-        let leftX = -attackAngle.z() / length * 3
-        let leftZ = attackAngle.x() / length * 3
-        let smokeX = defendingPos.x() + leftX
-        let smokeY = defendingPos.y()
-        let smokeZ = defendingPos.z() + leftZ
-        entity.level.spawnParticles('minecraft:smoke', false, smokeX, smokeY, smokeZ, 0, 0, 0, 10, 0.1)
+        let smokeMatrix = [
+            [0, 0, 1, 0, 0],
+            [0, 1, 0, 1, 0],
+            [1, 0, 1, 0, 1],
+            [0, 1, 0, 1, 0],
+            [0, 0, 1, 0, 0]
+        ]
+        let smokeSpacing = 3
+        global.spawnZombieCrowDebugSmoke(entity.level, defendingPos, attackAngle, smokeMatrix, smokeSpacing)
     } catch (err) {
         console.error(`[ZC-TRACE] 39 runFight particle exception=${err}`)
     }
