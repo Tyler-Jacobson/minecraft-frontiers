@@ -313,8 +313,6 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
         return
     }
 
-    console.log(`[ZC-TRACE] P6 arrow intercept detected projectile=${entity.uuid} arrow=${interceptingArrow.uuid} arrowType=${interceptingArrow.type} minDistSq=${closestDistanceSquared}`)
-
     if (interceptingArrow && interceptingArrow.isAlive()) {
         interceptingArrow.kill()
     }
@@ -332,14 +330,12 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
             entity.setOwner(reflectedByEntity)
         }
 
-        console.log(`[ZC-TRACE] P7 arrow intercept reflected projectile=${entity.uuid} targetCrow=${originalCrowOwner.uuid} reflector=${reflectedByEntity ? reflectedByEntity.type : 'none'}`)
         return
     }
 
     if (entity.isAlive()) {
         entity.kill()
     }
-    console.log(`[ZC-TRACE] P7 arrow intercept fallback_removed projectile=${entity.uuid}`)
 }
 
 global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {

@@ -36,9 +36,6 @@ global.zombieCrowGetFleeState = entity => {
     let rawIsFleeingValue = entity.getSyncedData('isFleeing')
     let fleeStateFromStrictBoolean = rawIsFleeingValue === true
     let normalizedFleeState = fleeStateFromStrictBoolean
-    if (entity.age % 20 === 0) {
-        console.log(`[ZC-TRACE] 14 flee-state read raw=${rawIsFleeingValue} type=${typeof rawIsFleeingValue} strictBool=${fleeStateFromStrictBoolean} normalized=${normalizedFleeState} age=${entity.age}`)
-    }
     return normalizedFleeState
 }
 
@@ -90,26 +87,17 @@ EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal sele
         1,
         entity => { // canUse — fight while not fleeing
             let isFleeing = global.zombieCrowGetFleeState(entity)
-            if (entity.age % 20 === 0) {
-                console.log(`[ZC-TRACE] 15 fight.canUse result=${!isFleeing}`)
-            }
             return !isFleeing
         },
         entity => { // canContinueToUse — keep fighting while not fleeing
             let isFleeing = global.zombieCrowGetFleeState(entity)
-            if (entity.age % 20 === 0) {
-                console.log(`[ZC-TRACE] 16 fight.canContinue result=${!isFleeing}`)
-            }
             return !isFleeing
         },
         false, // isInterruptable
-        entity => { console.log(`[ZC-TRACE] 17 fight.onStart uuid=${entity.uuid} age=${entity.age}`) }, // goalOnStartedEvent. this runs once when the goal starts
-        entity => { console.log(`[ZC-TRACE] 18 fight.onEnd uuid=${entity.uuid} age=${entity.age}`) }, // goalOnEndedEvent. this runs once when the goal ends
+        entity => { }, // goalOnStartedEvent. this runs once when the goal starts
+        entity => { }, // goalOnEndedEvent. this runs once when the goal ends
         true, // requiresUpdateEveryTick
         entity => { // goalOnTickEvent. this runs once every tick while the goal is running
-            if (entity.age % 20 === 0) {
-                console.log(`[ZC-TRACE] 19 fight.onTick age=${entity.age}`)
-            }
             global.zombieCrowRunFight(entity)
         }
     )
@@ -118,29 +106,19 @@ EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal sele
         2,
         entity => { // canUse — flee when isFleeing is set
             let isFleeing = global.zombieCrowGetFleeState(entity)
-            if (entity.age % 20 === 0) {
-                console.log(`[ZC-TRACE] 20 flee.canUse result=${isFleeing}`)
-            }
             return isFleeing
         },
         entity => { // canContinueToUse — keep fleeing while flag is set
             let isFleeing = global.zombieCrowGetFleeState(entity)
-            if (entity.age % 20 === 0) {
-                console.log(`[ZC-TRACE] 21 flee.canContinue result=${isFleeing}`)
-            }
             return isFleeing
         },
         true, // isInterruptable
         entity => { // goalOnStartedEvent. this runs once when the goal starts
-            console.log(`[ZC-TRACE] 22 flee.onStart uuid=${entity.uuid} age=${entity.age}`)
             global.zombieCrowStartFlee(entity)
         },
-        entity => { console.log(`[ZC-TRACE] 23 flee.onEnd uuid=${entity.uuid} age=${entity.age}`) }, // goalOnEndedEvent. this runs once when the goal ends
+        entity => { }, // goalOnEndedEvent. this runs once when the goal ends
         true, // requiresUpdateEveryTick
         entity => { // goalOnTickEvent. this runs once every tick while the goal is running
-            if (entity.age % 20 === 0) {
-                console.log(`[ZC-TRACE] 24 flee.onTick age=${entity.age}`)
-            }
             global.zombieCrowRunFleeTick(entity)
         }
     )
@@ -156,28 +134,22 @@ BlockEvents.broken('frontiers:zombie_crow_egg', event => {
 })
 
 global.zombieCrowEggBroken = event => {
-    console.log(`[ZC-TRACE] 1 zombieCrowEggBroken start`)
     let level = event.level
     let block = event.block
     let blockPos = block.pos
-    console.log(`[ZC-TRACE] 2 egg broken at ${blockPos.x},${blockPos.y},${blockPos.z}`)
 
     let currentHealth = Number(block.properties.current_health)
     let currentPhase = Number(block.properties.current_phase)
-    console.log(`[ZC-TRACE] 3 raw block props current_health=${block.properties.current_health} current_phase=${block.properties.current_phase}`)
 
     if (!Number.isFinite(currentHealth)) {
-        console.log(`[ZC-TRACE] 4 invalid current_health, defaulting to 40`)
         currentHealth = 40
     }
     if (!Number.isFinite(currentPhase)) {
-        console.log(`[ZC-TRACE] 5 invalid current_phase, defaulting to 0`)
         currentPhase = 0
     }
 
     currentHealth = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(currentHealth)))
     currentPhase = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_PHASE, Math.floor(currentPhase)))
-    console.log(`[ZC-TRACE] 6 clamped values currentHealth=${currentHealth} currentPhase=${currentPhase}`)
 
     for (let step = 0; step <= 15; step++) {
         let particleY = blockPos.y + step
@@ -185,53 +157,38 @@ global.zombieCrowEggBroken = event => {
             level.spawnParticles('call_of_yucutan:rain_wisp', true, blockPos.x + 0.5, particleY + 0.5, blockPos.z + 0.5, 0, 0, 0, 1, 0)
         })
     }
-    console.log(`[ZC-TRACE] 7 scheduled 16 beam particle steps`)
-
     let respawnedCrow = level.createEntity('frontiers:zombie_crow')
     if (!respawnedCrow) {
-        console.log(`[ZC-TRACE] 8 FAILED createEntity(frontiers:zombie_crow)`)
         return
     }
-    console.log(`[ZC-TRACE] 9 created new zombie crow entity`)
     respawnedCrow.setPosition(blockPos.x + 0.5, blockPos.y + 15, blockPos.z + 0.5)
     respawnedCrow.setNoGravity(true)
     respawnedCrow.setSyncedData('isFleeing', false)
     respawnedCrow.setSyncedData('currentPhase', currentPhase + 1)
     respawnedCrow.setSyncedData('orbitalDestinationIndex', 0)
-    console.log(`[ZC-TRACE] 10 pre-spawn syncedData isFleeing=false currentPhase=${currentPhase + 1} orbitalDestinationIndex=0`)
     respawnedCrow.spawn()
-    console.log(`[ZC-TRACE] 11 respawned crow spawned at ${blockPos.x + 0.5},${blockPos.y + 15},${blockPos.z + 0.5}`)
 
     let maxHealth = respawnedCrow.getMaxHealth()
     let respawnHealth = Math.max(1, Math.min(maxHealth, currentHealth))
     respawnedCrow.setHealth(respawnHealth)
-    console.log(`[ZC-TRACE] 12 applied respawnHealth=${respawnHealth} maxHealth=${maxHealth}`)
-
-    console.log(`[ZC-TRACE] 13 zombieCrowEggBroken complete phaseFromEgg=${currentPhase} phaseAfterRespawn=${currentPhase + 1}`)
 }
 
 global.zombieCrowRunFleeTick = entity => {
     try {
         if (!(entity.level === 'ClientLevel')) {
-            if (entity.age % 20 === 0) {
-                console.log(`[ZC-TRACE] 25 runFleeTick server age=${entity.age} uuid=${entity.uuid}`)
-            }
             let level = entity.level
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
             let targetZ = entity.getSyncedData('ownerBlockLocationZ')
             if (Math.abs(entity.x - targetX) < 1 && Math.abs(entity.z - targetZ) < 1) {
-                console.log(`[ZC-TRACE] 26 runFleeTick reached targetX/targetZ target=${targetX},${targetZ} entity=${entity.x},${entity.z}`)
                 let start = entity.getEyePosition()
                 let end = start.add(0, -99, 0)
                 let result = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
                 if (result.getType() === HitResult.Type.BLOCK) {
-                    console.log(`[ZC-TRACE] 27 runFleeTick clip hit block placing egg`)
                     let hit = result.getBlockPos()
                     let currentHealth = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(entity.getHealth())))
                     let currentPhase = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_PHASE, Number(entity.getSyncedData('currentPhase')) || 0))
                     Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} frontiers:zombie_crow_egg[current_health=${currentHealth},current_phase=${currentPhase}]`)
-                    console.log(`[ZC-TRACE] 28 setblock egg with current_health=${currentHealth} current_phase=${currentPhase}`)
 
                     try {
                         let block = level.getBlock(new BlockPos(hit.x, hit.y + 1, hit.z))
@@ -247,7 +204,6 @@ global.zombieCrowRunFleeTick = entity => {
                         let particleY = entity.y - step
                         level.server.scheduleInTicks(step, () => { level.spawnParticles("call_of_yucutan:rain_wisp", true, entity.x, particleY, entity.z, 0, 0, 0, 1, 0) })
                     }
-                    console.log(`[ZC-TRACE] 29 runFleeTick removing entity after egg placement`)
                     entity.remove('DISCARDED')
                 }
             }
@@ -278,20 +234,12 @@ global.zombieCrowRunFleeTick = entity => {
             }
         }
     } catch (err) {
-        console.log(`[ZC-TRACE] 30 runFleeTick exception=${err}`)
     }
 }
 
 global.zombieCrowRunFight = entity => {
     if (entity.level === 'ClientLevel') {
-        if (entity.age % 20 === 0) {
-            console.log(`[ZC-TRACE] 31 runFight skipped on client level age=${entity.age}`)
-        }
         return
-    }
-
-    if (entity.age % 20 === 0) {
-        console.log(`[ZC-TRACE] 32 runFight server tick age=${entity.age} uuid=${entity.uuid}`)
     }
 
     // --- Health-check: switch to flee at 1/3 health lost ---
@@ -312,18 +260,9 @@ global.zombieCrowRunFight = entity => {
         fleeThreshold = maxHealth * (1 / 3)
     }
 
-    if (entity.age % 20 === 0) {
-        console.log(`[ZC-TRACE] 33 runFight health=${entity.getHealth()} maxHealth=${maxHealth} currentPhaseRaw=${currentPhaseRaw} currentPhase=${currentPhase} fleeThreshold=${fleeThreshold}`)
-    }
     if (fleeThreshold >= 0 && entity.getHealth() <= fleeThreshold) {
-        console.log(`[ZC-TRACE] 34 runFight switching to flee because health threshold met`)
         entity.setSyncedData('isFleeing', true)
-        console.log(`[ZC-TRACE] 35 runFight wrote isFleeing raw=${entity.getSyncedData('isFleeing')}`)
         return
-    }
-
-    if (entity.age % 20 === 0 && currentPhase >= 2) {
-        console.log(`[ZC-TRACE] 47 runFight phase=${currentPhase} so flee is disabled`)
     }
 
     // --- Orbit + attack logic (moved from startup runZombieCrowTick) ---
@@ -331,13 +270,7 @@ global.zombieCrowRunFight = entity => {
 
     let nearestPlayer = entity.level.getNearestPlayer(entity, 128)
     if (!nearestPlayer) {
-        if (entity.age % 20 === 0) {
-            console.log(`[ZC-TRACE] 36 runFight no nearest player found`)
-        }
         return
-    }
-    if (entity.age % 20 === 0) {
-        console.log(`[ZC-TRACE] 37 runFight nearestPlayer=${nearestPlayer.name ? nearestPlayer.name.string : 'unknown'}`)
     }
 
     let pointIndex = entity.getSyncedData('orbitalDestinationIndex')
@@ -377,8 +310,6 @@ global.zombieCrowRunFight = entity => {
 
     // Fire projectile every 80 ticks
     if (entity.age % 80 === 0) {
-        console.log(`[ZC-TRACE] 38 runFight firing projectile`)
-
         let attackingPos = entity.eyePosition
         let defendingPos = nearestPlayer.eyePosition
         if (attackingPos && defendingPos) {
@@ -444,13 +375,11 @@ global.zombieCrowRunFight = entity => {
         let smokeSpacing = 3
         global.spawnZombieCrowDebugSmoke(entity.level, defendingPos, attackAngle, selectedAttackMatrix, smokeSpacing)
     } catch (err) {
-        console.error(`[ZC-TRACE] 39 runFight particle exception=${err}`)
     }
 }
 
 global.zombieCrowStartFlee = entity => {
     let level = entity.level
-    console.log(`[ZC-TRACE] 40 startFlee invoked uuid=${entity.uuid}`)
     let foundDestination = false
     for (let tries = 0; tries < 10; tries++) {
         let randomAngleFromBait = getRandomIntInclusive(0, 360)
