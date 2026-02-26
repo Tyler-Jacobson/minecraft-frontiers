@@ -8,6 +8,8 @@ let CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
 
 const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
 const ZOMBIE_CROW_EGG_MAX_PHASE = 3
+const ZOMBIE_CROW_ORBIT_MOVE_SPEED = 0.2
+const ZOMBIE_CROW_FLEE_MOVE_SPEED = 0.7
 const ZOMBIE_CROW_ATTACK_MATRICES = [
     [
         [0, 0, 0, 0, 0],
@@ -226,10 +228,12 @@ global.zombieCrowRunFleeTick = entity => {
 
             let clampedY = global.clampY(desiredY, entity.y - 3, entity.y + 3)
             if (entity.isInWater()) {
-                entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, 10)
+                entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
+                global.applyHorizontalSteering(entity, targetX, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
             } else {
                 entity.lookAt("eyes", new Vec3d(targetX, clampedY, targetZ))
-                entity.getNavigation().moveTo(targetX, clampedY, targetZ, 1)
+                entity.getNavigation().moveTo(targetX, clampedY, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
+                global.applyHorizontalSteering(entity, targetX, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
                 global.applyVerticalSteering(entity, clampedY, 0.15, 0.2)
             }
         }
@@ -306,7 +310,8 @@ global.zombieCrowRunFight = entity => {
     }
 
     entity.lookAt("eyes", new Vec3d(targetX, targetY, targetZ))
-    entity.getNavigation().moveTo(targetX, targetY, targetZ, 1)
+    entity.getNavigation().moveTo(targetX, targetY, targetZ, ZOMBIE_CROW_ORBIT_MOVE_SPEED)
+    global.applyHorizontalSteering(entity, targetX, targetZ, ZOMBIE_CROW_ORBIT_MOVE_SPEED)
 
     // Fire projectile every 80 ticks
     if (entity.age % 80 === 0) {
@@ -430,4 +435,28 @@ global.applyVerticalSteering = (entity, targetY, strength, maxSpeed) => {
     let yVel = Math.max(-maxSpeed, Math.min(maxSpeed, dy * strength))
 
     entity.setMotion(motion.x(), yVel, motion.z())
+}
+
+global.applyHorizontalSteering = (entity, targetX, targetZ, horizontalSpeed) => {
+    if (!entity || !entity.isAlive()) {
+        return
+    }
+
+    let speedValue = Number(horizontalSpeed)
+    if (!Number.isFinite(speedValue) || speedValue <= 0) {
+        return
+    }
+
+    let deltaX = targetX - entity.x
+    let deltaZ = targetZ - entity.z
+    let horizontalDistance = Math.sqrt((deltaX * deltaX) + (deltaZ * deltaZ))
+    if (horizontalDistance < 0.001) {
+        return
+    }
+
+    let directionX = deltaX / horizontalDistance
+    let directionZ = deltaZ / horizontalDistance
+    let motion = entity.getDeltaMovement()
+
+    entity.setMotion(directionX * speedValue, motion.y(), directionZ * speedValue)
 }
