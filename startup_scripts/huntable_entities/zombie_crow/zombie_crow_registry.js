@@ -220,7 +220,7 @@ global.zombieCrowProjectileOnTick = (entity) => {
     }
 }
 
-global.spawnZombieCrowProjectile = (entity, target) => {
+global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
     const { level, eyePosition } = entity
 
     const projectile = level.createEntity("frontiers:zombie_crow_projectile");
@@ -231,15 +231,10 @@ global.spawnZombieCrowProjectile = (entity, target) => {
 
     // const vel = lookAngle.scale(1.5)
 
-    let targetPosition = null
-    if (target && target.eyePosition) {
-        targetPosition = target.eyePosition
-    } else if (target && Number.isFinite(target.x) && Number.isFinite(target.y) && Number.isFinite(target.z)) {
-        targetPosition = new Vec3d(target.x, target.y, target.z)
-    }
-    if (!targetPosition) {
+    if (!Number.isFinite(targetX) || !Number.isFinite(targetY) || !Number.isFinite(targetZ)) {
         return
     }
+    let targetPosition = new Vec3d(targetX, targetY, targetZ)
 
     let attackAngle = global.angleVecFromAToB(eyePosition, targetPosition)
 

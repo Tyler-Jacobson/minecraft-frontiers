@@ -12,23 +12,23 @@ const ZOMBIE_CROW_ATTACK_MATRICES = [
     [
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
-        [0, 0, 1, 0, 0],
+        [0, 0, -1, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0]
     ],
     [
         [0, 0, 0, 0, 0],
-        [0, 0, 1, 0, 0],
-        [0, 1, 1, 1, 0],
-        [0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0],
+        [1, 5, 10, 15, 20],
+        [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0]
     ],
     [
         [0, 0, 1, 0, 0],
-        [0, 1, 0, 1, 0],
-        [1, 0, 1, 0, 1],
-        [0, 1, 0, 1, 0],
-        [0, 0, 1, 0, 0]
+        [0, 8, 0, 2, 0],
+        [7, 0, 9, 0, 3],
+        [0, 6, 0, 4, 0],
+        [0, 0, 5, 0, 0]
     ]
 ]
 
@@ -69,7 +69,7 @@ global.spawnZombieCrowDebugSmoke = (level, defendingPos, attackAngle, smokeMatri
         }
         for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
             let cellValue = Number(row[columnIndex])
-            if (cellValue !== 1) {
+            if (cellValue === 0) {
                 continue
             }
 
@@ -79,7 +79,7 @@ global.spawnZombieCrowDebugSmoke = (level, defendingPos, attackAngle, smokeMatri
             let smokeX = defendingPos.x() + (forwardX * forwardFactor * spacing) + (leftX * sideFactor * spacing)
             let smokeZ = defendingPos.z() + (forwardZ * forwardFactor * spacing) + (leftZ * sideFactor * spacing)
 
-            level.spawnParticles('minecraft:smoke', false, smokeX, smokeY, smokeZ, 0, 0, 0, 10, 0.1)
+            // level.spawnParticles('minecraft:smoke', false, smokeX, smokeY, smokeZ, 0, 0, 0, 10, 0.1)
         }
     }
 }
@@ -389,6 +389,8 @@ global.zombieCrowRunFight = entity => {
                 let forwardZ = attackAngle.z() / horizontalLength
                 let leftX = -forwardZ
                 let leftZ = forwardX
+                let fightLevel = entity.level
+                let firingCrowUuid = `${entity.uuid}`
 
                 let attackMatrixSpacing = 3
 
@@ -399,7 +401,7 @@ global.zombieCrowRunFight = entity => {
                     }
                     for (let columnIndex = 0; columnIndex < 5; columnIndex++) {
                         let cellValue = Number(row[columnIndex])
-                        if (cellValue !== 1) {
+                        if (cellValue === 0) {
                             continue
                         }
 
@@ -409,12 +411,18 @@ global.zombieCrowRunFight = entity => {
                         let targetMatrixX = defendingPos.x() + (forwardX * forwardFactor * attackMatrixSpacing) + (leftX * sideFactor * attackMatrixSpacing)
                         let targetMatrixY = defendingPos.y()
                         let targetMatrixZ = defendingPos.z() + (forwardZ * forwardFactor * attackMatrixSpacing) + (leftZ * sideFactor * attackMatrixSpacing)
-
-                        global.spawnZombieCrowProjectile(entity, {
-                            x: targetMatrixX,
-                            y: targetMatrixY,
-                            z: targetMatrixZ
-                        })
+                        if (cellValue === -1) {
+                            global.spawnZombieCrowProjectile(entity, targetMatrixX, targetMatrixY, targetMatrixZ)
+                        } else if (cellValue > 0) {
+                            let tickDelay = Math.max(1, Math.floor(cellValue))
+                            Utils.server.scheduleInTicks(tickDelay, () => {
+                                let firingCrow = fightLevel.getEntity(firingCrowUuid)
+                                if (!firingCrow || !firingCrow.isAlive()) {
+                                    return
+                                }
+                                global.spawnZombieCrowProjectile(firingCrow, targetMatrixX, targetMatrixY, targetMatrixZ)
+                            })
+                        }
                     }
                 }
             }
