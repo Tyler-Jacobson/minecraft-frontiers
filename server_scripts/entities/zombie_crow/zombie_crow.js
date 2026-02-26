@@ -231,15 +231,32 @@ global.zombieCrowRunFight = entity => {
 
     // --- Health-check: switch to flee at 1/3 health lost ---
     let maxHealth = entity.getMaxHealth()
-    let fleeThreshold = maxHealth * (2 / 3)
-    if (entity.age % 20 === 0) {
-        console.log(`[ZC-TRACE] 33 runFight health=${entity.getHealth()} maxHealth=${maxHealth} fleeThreshold=${fleeThreshold}`)
+    let currentPhaseRaw = entity.getSyncedData('currentPhase')
+    let currentPhase = Number(currentPhaseRaw)
+    if (!Number.isFinite(currentPhase)) {
+        currentPhase = 0
     }
-    if (entity.getHealth() <= fleeThreshold) {
+    currentPhase = Math.max(0, Math.floor(currentPhase))
+
+    let fleeThreshold = -1
+    if (currentPhase === 0) {
+        fleeThreshold = maxHealth * (2 / 3)
+    } else if (currentPhase === 1) {
+        fleeThreshold = maxHealth * (1 / 3)
+    }
+
+    if (entity.age % 20 === 0) {
+        console.log(`[ZC-TRACE] 33 runFight health=${entity.getHealth()} maxHealth=${maxHealth} currentPhaseRaw=${currentPhaseRaw} currentPhase=${currentPhase} fleeThreshold=${fleeThreshold}`)
+    }
+    if (fleeThreshold >= 0 && entity.getHealth() <= fleeThreshold) {
         console.log(`[ZC-TRACE] 34 runFight switching to flee because health threshold met`)
         entity.setSyncedData('isFleeing', true)
         console.log(`[ZC-TRACE] 35 runFight wrote isFleeing raw=${entity.getSyncedData('isFleeing')}`)
         return
+    }
+
+    if (entity.age % 20 === 0 && currentPhase >= 2) {
+        console.log(`[ZC-TRACE] 47 runFight phase=${currentPhase} so flee is disabled`)
     }
 
     // --- Orbit + attack logic (moved from startup runZombieCrowTick) ---
