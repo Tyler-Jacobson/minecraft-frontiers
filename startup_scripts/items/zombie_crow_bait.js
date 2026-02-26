@@ -18,6 +18,7 @@ StartupEvents.registry("item", event => {
 
 global.finishUsingZombieCrowBait = (itemstack, level, player) => {
     const { usedItemHand, inventory, lookAngle, eyePosition } = player
+    console.log(`[ZC-TRACE] 41 finishUsingZombieCrowBait player=${player.name ? player.name.string : 'unknown'}`)
 
     player.addItemCooldown(itemstack.item, 1) // itemcooldown 0 is perfect for gat mode
     // player.damageHeldItem(usedItemHand, 1) // instead reduce hand count by 1
@@ -28,7 +29,12 @@ global.finishUsingZombieCrowBait = (itemstack, level, player) => {
 }
 
 global.spawnZombieCrow = (player, level, eyePosition) => {
+    console.log(`[ZC-TRACE] 42 spawnZombieCrow start`)
     const entity = level.createEntity("frontiers:zombie_crow");
+    if (!entity) {
+        console.log(`[ZC-TRACE] 43 spawnZombieCrow FAILED createEntity(frontiers:zombie_crow)`)
+        return
+    }
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     // projectile.setOwner(player)
     // const vel = lookAngle.scale(3)
@@ -38,9 +44,12 @@ global.spawnZombieCrow = (player, level, eyePosition) => {
     let targetLocation = playerPosition.add(lookVector)
     // projectile.setMotion(vel.x(), vel.y() + 0.1, vel.z())
     entity.setPosition(targetLocation.x(), targetLocation.y() + 15, targetLocation.z())
+    console.log(`[ZC-TRACE] 44 spawnZombieCrow setPosition=${targetLocation.x()},${targetLocation.y() + 15},${targetLocation.z()}`)
     entity.setSyncedData('currentPhase', 0)
-    entity.setSyncedData('isFleeing', 0)
+    entity.setSyncedData('isFleeing', false)
     entity.setSyncedData('orbitalDestinationIndex', 0)
+    console.log(`[ZC-TRACE] 45 spawnZombieCrow wrote syncedData currentPhase=${entity.getSyncedData('currentPhase')} isFleeing=${entity.getSyncedData('isFleeing')} orbitalDestinationIndex=${entity.getSyncedData('orbitalDestinationIndex')}`)
     entity.setNoGravity(true)
     entity.spawn()
+    console.log(`[ZC-TRACE] 46 spawnZombieCrow spawned uuid=${entity.uuid}`)
 }

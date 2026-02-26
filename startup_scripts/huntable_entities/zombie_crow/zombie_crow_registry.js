@@ -27,7 +27,7 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "ownerBlockLocationZ", 0)
 
             entity.addSyncedData("int", "currentPhase", 0)
-            entity.addSyncedData("int", "isFleeing", 0)
+            entity.addSyncedData("boolean", "isFleeing", false)
 
         })
     })
@@ -75,13 +75,7 @@ StartupEvents.registry('entity_type', event => {
 
 global.runZombieCrowTick = entity => {
     // Part entity tick only — fight/flee logic lives in server-script goals
-    if (entity.age % 20 === 0) {
-        console.log(`[ZC-TRACE] 66 runZombieCrowTick aiStep hook age=${entity.age} uuid=${entity.uuid}`)
-    }
     entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z())
-    if (entity.age % 20 === 0) {
-        console.log(`[ZC-TRACE] 67 runZombieCrowTick part ticked`)
-    }
 }
 
 StartupEvents.registry('entity_type', event => {
@@ -250,17 +244,7 @@ StartupEvents.registry("block", event => {
         .displayName("Zombie Crow Egg")
         .property(IntegerProperty.create("current_health", 0, ZOMBIE_CROW_EGG_MAX_HEALTH))
         .property(IntegerProperty.create("current_phase", 0, ZOMBIE_CROW_EGG_MAX_PHASE))
-        .blockEntity(entityInfo => {
-            entityInfo.serverTick(1, 0, entity => {
-                global.zombieCrowEggBlockTick(entity)
-            })
-        })
         .placementState(event => {
             console.log(`placed egg`)
         })
 })
-
-global.zombieCrowEggBlockTick = (entity) => {
-    let freshInstance = entity.level.getBlock(entity.blockPos)
-    console.log(`ticking egg ${freshInstance.properties}`)
-}
