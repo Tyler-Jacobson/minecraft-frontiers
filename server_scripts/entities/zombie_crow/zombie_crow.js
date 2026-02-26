@@ -8,6 +8,29 @@ let CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
 
 const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
 const ZOMBIE_CROW_EGG_MAX_PHASE = 3
+const ZOMBIE_CROW_ATTACK_MATRICES = [
+    [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0]
+    ],
+    [
+        [0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 1, 1, 1, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0]
+    ],
+    [
+        [0, 0, 1, 0, 0],
+        [0, 1, 0, 1, 0],
+        [1, 0, 1, 0, 1],
+        [0, 1, 0, 1, 0],
+        [0, 0, 1, 0, 0]
+    ]
+]
 
 global.zombieCrowGetFleeState = entity => {
     let rawIsFleeingValue = entity.getSyncedData('isFleeing')
@@ -279,6 +302,8 @@ global.zombieCrowRunFight = entity => {
         currentPhase = 0
     }
     currentPhase = Math.max(0, Math.floor(currentPhase))
+    let attackMatrixIndex = Math.max(0, Math.min(2, currentPhase))
+    let selectedAttackMatrix = ZOMBIE_CROW_ATTACK_MATRICES[attackMatrixIndex]
 
     let fleeThreshold = -1
     if (currentPhase === 0) {
@@ -365,17 +390,10 @@ global.zombieCrowRunFight = entity => {
                 let leftX = -forwardZ
                 let leftZ = forwardX
 
-                let attackMatrix = [
-                    [0, 0, 1, 0, 0],
-                    [0, 1, 0, 1, 0],
-                    [1, 0, 1, 0, 1],
-                    [0, 1, 0, 1, 0],
-                    [0, 0, 1, 0, 0]
-                ]
                 let attackMatrixSpacing = 3
 
                 for (let rowIndex = 0; rowIndex < 5; rowIndex++) {
-                    let row = attackMatrix[rowIndex]
+                    let row = selectedAttackMatrix[rowIndex]
                     if (!row) {
                         continue
                     }
@@ -415,15 +433,8 @@ global.zombieCrowRunFight = entity => {
         if (length === 0) {
             return
         }
-        let smokeMatrix = [
-            [0, 0, 1, 0, 0],
-            [0, 1, 0, 1, 0],
-            [1, 0, 1, 0, 1],
-            [0, 1, 0, 1, 0],
-            [0, 0, 1, 0, 0]
-        ]
         let smokeSpacing = 3
-        global.spawnZombieCrowDebugSmoke(entity.level, defendingPos, attackAngle, smokeMatrix, smokeSpacing)
+        global.spawnZombieCrowDebugSmoke(entity.level, defendingPos, attackAngle, selectedAttackMatrix, smokeSpacing)
     } catch (err) {
         console.error(`[ZC-TRACE] 39 runFight particle exception=${err}`)
     }
