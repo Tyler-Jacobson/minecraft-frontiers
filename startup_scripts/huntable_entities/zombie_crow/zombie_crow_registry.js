@@ -5,6 +5,8 @@ const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
 const ORBIT_RADIUS = 10
 const CROW_PROJECTILE_DAMAGE = 5
 const ZOMBIE_CROW_PROJECTILE_RADIUS = 2
+const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
+const ZOMBIE_CROW_EGG_MAX_PHASE = 3
 
 EntityJSEvents.createAttributes(event => {
     event.create(ZOMBIE_CROW_ID, attribute => {
@@ -25,6 +27,7 @@ EntityJSEvents.modifyEntity(event => {
             entity.addSyncedData("int", "ownerBlockLocationZ", 0)
 
             entity.addSyncedData("int", "currentPhase", 0)
+            entity.addSyncedData("boolean", "isFleeing", false)
 
         })
     })
@@ -71,86 +74,15 @@ StartupEvents.registry('entity_type', event => {
 })
 
 global.runZombieCrowTick = entity => {
-    if (!(entity.level === 'ClientLevel')) {
-        let nearestPlayer = null
-        let nearestDistance = 999999
-        entity.level.players.forEach(player => {
-            let distance = entity.distanceToSqr(new Vec3d(player.x, player.y, player.z))
-            if (distance < nearestDistance) { nearestDistance = distance; nearestPlayer = player }
-        })
-        // console.log(`nearest player ${nearestPlayer}`)
-        if (!nearestPlayer) return
-        let pointIndex = entity.getSyncedData("orbitalDestinationIndex")
-
-        // mob checkpoint debug:
-        for (let index = 0; index < 8; index++) {
-            let angle = (index % 8) * (JavaMath.PI / 4)
-            let targetX = nearestPlayer.x + Math.cos(angle) * ORBIT_RADIUS
-            let targetY = entity.y
-            let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
-            // console.log(`running loop ${targetX} ${targetY} ${targetZ}`)
-            if (pointIndex === index) {
-                entity.level.spawnParticles("minecraft:lava", false, targetX, targetY, targetZ, 0, 0, 0, 1, 0)
-
-            } else {
-                entity.level.spawnParticles("call_of_yucutan:rain_wisp", true, targetX, targetY, targetZ, 0, 0, 0, 1, 0)
-            }
-        }
-
-        // actual movement logic:
-        let angle = (pointIndex % 8) * (JavaMath.PI / 4)
-
-        let targetX = nearestPlayer.x + Math.cos(angle) * ORBIT_RADIUS
-        let targetY = entity.y
-        let targetZ = nearestPlayer.z + Math.sin(angle) * ORBIT_RADIUS
-
-        // entity.getNavigation().recomputePath()
-        // entity.getNavigation().moveTo(targetX, targetY, targetZ, 2)
-
-        let entityX = entity.x
-        let entityZ = entity.z
-
-        if (entityX > targetX - 1 && entityX < targetX + 1 && entityZ > targetZ - 1 && entityZ < targetZ + 1) {
-            console.log(`hit checkpoint`)
-            if (pointIndex >= 7) {
-                entity.setSyncedData("orbitalDestinationIndex", 0) // for some reason naming this correctly fucks it
-            } else {
-                entity.setSyncedData("orbitalDestinationIndex", pointIndex + 1)
-            }
-        }
-
-
-        if (entity.age % 80 === 0) {
-            global.spawnZombieCrowProjectile(entity, nearestPlayer)
-            // player, level, eyePosition, lookAngle
-        }
-
-        try {
-            let attackingEntity = entity.eyePosition
-            let defendingEntity = nearestPlayer.eyePosition
-            if (!attackingEntity || !defendingEntity) return
-            let attackAngle = global.angleVecFromAToB(attackingEntity, defendingEntity)
-            let length = Math.sqrt(attackAngle.x() * attackAngle.x() + attackAngle.z() * attackAngle.z())
-            let leftX = -attackAngle.z() / length * 3
-            let leftZ = attackAngle.x() / length * 3
-            let targetXModified = defendingEntity.x() + leftX
-            let targetYModified = defendingEntity.y()
-            let targetZModified = defendingEntity.z() + leftZ
-            entity.level.spawnParticles("minecraft:smoke", false, targetXModified, targetYModified, targetZModified, 0, 0, 0, 10, 0.1) // some of the particles from explosive enhancements require speed of 1 in order to display
-
-            console.log(`leftside ${targetXModified} ${targetYModified} ${targetZModified}`)
-        } catch (err) {
-            console.error(`failed ${err}`)
-        }
-
-    }
-
-    entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z()) // can you just set this to look angle?
+    // Part entity tick only — fight/flee logic lives in server-script goals
+    entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z())
 }
 
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
     event.create("frontiers:zombie_crow_projectile", "entityjs:geckolib_projectile")
+        .isAttackable(true)
+        .isPickable(true)
         .onHitEntity(context => {
             global.zombieCrowProjectileOnHitEntity(context)
         }).onHitBlock(context => {
@@ -265,6 +197,11 @@ global.zombieCrowProjectileOnHitEntity = (context) => {
 }
 
 global.zombieCrowProjectileOnTick = (entity) => {
+    global.zombieCrowProjectileTryArrowIntercept(entity)
+    if (!entity || !entity.isAlive()) {
+        return
+    }
+
     const world = entity.level
 
     const collisionX = entity.x
@@ -290,7 +227,118 @@ global.zombieCrowProjectileOnTick = (entity) => {
     }
 }
 
-global.spawnZombieCrowProjectile = (entity, target) => {
+global.zombieCrowProjectileTryArrowIntercept = entity => {
+    if (!entity || !entity.isAlive()) {
+        return
+    }
+    if (entity.level === 'ClientLevel') {
+        return
+    }
+
+    let readVectorComponent = (vectorValue, componentKey) => {
+        if (!vectorValue) {
+            return 0
+        }
+        let componentField = vectorValue[componentKey]
+        if (typeof componentField === 'function') {
+            return Number(componentField.call(vectorValue)) || 0
+        }
+        return Number(componentField) || 0
+    }
+
+    let distanceSquared = (firstX, firstY, firstZ, secondX, secondY, secondZ) => {
+        let deltaX = firstX - secondX
+        let deltaY = firstY - secondY
+        let deltaZ = firstZ - secondZ
+        return (deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ)
+    }
+
+    let projectileMotion = entity.getDeltaMovement()
+    let projectileMotionX = readVectorComponent(projectileMotion, 'x')
+    let projectileMotionY = readVectorComponent(projectileMotion, 'y')
+    let projectileMotionZ = readVectorComponent(projectileMotion, 'z')
+
+    let projectileCurrentX = entity.x
+    let projectileCurrentY = entity.y
+    let projectileCurrentZ = entity.z
+    let projectilePreviousX = projectileCurrentX - projectileMotionX
+    let projectilePreviousY = projectileCurrentY - projectileMotionY
+    let projectilePreviousZ = projectileCurrentZ - projectileMotionZ
+
+    let hitboxToCheck = entity.boundingBox.inflate(1.25, 1.25, 1.25)
+    let nearbyArrowEntities = entity.level.getEntitiesWithin(hitboxToCheck).filter(nearbyEntity => {
+        return nearbyEntity.type === 'minecraft:arrow' || nearbyEntity.type === 'minecraft:spectral_arrow'
+    })
+
+    if (!nearbyArrowEntities || nearbyArrowEntities.length === 0) {
+        return
+    }
+
+    let interceptingArrow = null
+    let closestDistanceSquared = Number.MAX_VALUE
+    let interceptionDistanceThresholdSquared = 1.35 * 1.35
+
+    for (let arrowIndex = 0; arrowIndex < nearbyArrowEntities.length; arrowIndex++) {
+        let currentArrow = nearbyArrowEntities[arrowIndex]
+        if (!currentArrow || !currentArrow.isAlive()) {
+            continue
+        }
+
+        let arrowMotion = currentArrow.getDeltaMovement()
+        let arrowMotionX = readVectorComponent(arrowMotion, 'x')
+        let arrowMotionY = readVectorComponent(arrowMotion, 'y')
+        let arrowMotionZ = readVectorComponent(arrowMotion, 'z')
+
+        let arrowCurrentX = currentArrow.x
+        let arrowCurrentY = currentArrow.y
+        let arrowCurrentZ = currentArrow.z
+        let arrowPreviousX = arrowCurrentX - arrowMotionX
+        let arrowPreviousY = arrowCurrentY - arrowMotionY
+        let arrowPreviousZ = arrowCurrentZ - arrowMotionZ
+
+        let localClosestDistanceSquared = Math.min(
+            distanceSquared(projectileCurrentX, projectileCurrentY, projectileCurrentZ, arrowCurrentX, arrowCurrentY, arrowCurrentZ),
+            distanceSquared(projectileCurrentX, projectileCurrentY, projectileCurrentZ, arrowPreviousX, arrowPreviousY, arrowPreviousZ),
+            distanceSquared(projectilePreviousX, projectilePreviousY, projectilePreviousZ, arrowCurrentX, arrowCurrentY, arrowCurrentZ),
+            distanceSquared(projectilePreviousX, projectilePreviousY, projectilePreviousZ, arrowPreviousX, arrowPreviousY, arrowPreviousZ)
+        )
+
+        if (localClosestDistanceSquared < closestDistanceSquared) {
+            closestDistanceSquared = localClosestDistanceSquared
+            interceptingArrow = currentArrow
+        }
+    }
+
+    if (!interceptingArrow || closestDistanceSquared > interceptionDistanceThresholdSquared) {
+        return
+    }
+
+    if (interceptingArrow && interceptingArrow.isAlive()) {
+        interceptingArrow.kill()
+    }
+
+    let originalCrowOwner = entity.getOwner()
+    if (originalCrowOwner && originalCrowOwner.isAlive()) {
+        let projectileStartPosition = entity.getEyePosition()
+        let returnTargetPosition = originalCrowOwner.getEyePosition()
+        let returnDirection = global.angleVecFromAToB(projectileStartPosition, returnTargetPosition)
+
+        entity.setMotion(returnDirection.x(), returnDirection.y(), returnDirection.z())
+
+        let reflectedByEntity = interceptingArrow ? interceptingArrow.getOwner() : null
+        if (reflectedByEntity && reflectedByEntity.isAlive()) {
+            entity.setOwner(reflectedByEntity)
+        }
+
+        return
+    }
+
+    if (entity.isAlive()) {
+        entity.kill()
+    }
+}
+
+global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
     const { level, eyePosition } = entity
 
     const projectile = level.createEntity("frontiers:zombie_crow_projectile");
@@ -301,7 +349,12 @@ global.spawnZombieCrowProjectile = (entity, target) => {
 
     // const vel = lookAngle.scale(1.5)
 
-    let attackAngle = global.angleVecFromAToB(eyePosition, target.eyePosition)
+    if (!Number.isFinite(targetX) || !Number.isFinite(targetY) || !Number.isFinite(targetZ)) {
+        return
+    }
+    let targetPosition = new Vec3d(targetX, targetY, targetZ)
+
+    let attackAngle = global.angleVecFromAToB(eyePosition, targetPosition)
 
     projectile.setMotion(attackAngle.x(), attackAngle.y(), attackAngle.z())
     projectile.setPosition(eyePosition.x(), eyePosition.y(), eyePosition.z())
@@ -312,18 +365,9 @@ global.spawnZombieCrowProjectile = (entity, target) => {
 StartupEvents.registry("block", event => {
     event.create("frontiers:zombie_crow_egg")
         .displayName("Zombie Crow Egg")
-        .property(IntegerProperty.create("current_health", 0, 1000))
-        .blockEntity(entityInfo => {
-            entityInfo.serverTick(1, 0, entity => {
-                global.zombieCrowEggBlockTick(entity)
-            })
-        })
+        .property(IntegerProperty.create("current_health", 0, ZOMBIE_CROW_EGG_MAX_HEALTH))
+        .property(IntegerProperty.create("current_phase", 0, ZOMBIE_CROW_EGG_MAX_PHASE))
         .placementState(event => {
             console.log(`placed egg`)
         })
 })
-
-global.zombieCrowEggBlockTick = (entity) => {
-    let freshInstance = entity.level.getBlock(entity.blockPos)
-    console.log(`ticking egg ${freshInstance.properties}`)
-}

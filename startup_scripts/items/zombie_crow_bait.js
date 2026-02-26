@@ -29,6 +29,9 @@ global.finishUsingZombieCrowBait = (itemstack, level, player) => {
 
 global.spawnZombieCrow = (player, level, eyePosition) => {
     const entity = level.createEntity("frontiers:zombie_crow");
+    if (!entity) {
+        return
+    }
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     // projectile.setOwner(player)
     // const vel = lookAngle.scale(3)
@@ -38,6 +41,9 @@ global.spawnZombieCrow = (player, level, eyePosition) => {
     let targetLocation = playerPosition.add(lookVector)
     // projectile.setMotion(vel.x(), vel.y() + 0.1, vel.z())
     entity.setPosition(targetLocation.x(), targetLocation.y() + 15, targetLocation.z())
+    entity.setSyncedData('currentPhase', 0)
+    entity.setSyncedData('isFleeing', false)
+    entity.setSyncedData('orbitalDestinationIndex', 0)
     entity.setNoGravity(true)
     entity.spawn()
 }
