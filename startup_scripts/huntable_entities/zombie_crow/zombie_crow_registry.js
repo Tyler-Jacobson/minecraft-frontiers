@@ -235,7 +235,37 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
         return
     }
 
-    let hitboxToCheck = entity.boundingBox.inflate(0.35, 0.35, 0.35)
+    let readVectorComponent = (vectorValue, componentKey) => {
+        if (!vectorValue) {
+            return 0
+        }
+        let componentField = vectorValue[componentKey]
+        if (typeof componentField === 'function') {
+            return Number(componentField.call(vectorValue)) || 0
+        }
+        return Number(componentField) || 0
+    }
+
+    let distanceSquared = (firstX, firstY, firstZ, secondX, secondY, secondZ) => {
+        let deltaX = firstX - secondX
+        let deltaY = firstY - secondY
+        let deltaZ = firstZ - secondZ
+        return (deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ)
+    }
+
+    let projectileMotion = entity.getDeltaMovement()
+    let projectileMotionX = readVectorComponent(projectileMotion, 'x')
+    let projectileMotionY = readVectorComponent(projectileMotion, 'y')
+    let projectileMotionZ = readVectorComponent(projectileMotion, 'z')
+
+    let projectileCurrentX = entity.x
+    let projectileCurrentY = entity.y
+    let projectileCurrentZ = entity.z
+    let projectilePreviousX = projectileCurrentX - projectileMotionX
+    let projectilePreviousY = projectileCurrentY - projectileMotionY
+    let projectilePreviousZ = projectileCurrentZ - projectileMotionZ
+
+    let hitboxToCheck = entity.boundingBox.inflate(1.25, 1.25, 1.25)
     let nearbyArrowEntities = entity.level.getEntitiesWithin(hitboxToCheck).filter(nearbyEntity => {
         return nearbyEntity.type === 'minecraft:arrow' || nearbyEntity.type === 'minecraft:spectral_arrow'
     })
@@ -244,8 +274,46 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
         return
     }
 
-    let interceptingArrow = nearbyArrowEntities[0]
-    console.log(`[ZC-TRACE] P6 arrow intercept detected projectile=${entity.uuid} arrow=${interceptingArrow ? interceptingArrow.uuid : 'unknown'} arrowType=${interceptingArrow ? interceptingArrow.type : 'unknown'}`)
+    let interceptingArrow = null
+    let closestDistanceSquared = Number.MAX_VALUE
+    let interceptionDistanceThresholdSquared = 1.35 * 1.35
+
+    for (let arrowIndex = 0; arrowIndex < nearbyArrowEntities.length; arrowIndex++) {
+        let currentArrow = nearbyArrowEntities[arrowIndex]
+        if (!currentArrow || !currentArrow.isAlive()) {
+            continue
+        }
+
+        let arrowMotion = currentArrow.getDeltaMovement()
+        let arrowMotionX = readVectorComponent(arrowMotion, 'x')
+        let arrowMotionY = readVectorComponent(arrowMotion, 'y')
+        let arrowMotionZ = readVectorComponent(arrowMotion, 'z')
+
+        let arrowCurrentX = currentArrow.x
+        let arrowCurrentY = currentArrow.y
+        let arrowCurrentZ = currentArrow.z
+        let arrowPreviousX = arrowCurrentX - arrowMotionX
+        let arrowPreviousY = arrowCurrentY - arrowMotionY
+        let arrowPreviousZ = arrowCurrentZ - arrowMotionZ
+
+        let localClosestDistanceSquared = Math.min(
+            distanceSquared(projectileCurrentX, projectileCurrentY, projectileCurrentZ, arrowCurrentX, arrowCurrentY, arrowCurrentZ),
+            distanceSquared(projectileCurrentX, projectileCurrentY, projectileCurrentZ, arrowPreviousX, arrowPreviousY, arrowPreviousZ),
+            distanceSquared(projectilePreviousX, projectilePreviousY, projectilePreviousZ, arrowCurrentX, arrowCurrentY, arrowCurrentZ),
+            distanceSquared(projectilePreviousX, projectilePreviousY, projectilePreviousZ, arrowPreviousX, arrowPreviousY, arrowPreviousZ)
+        )
+
+        if (localClosestDistanceSquared < closestDistanceSquared) {
+            closestDistanceSquared = localClosestDistanceSquared
+            interceptingArrow = currentArrow
+        }
+    }
+
+    if (!interceptingArrow || closestDistanceSquared > interceptionDistanceThresholdSquared) {
+        return
+    }
+
+    console.log(`[ZC-TRACE] P6 arrow intercept detected projectile=${entity.uuid} arrow=${interceptingArrow.uuid} arrowType=${interceptingArrow.type} minDistSq=${closestDistanceSquared}`)
 
     if (interceptingArrow && interceptingArrow.isAlive()) {
         interceptingArrow.kill()
