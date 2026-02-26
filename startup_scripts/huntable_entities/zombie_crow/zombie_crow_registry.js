@@ -319,10 +319,27 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
         interceptingArrow.kill()
     }
 
+    let originalCrowOwner = entity.getOwner()
+    if (originalCrowOwner && originalCrowOwner.isAlive()) {
+        let projectileStartPosition = entity.getEyePosition()
+        let returnTargetPosition = originalCrowOwner.getEyePosition()
+        let returnDirection = global.angleVecFromAToB(projectileStartPosition, returnTargetPosition)
+
+        entity.setMotion(returnDirection.x(), returnDirection.y(), returnDirection.z())
+
+        let reflectedByEntity = interceptingArrow ? interceptingArrow.getOwner() : null
+        if (reflectedByEntity && reflectedByEntity.isAlive()) {
+            entity.setOwner(reflectedByEntity)
+        }
+
+        console.log(`[ZC-TRACE] P7 arrow intercept reflected projectile=${entity.uuid} targetCrow=${originalCrowOwner.uuid} reflector=${reflectedByEntity ? reflectedByEntity.type : 'none'}`)
+        return
+    }
+
     if (entity.isAlive()) {
         entity.kill()
     }
-    console.log(`[ZC-TRACE] P7 arrow intercept resolved projectile_removed=${!entity.isAlive()}`)
+    console.log(`[ZC-TRACE] P7 arrow intercept fallback_removed projectile=${entity.uuid}`)
 }
 
 global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
