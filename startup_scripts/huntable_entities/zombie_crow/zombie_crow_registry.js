@@ -81,6 +81,8 @@ global.runZombieCrowTick = entity => {
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
     event.create("frontiers:zombie_crow_projectile", "entityjs:geckolib_projectile")
+        .isAttackable(true)
+        .isPickable(true)
         .onHitEntity(context => {
             global.zombieCrowProjectileOnHitEntity(context)
         }).onHitBlock(context => {
@@ -195,6 +197,11 @@ global.zombieCrowProjectileOnHitEntity = (context) => {
 }
 
 global.zombieCrowProjectileOnTick = (entity) => {
+    global.zombieCrowProjectileTryArrowIntercept(entity)
+    if (!entity || !entity.isAlive()) {
+        return
+    }
+
     const world = entity.level
 
     const collisionX = entity.x
@@ -218,6 +225,36 @@ global.zombieCrowProjectileOnTick = (entity) => {
     if (entity.age >= 100) {
         entity.kill()
     }
+}
+
+global.zombieCrowProjectileTryArrowIntercept = entity => {
+    if (!entity || !entity.isAlive()) {
+        return
+    }
+    if (entity.level === 'ClientLevel') {
+        return
+    }
+
+    let hitboxToCheck = entity.boundingBox.inflate(0.35, 0.35, 0.35)
+    let nearbyArrowEntities = entity.level.getEntitiesWithin(hitboxToCheck).filter(nearbyEntity => {
+        return nearbyEntity.type === 'minecraft:arrow' || nearbyEntity.type === 'minecraft:spectral_arrow'
+    })
+
+    if (!nearbyArrowEntities || nearbyArrowEntities.length === 0) {
+        return
+    }
+
+    let interceptingArrow = nearbyArrowEntities[0]
+    console.log(`[ZC-TRACE] P6 arrow intercept detected projectile=${entity.uuid} arrow=${interceptingArrow ? interceptingArrow.uuid : 'unknown'} arrowType=${interceptingArrow ? interceptingArrow.type : 'unknown'}`)
+
+    if (interceptingArrow && interceptingArrow.isAlive()) {
+        interceptingArrow.kill()
+    }
+
+    if (entity.isAlive()) {
+        entity.kill()
+    }
+    console.log(`[ZC-TRACE] P7 arrow intercept resolved projectile_removed=${!entity.isAlive()}`)
 }
 
 global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
