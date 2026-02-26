@@ -7,6 +7,8 @@ let HitResult = Java.loadClass('net.minecraft.world.phys.HitResult')
 let CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
 
 const ZOMBIE_CROW_TRACE_PREFIX = '[ZC-TRACE]'
+const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
+const ZOMBIE_CROW_EGG_MAX_PHASE = 64
 
 EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal selectors
     console.log(`${ZOMBIE_CROW_TRACE_PREFIX} 1 addGoalSelectors registration start`)
@@ -97,6 +99,50 @@ EntityJSEvents.addGoals('frontiers:zombie_crow', event => { // target selectors
     console.log(`${ZOMBIE_CROW_TRACE_PREFIX} 14 addGoals registration complete`)
 })
 
+BlockEvents.broken('frontiers:zombie_crow_egg', event => {
+    global.zombieCrowEggBroken(event)
+})
+
+global.zombieCrowEggBroken = event => {
+    let level = event.level
+    let block = event.block
+    let blockPos = block.pos
+
+    let currentHealth = Number(block.properties.current_health)
+    let currentPhase = Number(block.properties.current_phase)
+
+    if (!Number.isFinite(currentHealth)) {
+        currentHealth = 40
+    }
+    if (!Number.isFinite(currentPhase)) {
+        currentPhase = 0
+    }
+
+    currentHealth = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(currentHealth)))
+    currentPhase = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_PHASE, Math.floor(currentPhase)))
+
+    for (let step = 0; step <= 15; step++) {
+        let particleY = blockPos.y + step
+        level.server.scheduleInTicks(step, () => {
+            level.spawnParticles('call_of_yucutan:rain_wisp', true, blockPos.x + 0.5, particleY + 0.5, blockPos.z + 0.5, 0, 0, 0, 1, 0)
+        })
+    }
+
+    let respawnedCrow = level.createEntity('frontiers:zombie_crow')
+    respawnedCrow.setPosition(blockPos.x + 0.5, blockPos.y + 15, blockPos.z + 0.5)
+    respawnedCrow.setNoGravity(true)
+    respawnedCrow.setSyncedData('isFleeing', 0)
+    respawnedCrow.setSyncedData('currentPhase', currentPhase + 1)
+    respawnedCrow.setSyncedData('orbitalDestinationIndex', 0)
+    respawnedCrow.spawn()
+
+    let maxHealth = respawnedCrow.getMaxHealth()
+    let respawnHealth = Math.max(1, Math.min(maxHealth, currentHealth))
+    respawnedCrow.setHealth(respawnHealth)
+
+    console.log(`${ZOMBIE_CROW_TRACE_PREFIX} 68 egg broken at ${blockPos.x},${blockPos.y},${blockPos.z} respawnHealth=${respawnHealth} phaseFromEgg=${currentPhase} phaseAfterRespawn=${currentPhase + 1}`)
+}
+
 global.zombieCrowRunFleeTick = entity => {
     try {
         if (entity.age % 20 === 0) {
@@ -118,8 +164,10 @@ global.zombieCrowRunFleeTick = entity => {
                 if (result.getType() === HitResult.Type.BLOCK) {
                     console.log(`${ZOMBIE_CROW_TRACE_PREFIX} 18 flee downward clip hit block, placing egg`)
                     let hit = result.getBlockPos()
-                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} frontiers:zombie_crow_egg[current_health=3]`)
-                    console.log(`${ZOMBIE_CROW_TRACE_PREFIX} 19 setblock issued at ${hit.x},${hit.y + 1},${hit.z}`)
+                    let currentHealth = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(entity.getHealth())))
+                    let currentPhase = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_PHASE, Number(entity.getSyncedData('currentPhase')) || 0))
+                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} frontiers:zombie_crow_egg[current_health=${currentHealth},current_phase=${currentPhase}]`)
+                    console.log(`${ZOMBIE_CROW_TRACE_PREFIX} 19 setblock issued at ${hit.x},${hit.y + 1},${hit.z} with current_health=${currentHealth} current_phase=${currentPhase}`)
 
                     try {
                         let block = level.getBlock(new BlockPos(hit.x, hit.y + 1, hit.z))

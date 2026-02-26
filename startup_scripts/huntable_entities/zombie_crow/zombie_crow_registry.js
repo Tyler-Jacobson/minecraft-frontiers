@@ -5,6 +5,8 @@ const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
 const ORBIT_RADIUS = 10
 const CROW_PROJECTILE_DAMAGE = 5
 const ZOMBIE_CROW_PROJECTILE_RADIUS = 2
+const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
+const ZOMBIE_CROW_EGG_MAX_PHASE = 3
 
 EntityJSEvents.createAttributes(event => {
     event.create(ZOMBIE_CROW_ID, attribute => {
@@ -246,7 +248,8 @@ global.spawnZombieCrowProjectile = (entity, target) => {
 StartupEvents.registry("block", event => {
     event.create("frontiers:zombie_crow_egg")
         .displayName("Zombie Crow Egg")
-        .property(IntegerProperty.create("current_health", 0, 1000))
+        .property(IntegerProperty.create("current_health", 0, ZOMBIE_CROW_EGG_MAX_HEALTH))
+        .property(IntegerProperty.create("current_phase", 0, ZOMBIE_CROW_EGG_MAX_PHASE))
         .blockEntity(entityInfo => {
             entityInfo.serverTick(1, 0, entity => {
                 global.zombieCrowEggBlockTick(entity)
