@@ -20,10 +20,10 @@ global.finishUsingZombieCrowBait = (itemstack, level, player) => {
     const { usedItemHand, inventory, lookAngle, eyePosition } = player
 
     player.addItemCooldown(itemstack.item, 1) // itemcooldown 0 is perfect for gat mode
-    // player.damageHeldItem(usedItemHand, 1) // instead reduce hand count by 1
 
     global.spawnZombieCrow(player, level, eyePosition)
 
+    itemstack.shrink(1)
     return itemstack
 }
 
