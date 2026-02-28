@@ -57,7 +57,7 @@ StartupEvents.registry('entity_type', event => {
     })
     builder.createNavigation(context => EntityJSUtils.createFlyingPathNavigation(context.entity, context.level))
     builder.dropCustomDeathLoot(context => {
-        context.entity.block.popItemFromFace('butchersdelight:dead_cow', 'up')
+        context.entity.block.popItemFromFace('frontiers:zombie_crow_carcass', 'up')
     })
     builder.addPartEntity("one", 0.9, 0.9, builder => {
         // Adds an additional hitbox to the entity with builder support
