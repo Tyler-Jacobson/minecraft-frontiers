@@ -1,5 +1,7 @@
-StartupEvents.registry('item', event => {
-    event.create('frontiers:zombie_crow_carcass', 'basic')
+StartupEvents.registry('block', event => {
+    event.create('frontiers:zombie_crow_carcass')
         .displayName('Zombie Crow Carcass')
-        .modelJson({ parent: 'frontiers:item/zombie_crow_carcass' })
+        .notSolid()
+        // .noOcclusion() // this method does not exist
+        // .noCollision() // carcass blocks should have collision
 })
