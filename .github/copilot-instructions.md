@@ -128,4 +128,9 @@ StartupEvents.registry('block', event => {
 ```
 
 
+10. **Block builder method availability**
+	- `.noOcclusion()` is **not** an available method on the KubeJS block builder in this workspace. Do not call it when registering blocks.
+	- Use `.notSolid()` and `.noCollision()` instead for non-solid decorative blocks.
+
+
 ````
