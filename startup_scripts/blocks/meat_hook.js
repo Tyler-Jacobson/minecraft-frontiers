@@ -4,4 +4,8 @@ StartupEvents.registry('block', event => {
         .notSolid()
         // .noOcclusion()
         .noCollision()
+        .property($BlockStateProperties.HORIZONTAL_FACING)
+        .placementState(ctx => {
+            ctx.set($BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalDirection())
+        })
 })

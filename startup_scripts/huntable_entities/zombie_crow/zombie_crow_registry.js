@@ -1,4 +1,3 @@
-let $BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
 let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
 
 const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
