@@ -5,7 +5,7 @@ StartupEvents.registry('block', event => {
         // .noOcclusion()
         .noCollision()
         .property($BlockStateProperties.HORIZONTAL_FACING)
-        .placementState(ctx => {
-            ctx.set($BlockStateProperties.HORIZONTAL_FACING, ctx.getHorizontalDirection())
+        .placementState(placementContext => {
+            placementContext.set($BlockStateProperties.HORIZONTAL_FACING, placementContext.getHorizontalDirection())
         })
 })

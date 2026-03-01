@@ -93,3 +93,39 @@ entity.setMotion(motionX, motionY, motionZ)
 ```
 
 	- Prefer this over `setDeltaMovement(x, y, z)` calls, which may fail with runtime method-resolution issues in this environment.
+
+9. **Directional block placement pattern**
+	- When a block needs to face toward (or away from) the player on placement, use `.property()` with `$BlockStateProperties.HORIZONTAL_FACING` and set it inside `.placementState()` using the **property object** as the key — not a string.
+	- Get the player’s facing direction from `placementContext.getHorizontalDirection()` (already horizontal-only, no conversion needed).
+	- Two critical rules that are easy to get wrong:
+		- `ctx.set()` requires the **property object** as the first argument, not a string like `'facing'`. Passing a string will throw a `Can't find method` error at runtime.
+		- Do **not** use `player.getDirection()` — that method does not exist on the KubeJS player wrapper. Use `placementContext.getHorizontalDirection()` instead.
+
+```js
+StartupEvents.registry('block', event => {
+    event.create('frontiers:my_directional_block')
+        .displayName('My Directional Block')
+        .property($BlockStateProperties.HORIZONTAL_FACING)
+        .placementState(placementContext => {
+            // getHorizontalDirection() returns the direction the player is looking.
+            // Use getHorizontalDirection().getOpposite() if the block should face *away* from the player instead.
+            placementContext.set($BlockStateProperties.HORIZONTAL_FACING, placementContext.getHorizontalDirection())
+        })
+})
+```
+
+	- In the blockstates JSON, map each facing value to a y-rotation variant. South is y=0 (the model’s default forward), then +90° per 90° clockwise turn:
+
+```json
+{
+    "variants": {
+        "facing=south": {"model": "frontiers:block/my_directional_block", "y": 0},
+        "facing=west":  {"model": "frontiers:block/my_directional_block", "y": 90},
+        "facing=north": {"model": "frontiers:block/my_directional_block", "y": 180},
+        "facing=east":  {"model": "frontiers:block/my_directional_block", "y": 270}
+    }
+}
+```
+
+
+````
