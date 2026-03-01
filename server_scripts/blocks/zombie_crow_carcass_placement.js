@@ -6,7 +6,8 @@ BlockEvents.rightClicked(event => {
         return
     }
 
-    event.block.set('frontiers:zombie_crow_carcass')
+    let hookFacing = event.block.properties.get('facing')
+    event.block.set('frontiers:zombie_crow_carcass', { facing: hookFacing })
 
     if (!event.player.isCreativeMode) {
         event.item.count--

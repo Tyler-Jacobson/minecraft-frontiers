@@ -3,4 +3,5 @@ StartupEvents.registry('block', event => {
         .displayName('Zombie Crow Carcass')
         .notSolid()
         .noCollision()
+        .property($BlockStateProperties.HORIZONTAL_FACING)
 })

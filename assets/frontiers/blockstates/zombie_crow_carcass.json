@@ -1,5 +1,8 @@
 {
     "variants": {
-        "": {"model": "frontiers:block/zombie_crow_carcass"}
+        "facing=south": {"model": "frontiers:block/zombie_crow_carcass", "y": 0},
+        "facing=west":  {"model": "frontiers:block/zombie_crow_carcass", "y": 90},
+        "facing=north": {"model": "frontiers:block/zombie_crow_carcass", "y": 180},
+        "facing=east":  {"model": "frontiers:block/zombie_crow_carcass", "y": 270}
     }
 }
