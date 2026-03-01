@@ -3,5 +3,5 @@ StartupEvents.registry('block', event => {
         .displayName('Zombie Crow Carcass')
         .notSolid()
         // .noOcclusion() // this method does not exist
-        // .noCollision() // carcass blocks should have collision
+        .noCollision()
 })
