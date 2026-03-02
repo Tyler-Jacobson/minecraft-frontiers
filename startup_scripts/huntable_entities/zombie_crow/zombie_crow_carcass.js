@@ -1,5 +1,5 @@
-let BooleanProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.BooleanProperty')
-let CARCASS_SKINNED = BooleanProperty.create("skinned")
+let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
+let CARCASS_SKINNED_STAGE = IntegerProperty.create("skinned", 0, 4)
 
 StartupEvents.registry('block', event => {
     event.create('frontiers:zombie_crow_carcass')
@@ -7,8 +7,8 @@ StartupEvents.registry('block', event => {
         .notSolid()
         .noCollision()
         .property($BlockStateProperties.HORIZONTAL_FACING)
-        .property(CARCASS_SKINNED)
+        .property(CARCASS_SKINNED_STAGE)
         .defaultState(state => {
-            state.set(CARCASS_SKINNED, false)
+            state.set(CARCASS_SKINNED_STAGE, 0)
         })
 })
