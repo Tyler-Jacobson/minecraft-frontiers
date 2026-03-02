@@ -111,6 +111,32 @@ ServerEvents.recipes(event => {
         ]
     )
 
+    // Meat hook (right-handed variant)
+    event.shaped(
+        Item.of('frontiers:meat_hook', 1),
+        [
+            ' F ',
+            ' FF',
+            '   '
+        ],
+        {
+            F: 'minecraft:flint'
+        }
+    )
+
+    // Meat hook (left-handed variant)
+    event.shaped(
+        Item.of('frontiers:meat_hook', 1),
+        [
+            ' F ',
+            'FF ',
+            '   '
+        ],
+        {
+            F: 'minecraft:flint'
+        }
+    )
+
 })
 
 
