@@ -9,7 +9,10 @@ BlockEvents.rightClicked(event => {
 
     let facing = event.block.properties.get('facing')
     let nextStage = currentStage + 1
-    event.block.set('frontiers:zombie_crow_carcass', { facing: facing, skinned: String(nextStage) })
+
+    if (Math.random() < 0.4) {
+        event.block.set('frontiers:zombie_crow_carcass', { facing: facing, skinned: String(nextStage) })
+    }
 
     if (!event.player.isCreativeMode) {
         event.item.damageValue++
