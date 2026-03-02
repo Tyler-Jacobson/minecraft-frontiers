@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=south": {"model": "frontiers:block/meat_hook", "y": 0},
+        "facing=west":  {"model": "frontiers:block/meat_hook", "y": 90},
+        "facing=north": {"model": "frontiers:block/meat_hook", "y": 180},
+        "facing=east":  {"model": "frontiers:block/meat_hook", "y": 270}
+    }
+}

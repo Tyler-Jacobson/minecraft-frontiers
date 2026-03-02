@@ -57,5 +57,60 @@ ServerEvents.recipes(event => {
         }
     )
 
+    // Plant fiber arrows (yields 8)
+    event.shaped(
+        Item.of('minecraft:arrow', 8),
+        [
+            '  A',
+            ' B ',
+            'C  '
+        ],
+        {
+            A: 'minecraft:flint',
+            B: 'minecraft:stick',
+            C: 'frontiers:plant_fiber'
+        }
+    )
+
+    // Plant fiber bow (left-handed variant)
+    event.shaped(
+        Item.of('minecraft:bow', 1),
+        [
+            'CB ',
+            'C B',
+            'CB '
+        ],
+        {
+            B: 'minecraft:stick',
+            C: 'frontiers:plant_fiber'
+        }
+    )
+
+    // Plant fiber bow (right-handed variant)
+    event.shaped(
+        Item.of('minecraft:bow', 1),
+        [
+            ' BC',
+            'B C',
+            ' BC'
+        ],
+        {
+            B: 'minecraft:stick',
+            C: 'frontiers:plant_fiber'
+        }
+    )
+
+    // Zombie crow bait (shapeless: 2 plant fiber + 2 wheat seeds)
+    event.shapeless(
+        Item.of('frontiers:zombie_crow_bait', 1),
+        [
+            'frontiers:plant_fiber',
+            'frontiers:plant_fiber',
+            'minecraft:wheat_seeds',
+            'minecraft:wheat_seeds'
+        ]
+    )
+
 })
+
 

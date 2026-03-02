@@ -1,4 +1,3 @@
-let $BlockStateProperties = Java.loadClass('net.minecraft.world.level.block.state.properties.BlockStateProperties')
 let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
 
 const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
@@ -57,7 +56,7 @@ StartupEvents.registry('entity_type', event => {
     })
     builder.createNavigation(context => EntityJSUtils.createFlyingPathNavigation(context.entity, context.level))
     builder.dropCustomDeathLoot(context => {
-        context.entity.block.popItemFromFace('butchersdelight:dead_cow', 'up')
+        context.entity.block.popItemFromFace('frontiers:zombie_crow_carcass', 'up')
     })
     builder.addPartEntity("one", 0.9, 0.9, builder => {
         // Adds an additional hitbox to the entity with builder support
@@ -317,19 +316,25 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
         interceptingArrow.kill()
     }
 
-    let originalCrowOwner = entity.getOwner()
-    if (originalCrowOwner && originalCrowOwner.isAlive()) {
-        let projectileStartPosition = entity.getEyePosition()
-        let returnTargetPosition = originalCrowOwner.getEyePosition()
-        let returnDirection = global.angleVecFromAToB(projectileStartPosition, returnTargetPosition)
-
-        entity.setMotion(returnDirection.x(), returnDirection.y(), returnDirection.z())
-
-        let reflectedByEntity = interceptingArrow ? interceptingArrow.getOwner() : null
-        if (reflectedByEntity && reflectedByEntity.isAlive()) {
-            entity.setOwner(reflectedByEntity)
+    let reflectedByEntity = interceptingArrow ? interceptingArrow.getOwner() : null
+    if (reflectedByEntity && reflectedByEntity.isAlive() && reflectedByEntity.isPlayer()) {
+        let currentMotion = entity.getDeltaMovement()
+        let currentSpeed = Math.sqrt(
+            (currentMotion.x() * currentMotion.x()) +
+            (currentMotion.y() * currentMotion.y()) +
+            (currentMotion.z() * currentMotion.z())
+        )
+        if (!Number.isFinite(currentSpeed) || currentSpeed <= 0.05) {
+            currentSpeed = 1
         }
 
+        let reflectorLookAngle = reflectedByEntity.getLookAngle()
+        entity.setMotion(
+            reflectorLookAngle.x() * currentSpeed,
+            reflectorLookAngle.y() * currentSpeed,
+            reflectorLookAngle.z() * currentSpeed
+        )
+        entity.setOwner(reflectedByEntity)
         return
     }
 
