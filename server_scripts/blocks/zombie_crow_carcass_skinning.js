@@ -15,7 +15,7 @@ BlockEvents.rightClicked(event => {
     }
 
     if (!event.player.isCreativeMode) {
-        event.item.damageValue++
+        event.player.damageHeldItem(event.hand, 1)
     }
 
     event.cancel()
