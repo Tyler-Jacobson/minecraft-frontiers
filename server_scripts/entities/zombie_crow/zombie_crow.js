@@ -6,34 +6,6 @@ let ClipContext = Java.loadClass('net.minecraft.world.level.ClipContext')
 let HitResult = Java.loadClass('net.minecraft.world.phys.HitResult')
 let CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
 
-const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
-const ZOMBIE_CROW_EGG_MAX_PHASE = 3
-const ZOMBIE_CROW_ORBIT_MOVE_SPEED = 0.2
-const ZOMBIE_CROW_FLEE_MOVE_SPEED = 0.7
-const ZOMBIE_CROW_ATTACK_MATRICES = [
-    [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, -1, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
-    ],
-    [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 5, 0, -1, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
-    ],
-    [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 5, 10, -1, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
-    ]
-]
-
 global.zombieCrowGetFleeState = entity => {
     let rawIsFleeingValue = entity.getSyncedData('isFleeing')
     let fleeStateFromStrictBoolean = rawIsFleeingValue === true
@@ -150,8 +122,8 @@ global.zombieCrowEggBroken = event => {
         currentPhase = 0
     }
 
-    currentHealth = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(currentHealth)))
-    currentPhase = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_PHASE, Math.floor(currentPhase)))
+    currentHealth = Math.max(0, Math.min(global.ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(currentHealth)))
+    currentPhase = Math.max(0, Math.min(global.ZOMBIE_CROW_EGG_MAX_PHASE, Math.floor(currentPhase)))
 
     for (let step = 0; step <= 15; step++) {
         let particleY = blockPos.y + step
@@ -188,8 +160,8 @@ global.zombieCrowRunFleeTick = entity => {
                 let result = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
                 if (result.getType() === HitResult.Type.BLOCK) {
                     let hit = result.getBlockPos()
-                    let currentHealth = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(entity.getHealth())))
-                    let currentPhase = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_PHASE, Number(entity.getSyncedData('currentPhase')) || 0))
+                    let currentHealth = Math.max(0, Math.min(global.ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(entity.getHealth())))
+                    let currentPhase = Math.max(0, Math.min(global.ZOMBIE_CROW_EGG_MAX_PHASE, Number(entity.getSyncedData('currentPhase')) || 0))
                     Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} ${global.ZOMBIE_CROW_EGG_ID}[current_health=${currentHealth},current_phase=${currentPhase}]`)
 
                     try {
@@ -228,12 +200,12 @@ global.zombieCrowRunFleeTick = entity => {
 
             let clampedY = global.clampY(desiredY, entity.y - 3, entity.y + 3)
             if (entity.isInWater()) {
-                entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
-                global.applyHorizontalSteering(entity, targetX, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
+                entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, global.ZOMBIE_CROW_FLEE_MOVE_SPEED)
+                global.applyHorizontalSteering(entity, targetX, targetZ, global.ZOMBIE_CROW_FLEE_MOVE_SPEED)
             } else {
                 entity.lookAt("eyes", new Vec3d(targetX, clampedY, targetZ))
-                entity.getNavigation().moveTo(targetX, clampedY, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
-                global.applyHorizontalSteering(entity, targetX, targetZ, ZOMBIE_CROW_FLEE_MOVE_SPEED)
+                entity.getNavigation().moveTo(targetX, clampedY, targetZ, global.ZOMBIE_CROW_FLEE_MOVE_SPEED)
+                global.applyHorizontalSteering(entity, targetX, targetZ, global.ZOMBIE_CROW_FLEE_MOVE_SPEED)
                 global.applyVerticalSteering(entity, clampedY, 0.15, 0.2)
             }
         }
@@ -255,7 +227,7 @@ global.zombieCrowRunFight = entity => {
     }
     currentPhase = Math.max(0, Math.floor(currentPhase))
     let attackMatrixIndex = Math.max(0, Math.min(2, currentPhase))
-    let selectedAttackMatrix = ZOMBIE_CROW_ATTACK_MATRICES[attackMatrixIndex]
+    let selectedAttackMatrix = global.ZOMBIE_CROW_ATTACK_MATRICES[attackMatrixIndex]
 
     let fleeThreshold = -1
     if (currentPhase === 0) {
@@ -270,7 +242,6 @@ global.zombieCrowRunFight = entity => {
     }
 
     // --- Orbit + attack logic (moved from startup runZombieCrowTick) ---
-    let ORBIT_RADIUS = 10
 
     let nearestPlayer = entity.level.getNearestPlayer(entity, 128)
     if (!nearestPlayer) {
@@ -282,9 +253,9 @@ global.zombieCrowRunFight = entity => {
     // Debug particles for each of the 8 orbital waypoints
     for (let index = 0; index < 8; index++) {
         let waypointAngle = (index % 8) * (JavaMath.PI / 4)
-        let waypointX = nearestPlayer.x + Math.cos(waypointAngle) * ORBIT_RADIUS
+        let waypointX = nearestPlayer.x + Math.cos(waypointAngle) * global.ZOMBIE_CROW_ORBIT_RADIUS
         let waypointY = entity.y
-        let waypointZ = nearestPlayer.z + Math.sin(waypointAngle) * ORBIT_RADIUS
+        let waypointZ = nearestPlayer.z + Math.sin(waypointAngle) * global.ZOMBIE_CROW_ORBIT_RADIUS
         if (pointIndex === index) {
             entity.level.spawnParticles('minecraft:lava', false, waypointX, waypointY, waypointZ, 0, 0, 0, 1, 0)
         } else {
@@ -294,9 +265,9 @@ global.zombieCrowRunFight = entity => {
 
     // Move toward current waypoint
     let currentAngle = (pointIndex % 8) * (JavaMath.PI / 4)
-    let targetX = nearestPlayer.x + Math.cos(currentAngle) * ORBIT_RADIUS
+    let targetX = nearestPlayer.x + Math.cos(currentAngle) * global.ZOMBIE_CROW_ORBIT_RADIUS
     let targetY = entity.y
-    let targetZ = nearestPlayer.z + Math.sin(currentAngle) * ORBIT_RADIUS
+    let targetZ = nearestPlayer.z + Math.sin(currentAngle) * global.ZOMBIE_CROW_ORBIT_RADIUS
 
     let entityX = entity.x
     let entityZ = entity.z
@@ -310,8 +281,8 @@ global.zombieCrowRunFight = entity => {
     }
 
     entity.lookAt("eyes", new Vec3d(targetX, targetY, targetZ))
-    entity.getNavigation().moveTo(targetX, targetY, targetZ, ZOMBIE_CROW_ORBIT_MOVE_SPEED)
-    global.applyHorizontalSteering(entity, targetX, targetZ, ZOMBIE_CROW_ORBIT_MOVE_SPEED)
+    entity.getNavigation().moveTo(targetX, targetY, targetZ, global.ZOMBIE_CROW_ORBIT_MOVE_SPEED)
+    global.applyHorizontalSteering(entity, targetX, targetZ, global.ZOMBIE_CROW_ORBIT_MOVE_SPEED)
 
     // Fire projectile every 80 ticks
     if (entity.age % 80 === 0) {

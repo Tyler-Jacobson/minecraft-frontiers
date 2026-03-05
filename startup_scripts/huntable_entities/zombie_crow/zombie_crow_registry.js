@@ -1,11 +1,5 @@
 let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
 
-const ORBIT_RADIUS = 10
-const CROW_PROJECTILE_DAMAGE = 5
-const ZOMBIE_CROW_PROJECTILE_RADIUS = 2
-const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
-const ZOMBIE_CROW_EGG_MAX_PHASE = 3
-
 EntityJSEvents.createAttributes(event => {
     event.create(global.ZOMBIE_CROW_ID, attribute => {
         attribute.add("minecraft:generic.max_health", 40)
@@ -115,7 +109,7 @@ global.zombieCrowProjectileOnHitBlock = (context) => {
 
     const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
+    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(global.ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
 
 
     let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
@@ -126,7 +120,7 @@ global.zombieCrowProjectileOnHitBlock = (context) => {
 
     nearbyEntities.forEach((nearbyEntity) => {
         nearbyEntity.setRemainingFireTicks(100)
-        nearbyEntity.attack(damageSource, CROW_PROJECTILE_DAMAGE) // this should be explosive attack or fire damage attack
+        nearbyEntity.attack(damageSource, global.ZOMBIE_CROW_PROJECTILE_DAMAGE) // this should be explosive attack or fire damage attack
 
     })
 
@@ -174,7 +168,7 @@ global.zombieCrowProjectileOnHitEntity = (context) => {
 
     const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
+    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(global.ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
     if (!nearbyEntities.contains(hitEntity)) {
         nearbyEntities.push(hitEntity)
     }
@@ -187,7 +181,7 @@ global.zombieCrowProjectileOnHitEntity = (context) => {
 
     nearbyEntities.forEach((nearbyEntity) => {
         nearbyEntity.setRemainingFireTicks(100)
-        nearbyEntity.attack(damageSource, CROW_PROJECTILE_DAMAGE)
+        nearbyEntity.attack(damageSource, global.ZOMBIE_CROW_PROJECTILE_DAMAGE)
     })
 
     // we now get rid of the projectile entity
@@ -369,8 +363,8 @@ global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
 StartupEvents.registry("block", event => {
     event.create(global.ZOMBIE_CROW_EGG_ID)
         .displayName("Zombie Crow Egg")
-        .property(IntegerProperty.create("current_health", 0, ZOMBIE_CROW_EGG_MAX_HEALTH))
-        .property(IntegerProperty.create("current_phase", 0, ZOMBIE_CROW_EGG_MAX_PHASE))
+        .property(IntegerProperty.create("current_health", 0, global.ZOMBIE_CROW_EGG_MAX_HEALTH))
+        .property(IntegerProperty.create("current_phase", 0, global.ZOMBIE_CROW_EGG_MAX_PHASE))
         .placementState(event => {
             console.log(`placed egg`)
         })
