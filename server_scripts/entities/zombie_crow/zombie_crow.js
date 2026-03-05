@@ -131,7 +131,7 @@ EntityJSEvents.addGoals(global.ZOMBIE_CROW_ID, event => { // target selectors
     event.hurtByTarget(1, [], true, [])
 })
 
-BlockEvents.broken('frontiers:zombie_crow_egg', event => {
+BlockEvents.broken(global.ZOMBIE_CROW_EGG_ID, event => {
     global.zombieCrowEggBroken(event)
 })
 
@@ -190,7 +190,7 @@ global.zombieCrowRunFleeTick = entity => {
                     let hit = result.getBlockPos()
                     let currentHealth = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_HEALTH, Math.floor(entity.getHealth())))
                     let currentPhase = Math.max(0, Math.min(ZOMBIE_CROW_EGG_MAX_PHASE, Number(entity.getSyncedData('currentPhase')) || 0))
-                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} frontiers:zombie_crow_egg[current_health=${currentHealth},current_phase=${currentPhase}]`)
+                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} ${global.ZOMBIE_CROW_EGG_ID}[current_health=${currentHealth},current_phase=${currentPhase}]`)
 
                     try {
                         let block = level.getBlock(new BlockPos(hit.x, hit.y + 1, hit.z))

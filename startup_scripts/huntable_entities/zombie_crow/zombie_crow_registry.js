@@ -44,7 +44,7 @@ StartupEvents.registry('entity_type', event => {
         })
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))
-        builder.textureResource(e => `frontiers:textures/entity/zombie_crow.png`)
+        builder.textureResource(e => global.ZOMBIE_CROW_TEXTURE)
     })
     builder.onHurt(context => {
         // Log the amount of damage received by the entity
@@ -78,7 +78,7 @@ global.runZombieCrowTick = entity => {
 
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
-    event.create("frontiers:zombie_crow_projectile", "entityjs:geckolib_projectile")
+    event.create(global.ZOMBIE_CROW_PROJECTILE_ID, "entityjs:geckolib_projectile")
         .isAttackable(true)
         .isPickable(true)
         .onHitEntity(context => {
@@ -345,7 +345,7 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
 global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
     const { level, eyePosition } = entity
 
-    const projectile = level.createEntity("frontiers:zombie_crow_projectile");
+    let projectile = level.createEntity(global.ZOMBIE_CROW_PROJECTILE_ID);
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     // console.log(`player ${player}`)
     projectile.setOwner(entity)
@@ -367,7 +367,7 @@ global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
 }
 
 StartupEvents.registry("block", event => {
-    event.create("frontiers:zombie_crow_egg")
+    event.create(global.ZOMBIE_CROW_EGG_ID)
         .displayName("Zombie Crow Egg")
         .property(IntegerProperty.create("current_health", 0, ZOMBIE_CROW_EGG_MAX_HEALTH))
         .property(IntegerProperty.create("current_phase", 0, ZOMBIE_CROW_EGG_MAX_PHASE))

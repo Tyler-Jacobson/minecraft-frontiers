@@ -1,5 +1,5 @@
 StartupEvents.registry("item", event => {
-    event.create("frontiers:zombie_crow_bait", 'basic')
+    event.create(global.ZOMBIE_CROW_BAIT_ID, 'basic')
         .use((level, player, hand) => {
             console.info('using bait')
             player.swing()
@@ -28,7 +28,7 @@ global.finishUsingZombieCrowBait = (itemstack, level, player) => {
 }
 
 global.spawnZombieCrow = (player, level, eyePosition) => {
-    const entity = level.createEntity("frontiers:zombie_crow");
+    let entity = level.createEntity(global.ZOMBIE_CROW_ID);
     if (!entity) {
         return
     }
