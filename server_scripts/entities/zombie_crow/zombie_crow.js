@@ -83,7 +83,7 @@ global.spawnZombieCrowDebugSmoke = (level, defendingPos, attackAngle, smokeMatri
     }
 }
 
-EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal selectors
+EntityJSEvents.addGoalSelectors(global.ZOMBIE_CROW_ID, event => { // goal selectors
     event.customGoal(
         "fight",
         1,
@@ -126,7 +126,7 @@ EntityJSEvents.addGoalSelectors('frontiers:zombie_crow', event => { // goal sele
     )
 })
 
-EntityJSEvents.addGoals('frontiers:zombie_crow', event => { // target selectors
+EntityJSEvents.addGoals(global.ZOMBIE_CROW_ID, event => { // target selectors
     event.ownerHurtByTarget(0)
     event.hurtByTarget(1, [], true, [])
 })
@@ -159,7 +159,7 @@ global.zombieCrowEggBroken = event => {
             level.spawnParticles('call_of_yucutan:rain_wisp', true, blockPos.x + 0.5, particleY + 0.5, blockPos.z + 0.5, 0, 0, 0, 1, 0)
         })
     }
-    let respawnedCrow = level.createEntity('frontiers:zombie_crow')
+    let respawnedCrow = level.createEntity(global.ZOMBIE_CROW_ID)
     if (!respawnedCrow) {
         return
     }

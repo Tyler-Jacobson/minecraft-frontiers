@@ -1,5 +1,5 @@
 BlockEvents.rightClicked(event => {
-    if (event.item.id !== 'frontiers:zombie_crow_carcass') return
+    if (event.item.id !== global.ZOMBIE_CROW_CARCASS_ID) return
 
     if (event.block.id !== 'frontiers:meat_hook') {
         event.cancel()
@@ -7,7 +7,7 @@ BlockEvents.rightClicked(event => {
     }
 
     let hookFacing = event.block.properties.get('facing')
-    event.block.set('frontiers:zombie_crow_carcass', { facing: hookFacing })
+    event.block.set(global.ZOMBIE_CROW_CARCASS_ID, { facing: hookFacing })
 
     if (!event.player.isCreativeMode) {
         event.item.count--

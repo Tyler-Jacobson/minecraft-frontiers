@@ -1,6 +1,5 @@
 let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
 
-const ZOMBIE_CROW_ID = 'frontiers:zombie_crow'
 const ORBIT_RADIUS = 10
 const CROW_PROJECTILE_DAMAGE = 5
 const ZOMBIE_CROW_PROJECTILE_RADIUS = 2
@@ -8,7 +7,7 @@ const ZOMBIE_CROW_EGG_MAX_HEALTH = 200
 const ZOMBIE_CROW_EGG_MAX_PHASE = 3
 
 EntityJSEvents.createAttributes(event => {
-    event.create(ZOMBIE_CROW_ID, attribute => {
+    event.create(global.ZOMBIE_CROW_ID, attribute => {
         attribute.add("minecraft:generic.max_health", 40)
         attribute.add("minecraft:generic.movement_speed", 1)
     })
@@ -16,7 +15,7 @@ EntityJSEvents.createAttributes(event => {
 
 
 EntityJSEvents.modifyEntity(event => {
-    event.modify(ZOMBIE_CROW_ID, modifyBuilder => {
+    event.modify(global.ZOMBIE_CROW_ID, modifyBuilder => {
         modifyBuilder.defineSyncedData(entity => {
             entity.addSyncedData("string", "headUUID", "default")
             entity.addSyncedData("int", "orbitalDestinationIndex", 0)
@@ -33,7 +32,7 @@ EntityJSEvents.modifyEntity(event => {
 })
 
 StartupEvents.registry('entity_type', event => {
-    const builder = event.create(ZOMBIE_CROW_ID, 'entityjs:tamable')
+    let builder = event.create(global.ZOMBIE_CROW_ID, 'entityjs:tamable')
         .mobCategory('creature')
         .sized(1.5, 1.5)
         .eggItem(item => {
@@ -56,7 +55,7 @@ StartupEvents.registry('entity_type', event => {
     })
     builder.createNavigation(context => EntityJSUtils.createFlyingPathNavigation(context.entity, context.level))
     builder.dropCustomDeathLoot(context => {
-        context.entity.block.popItemFromFace('frontiers:zombie_crow_carcass', 'up')
+        context.entity.block.popItemFromFace(global.ZOMBIE_CROW_CARCASS_ID, 'up')
     })
     builder.addPartEntity("one", 0.9, 0.9, builder => {
         // Adds an additional hitbox to the entity with builder support
