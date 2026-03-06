@@ -5,7 +5,7 @@ global.HUNTABLE_BIRD_CONSTANTS = {
     HUNTABLE_BIRD_PROJECTILE_ID: 'frontiers:zombie_crow_projectile',
     HUNTABLE_BIRD_EGG_ID: 'frontiers:zombie_crow_egg',
     HUNTABLE_BIRD_BAIT_ID: 'frontiers:zombie_crow_bait',
-    HUNTABLE_BIRD_TEXTURE: 'frontiers:textures/entity/zombie_crow.png',
+    HUNTABLE_BIRD_TEXTURE: 'frontiers:textures/entity/zombie_crow/zombie_crow.png',
 
     HUNTABLE_BIRD_ORBIT_RADIUS: 10,
     HUNTABLE_BIRD_PROJECTILE_DAMAGE: 5,

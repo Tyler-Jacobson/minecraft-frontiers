@@ -36,6 +36,8 @@ StartupEvents.registry('entity_type', event => {
         .tick(entity => { })
         .onAddedToWorld(entity => { // onAddedToWorld never seems to run
         })
+    builder.modelResource(entity => 'frontiers:geo/entity/zombie_crow/zombie_crow.geo.json')
+    builder.textureResource(entity => 'frontiers:textures/entity/zombie_crow/zombie_crow.png')
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))
         builder.textureResource(e => global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_TEXTURE)
@@ -72,9 +74,12 @@ global.runZombieCrowTick = entity => {
 
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
-    event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_ID, "entityjs:geckolib_projectile")
+    let projectileBuilder = event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_ID, "entityjs:geckolib_projectile")
         .isAttackable(true)
         .isPickable(true)
+    projectileBuilder.modelResource(entity => 'frontiers:geo/entity/zombie_crow/zombie_crow_projectile.geo.json')
+    projectileBuilder.textureResource(entity => 'frontiers:textures/entity/zombie_crow/zombie_crow_projectile.png')
+    projectileBuilder
         .onHitEntity(context => {
             global.zombieCrowProjectileOnHitEntity(context)
         }).onHitBlock(context => {
@@ -363,6 +368,7 @@ global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
 StartupEvents.registry("block", event => {
     event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_ID)
         .displayName("Zombie Crow Egg")
+        .textureAll('frontiers:block/zombie_crow/zombie_crow_egg')
         .property(IntegerProperty.create("current_health", 0, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_HEALTH))
         .property(IntegerProperty.create("current_phase", 0, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_PHASE))
         .placementState(event => {

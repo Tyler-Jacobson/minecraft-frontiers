@@ -1,5 +1,6 @@
 StartupEvents.registry("item", event => {
     event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_BAIT_ID, 'basic')
+        .texture('layer0', 'frontiers:item/zombie_crow/zombie_crow_bait')
         .use((level, player, hand) => {
             console.info('using bait')
             player.swing()

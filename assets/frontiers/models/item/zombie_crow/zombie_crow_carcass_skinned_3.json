@@ -2,8 +2,8 @@
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench",
 	"textures": {
-		"2": "frontiers:item/zombie_crow_carcass_skinned_3",
-		"particle": "frontiers:item/zombie_crow_carcass_skinned_3"
+		"2": "frontiers:item/zombie_crow/zombie_crow_carcass_skinned_3",
+		"particle": "frontiers:item/zombie_crow/zombie_crow_carcass_skinned_3"
 	},
 	"elements": [
 		{
