@@ -1,35 +1,40 @@
 StartupEvents.registry("item", event => {
-    event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_BAIT_ID, 'basic')
-        .texture('layer0', 'frontiers:item/zombie_crow/zombie_crow_bait')
-        .use((level, player, hand) => {
-            console.info('using bait')
-            player.swing()
-            // level.playSound(player, player.block.pos, 'minecraft:entity.egg.throw', "players", 0.5, 0.33-0.5)
+    global.HUNTABLE_BIRD_CONSTANTS.forEach(birdConfig => {
+        event.create(birdConfig.HUNTABLE_BIRD_BAIT_ID, 'basic')
+            .texture('layer0', birdConfig.HUNTABLE_BIRD_BAIT_TEXTURE)
+            .use((level, player, hand) => {
+                console.info('using bait')
+                player.swing()
+                // level.playSound(player, player.block.pos, 'minecraft:entity.egg.throw', "players", 0.5, 0.33-0.5)
 
-            return true
-        })
-        .finishUsing((itemstack, level, entity) => {
-            // console.info(`finish using hatchling ${itemstack} ${level} ${entity.player}`)
-            if (!entity.player) return itemstack
+                return true
+            })
+            .finishUsing((itemstack, level, entity) => {
+                // console.info(`finish using hatchling ${itemstack} ${level} ${entity.player}`)
+                if (!entity.player) return itemstack
 
-            return global.finishUsingZombieCrowBait(itemstack, level, entity) // multiplayer. does this need to be global?
-            // how many ticks to charge up weapon before calling .finishUsing
-        }).useDuration(itemstack => 1)
+                return global.finishUsingHuntableBirdBait(itemstack, level, entity) // multiplayer. does this need to be global?
+                // how many ticks to charge up weapon before calling .finishUsing
+            }).useDuration(itemstack => 1)
+    })
 })
 
-global.finishUsingZombieCrowBait = (itemstack, level, player) => {
+global.finishUsingHuntableBirdBait = (itemstack, level, player) => {
     const { usedItemHand, inventory, lookAngle, eyePosition } = player
 
     player.addItemCooldown(itemstack.item, 1) // itemcooldown 0 is perfect for gat mode
 
-    global.spawnZombieCrow(player, level, eyePosition)
+    let baitBirdConfig = global.HUNTABLE_BIRD_CONSTANTS.find(cfg => cfg.HUNTABLE_BIRD_BAIT_ID === itemstack.id)
+    if (baitBirdConfig) {
+        global.spawnHuntableBird(player, level, eyePosition, baitBirdConfig)
+    }
 
     itemstack.shrink(1)
     return itemstack
 }
 
-global.spawnZombieCrow = (player, level, eyePosition) => {
-    let entity = level.createEntity(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID);
+global.spawnHuntableBird = (player, level, eyePosition, birdConfig) => {
+    let entity = level.createEntity(birdConfig.HUNTABLE_BIRD_ID);
     if (!entity) {
         return
     }

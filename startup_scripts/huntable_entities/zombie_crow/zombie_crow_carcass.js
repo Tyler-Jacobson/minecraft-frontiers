@@ -2,13 +2,15 @@ let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.prop
 let CARCASS_SKINNED_STAGE = IntegerProperty.create("skinned", 0, 4)
 
 StartupEvents.registry('block', event => {
-    event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_CARCASS_ID)
-        .displayName('Zombie Crow Carcass')
-        .notSolid()
-        .noCollision()
-        .property($BlockStateProperties.HORIZONTAL_FACING)
-        .property(CARCASS_SKINNED_STAGE)
-        .defaultState(state => {
-            state.set(CARCASS_SKINNED_STAGE, 0)
-        })
+    global.HUNTABLE_BIRD_CONSTANTS.forEach(birdConfig => {
+        event.create(birdConfig.HUNTABLE_BIRD_CARCASS_ID)
+            .displayName(birdConfig.HUNTABLE_BIRD_CARCASS_DISPLAY_NAME)
+            .notSolid()
+            .noCollision()
+            .property($BlockStateProperties.HORIZONTAL_FACING)
+            .property(CARCASS_SKINNED_STAGE)
+            .defaultState(state => {
+                state.set(CARCASS_SKINNED_STAGE, 0)
+            })
+    })
 })

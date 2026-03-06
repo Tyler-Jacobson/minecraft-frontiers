@@ -2,7 +2,7 @@
 	"format_version": "1.21.11",
 	"credit": "Made with Blockbench",
 	"textures": {
-        "1": "frontiers:item/zombie_crow/zombie_crow_carcass"
+        "1": "frontiers:item/crow/crow_carcass"
 	},
 	"elements": [
 		{

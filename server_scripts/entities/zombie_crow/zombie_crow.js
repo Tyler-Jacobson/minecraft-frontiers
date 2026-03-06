@@ -6,14 +6,14 @@ let ClipContext = Java.loadClass('net.minecraft.world.level.ClipContext')
 let HitResult = Java.loadClass('net.minecraft.world.phys.HitResult')
 let CompoundTag = Java.loadClass('net.minecraft.nbt.CompoundTag')
 
-global.zombieCrowGetFleeState = entity => {
+global.huntableBirdGetFleeState = entity => {
     let rawIsFleeingValue = entity.getSyncedData('isFleeing')
     let fleeStateFromStrictBoolean = rawIsFleeingValue === true
     let normalizedFleeState = fleeStateFromStrictBoolean
     return normalizedFleeState
 }
 
-global.spawnZombieCrowDebugSmoke = (level, defendingPos, attackAngle, smokeMatrix, smokeSpacing) => {
+global.huntableBirdDebugSmoke = (level, defendingPos, attackAngle, smokeMatrix, smokeSpacing) => {
     let horizontalLength = Math.sqrt(attackAngle.x() * attackAngle.x() + attackAngle.z() * attackAngle.z())
     if (horizontalLength === 0) {
         return
@@ -55,62 +55,67 @@ global.spawnZombieCrowDebugSmoke = (level, defendingPos, attackAngle, smokeMatri
     }
 }
 
-EntityJSEvents.addGoalSelectors(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID, event => { // goal selectors
-    event.customGoal(
-        "fight",
-        1,
-        entity => { // canUse — fight while not fleeing
-            let isFleeing = global.zombieCrowGetFleeState(entity)
-            return !isFleeing
-        },
-        entity => { // canContinueToUse — keep fighting while not fleeing
-            let isFleeing = global.zombieCrowGetFleeState(entity)
-            return !isFleeing
-        },
-        false, // isInterruptable
-        entity => { }, // goalOnStartedEvent. this runs once when the goal starts
-        entity => { }, // goalOnEndedEvent. this runs once when the goal ends
-        true, // requiresUpdateEveryTick
-        entity => { // goalOnTickEvent. this runs once every tick while the goal is running
-            global.zombieCrowRunFight(entity)
-        }
-    )
-    event.customGoal(
-        "flee",
-        2,
-        entity => { // canUse — flee when isFleeing is set
-            let isFleeing = global.zombieCrowGetFleeState(entity)
-            return isFleeing
-        },
-        entity => { // canContinueToUse — keep fleeing while flag is set
-            let isFleeing = global.zombieCrowGetFleeState(entity)
-            return isFleeing
-        },
-        true, // isInterruptable
-        entity => { // goalOnStartedEvent. this runs once when the goal starts
-            global.zombieCrowStartFlee(entity)
-        },
-        entity => { }, // goalOnEndedEvent. this runs once when the goal ends
-        true, // requiresUpdateEveryTick
-        entity => { // goalOnTickEvent. this runs once every tick while the goal is running
-            global.zombieCrowRunFleeTick(entity)
-        }
-    )
+global.HUNTABLE_BIRD_CONSTANTS.forEach(birdConfig => {
+    EntityJSEvents.addGoalSelectors(birdConfig.HUNTABLE_BIRD_ID, event => { // goal selectors
+        event.customGoal(
+            "fight",
+            1,
+            entity => { // canUse — fight while not fleeing
+                let isFleeing = global.huntableBirdGetFleeState(entity)
+                return !isFleeing
+            },
+            entity => { // canContinueToUse — keep fighting while not fleeing
+                let isFleeing = global.huntableBirdGetFleeState(entity)
+                return !isFleeing
+            },
+            false, // isInterruptable
+            entity => { }, // goalOnStartedEvent. this runs once when the goal starts
+            entity => { }, // goalOnEndedEvent. this runs once when the goal ends
+            true, // requiresUpdateEveryTick
+            entity => { // goalOnTickEvent. this runs once every tick while the goal is running
+                global.huntableBirdRunFight(entity)
+            }
+        )
+        event.customGoal(
+            "flee",
+            2,
+            entity => { // canUse — flee when isFleeing is set
+                let isFleeing = global.huntableBirdGetFleeState(entity)
+                return isFleeing
+            },
+            entity => { // canContinueToUse — keep fleeing while flag is set
+                let isFleeing = global.huntableBirdGetFleeState(entity)
+                return isFleeing
+            },
+            true, // isInterruptable
+            entity => { // goalOnStartedEvent. this runs once when the goal starts
+                global.huntableBirdStartFlee(entity)
+            },
+            entity => { }, // goalOnEndedEvent. this runs once when the goal ends
+            true, // requiresUpdateEveryTick
+            entity => { // goalOnTickEvent. this runs once every tick while the goal is running
+                global.huntableBirdRunFleeTick(entity)
+            }
+        )
+    })
+
+    EntityJSEvents.addGoals(birdConfig.HUNTABLE_BIRD_ID, event => { // target selectors
+        event.ownerHurtByTarget(0)
+        event.hurtByTarget(1, [], true, [])
+    })
+
+    BlockEvents.broken(birdConfig.HUNTABLE_BIRD_EGG_ID, event => {
+        global.huntableBirdEggBroken(event)
+    })
 })
 
-EntityJSEvents.addGoals(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID, event => { // target selectors
-    event.ownerHurtByTarget(0)
-    event.hurtByTarget(1, [], true, [])
-})
-
-BlockEvents.broken(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_ID, event => {
-    global.zombieCrowEggBroken(event)
-})
-
-global.zombieCrowEggBroken = event => {
+global.huntableBirdEggBroken = event => {
     let level = event.level
     let block = event.block
     let blockPos = block.pos
+
+    let eggBirdConfig = global.HUNTABLE_BIRD_CONSTANTS.find(cfg => cfg.HUNTABLE_BIRD_EGG_ID === block.id)
+    if (!eggBirdConfig) return
 
     let currentHealth = Number(block.properties.current_health)
     let currentPhase = Number(block.properties.current_phase)
@@ -122,8 +127,8 @@ global.zombieCrowEggBroken = event => {
         currentPhase = 0
     }
 
-    currentHealth = Math.max(0, Math.min(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_HEALTH, Math.floor(currentHealth)))
-    currentPhase = Math.max(0, Math.min(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_PHASE, Math.floor(currentPhase)))
+    currentHealth = Math.max(0, Math.min(eggBirdConfig.HUNTABLE_BIRD_EGG_MAX_HEALTH, Math.floor(currentHealth)))
+    currentPhase = Math.max(0, Math.min(eggBirdConfig.HUNTABLE_BIRD_EGG_MAX_PHASE, Math.floor(currentPhase)))
 
     for (let step = 0; step <= 15; step++) {
         let particleY = blockPos.y + step
@@ -131,7 +136,7 @@ global.zombieCrowEggBroken = event => {
             level.spawnParticles('call_of_yucutan:rain_wisp', true, blockPos.x + 0.5, particleY + 0.5, blockPos.z + 0.5, 0, 0, 0, 1, 0)
         })
     }
-    let respawnedCrow = level.createEntity(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID)
+    let respawnedCrow = level.createEntity(eggBirdConfig.HUNTABLE_BIRD_ID)
     if (!respawnedCrow) {
         return
     }
@@ -147,9 +152,12 @@ global.zombieCrowEggBroken = event => {
     respawnedCrow.setHealth(respawnHealth)
 }
 
-global.zombieCrowRunFleeTick = entity => {
+global.huntableBirdRunFleeTick = entity => {
     try {
         if (!(entity.level === 'ClientLevel')) {
+            let fleeBirdConfig = global.HUNTABLE_BIRD_CONSTANTS.find(cfg => cfg.HUNTABLE_BIRD_ID === entity.type)
+            if (!fleeBirdConfig) return
+
             let level = entity.level
             let targetX = entity.getSyncedData('ownerBlockLocationX')
             let targetY = entity.getSyncedData('ownerBlockLocationY')
@@ -160,9 +168,9 @@ global.zombieCrowRunFleeTick = entity => {
                 let result = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity))
                 if (result.getType() === HitResult.Type.BLOCK) {
                     let hit = result.getBlockPos()
-                    let currentHealth = Math.max(0, Math.min(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_HEALTH, Math.floor(entity.getHealth())))
-                    let currentPhase = Math.max(0, Math.min(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_PHASE, Number(entity.getSyncedData('currentPhase')) || 0))
-                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} ${global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_ID}[current_health=${currentHealth},current_phase=${currentPhase}]`)
+                    let currentHealth = Math.max(0, Math.min(fleeBirdConfig.HUNTABLE_BIRD_EGG_MAX_HEALTH, Math.floor(entity.getHealth())))
+                    let currentPhase = Math.max(0, Math.min(fleeBirdConfig.HUNTABLE_BIRD_EGG_MAX_PHASE, Number(entity.getSyncedData('currentPhase')) || 0))
+                    Utils.server.runCommandSilent(`execute in ${entity.level.getDimension()} run setblock ${hit.x} ${hit.y + 1} ${hit.z} ${fleeBirdConfig.HUNTABLE_BIRD_EGG_ID}[current_health=${currentHealth},current_phase=${currentPhase}]`)
 
                     try {
                         let block = level.getBlock(new BlockPos(hit.x, hit.y + 1, hit.z))
@@ -200,12 +208,12 @@ global.zombieCrowRunFleeTick = entity => {
 
             let clampedY = global.clampY(desiredY, entity.y - 3, entity.y + 3)
             if (entity.isInWater()) {
-                entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
-                global.applyHorizontalSteering(entity, targetX, targetZ, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
+                entity.getLookControl().setLookAt(targetX, clampedY, targetZ); entity.getNavigation().moveTo(targetX, clampedY, targetZ, fleeBirdConfig.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
+                global.applyHorizontalSteering(entity, targetX, targetZ, fleeBirdConfig.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
             } else {
                 entity.lookAt("eyes", new Vec3d(targetX, clampedY, targetZ))
-                entity.getNavigation().moveTo(targetX, clampedY, targetZ, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
-                global.applyHorizontalSteering(entity, targetX, targetZ, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
+                entity.getNavigation().moveTo(targetX, clampedY, targetZ, fleeBirdConfig.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
+                global.applyHorizontalSteering(entity, targetX, targetZ, fleeBirdConfig.HUNTABLE_BIRD_FLEE_MOVE_SPEED)
                 global.applyVerticalSteering(entity, clampedY, 0.15, 0.2)
             }
         }
@@ -213,10 +221,13 @@ global.zombieCrowRunFleeTick = entity => {
     }
 }
 
-global.zombieCrowRunFight = entity => {
+global.huntableBirdRunFight = entity => {
     if (entity.level === 'ClientLevel') {
         return
     }
+
+    let fightBirdConfig = global.HUNTABLE_BIRD_CONSTANTS.find(cfg => cfg.HUNTABLE_BIRD_ID === entity.type)
+    if (!fightBirdConfig) return
 
     // --- Health-check: switch to flee at 1/3 health lost ---
     let maxHealth = entity.getMaxHealth()
@@ -227,7 +238,7 @@ global.zombieCrowRunFight = entity => {
     }
     currentPhase = Math.max(0, Math.floor(currentPhase))
     let attackMatrixIndex = Math.max(0, Math.min(2, currentPhase))
-    let selectedAttackMatrix = global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ATTACK_MATRICES[attackMatrixIndex]
+    let selectedAttackMatrix = fightBirdConfig.HUNTABLE_BIRD_ATTACK_MATRICES[attackMatrixIndex]
 
     let fleeThreshold = -1
     if (currentPhase === 0) {
@@ -253,9 +264,9 @@ global.zombieCrowRunFight = entity => {
     // Debug particles for each of the 8 orbital waypoints
     for (let index = 0; index < 8; index++) {
         let waypointAngle = (index % 8) * (JavaMath.PI / 4)
-        let waypointX = nearestPlayer.x + Math.cos(waypointAngle) * global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ORBIT_RADIUS
+        let waypointX = nearestPlayer.x + Math.cos(waypointAngle) * fightBirdConfig.HUNTABLE_BIRD_ORBIT_RADIUS
         let waypointY = entity.y
-        let waypointZ = nearestPlayer.z + Math.sin(waypointAngle) * global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ORBIT_RADIUS
+        let waypointZ = nearestPlayer.z + Math.sin(waypointAngle) * fightBirdConfig.HUNTABLE_BIRD_ORBIT_RADIUS
         if (pointIndex === index) {
             entity.level.spawnParticles('minecraft:lava', false, waypointX, waypointY, waypointZ, 0, 0, 0, 1, 0)
         } else {
@@ -265,9 +276,9 @@ global.zombieCrowRunFight = entity => {
 
     // Move toward current waypoint
     let currentAngle = (pointIndex % 8) * (JavaMath.PI / 4)
-    let targetX = nearestPlayer.x + Math.cos(currentAngle) * global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ORBIT_RADIUS
+    let targetX = nearestPlayer.x + Math.cos(currentAngle) * fightBirdConfig.HUNTABLE_BIRD_ORBIT_RADIUS
     let targetY = entity.y
-    let targetZ = nearestPlayer.z + Math.sin(currentAngle) * global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ORBIT_RADIUS
+    let targetZ = nearestPlayer.z + Math.sin(currentAngle) * fightBirdConfig.HUNTABLE_BIRD_ORBIT_RADIUS
 
     let entityX = entity.x
     let entityZ = entity.z
@@ -281,8 +292,8 @@ global.zombieCrowRunFight = entity => {
     }
 
     entity.lookAt("eyes", new Vec3d(targetX, targetY, targetZ))
-    entity.getNavigation().moveTo(targetX, targetY, targetZ, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ORBIT_MOVE_SPEED)
-    global.applyHorizontalSteering(entity, targetX, targetZ, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ORBIT_MOVE_SPEED)
+    entity.getNavigation().moveTo(targetX, targetY, targetZ, fightBirdConfig.HUNTABLE_BIRD_ORBIT_MOVE_SPEED)
+    global.applyHorizontalSteering(entity, targetX, targetZ, fightBirdConfig.HUNTABLE_BIRD_ORBIT_MOVE_SPEED)
 
     // Fire projectile every 80 ticks
     if (entity.age % 80 === 0) {
@@ -319,7 +330,7 @@ global.zombieCrowRunFight = entity => {
                         let targetMatrixY = defendingPos.y()
                         let targetMatrixZ = defendingPos.z() + (forwardZ * forwardFactor * attackMatrixSpacing) + (leftZ * sideFactor * attackMatrixSpacing)
                         if (cellValue === -1) {
-                            global.spawnZombieCrowProjectile(entity, targetMatrixX, targetMatrixY, targetMatrixZ)
+                            global.spawnHuntableBirdProjectile(entity, targetMatrixX, targetMatrixY, targetMatrixZ)
                         } else if (cellValue > 0) {
                             let tickDelay = Math.max(1, Math.floor(cellValue))
                             Utils.server.scheduleInTicks(tickDelay, () => {
@@ -327,7 +338,7 @@ global.zombieCrowRunFight = entity => {
                                 if (!firingCrow || !firingCrow.isAlive()) {
                                     return
                                 }
-                                global.spawnZombieCrowProjectile(firingCrow, targetMatrixX, targetMatrixY, targetMatrixZ)
+                                global.spawnHuntableBirdProjectile(firingCrow, targetMatrixX, targetMatrixY, targetMatrixZ)
                             })
                         }
                     }
@@ -349,12 +360,12 @@ global.zombieCrowRunFight = entity => {
             return
         }
         let smokeSpacing = 3
-        global.spawnZombieCrowDebugSmoke(entity.level, defendingPos, attackAngle, selectedAttackMatrix, smokeSpacing)
+        global.huntableBirdDebugSmoke(entity.level, defendingPos, attackAngle, selectedAttackMatrix, smokeSpacing)
     } catch (err) {
     }
 }
 
-global.zombieCrowStartFlee = entity => {
+global.huntableBirdStartFlee = entity => {
     let level = entity.level
     let foundDestination = false
     for (let tries = 0; tries < 10; tries++) {
