@@ -14,6 +14,9 @@ global.ZOMBIE_CROW_EGG_MAX_PHASE = 3
 global.ZOMBIE_CROW_ORBIT_MOVE_SPEED = 0.2
 global.ZOMBIE_CROW_FLEE_MOVE_SPEED = 0.7
 global.ZOMBIE_CROW_MAX_SKINNED_STAGE = 4
+global.ZOMBIE_CROW_PROJECTILE_ON_HIT = (hitEntity) => {
+    hitEntity.setRemainingFireTicks(100)
+}
 global.ZOMBIE_CROW_ATTACK_MATRICES = [
     [
         [0, 0, 0, 0, 0],

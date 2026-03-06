@@ -119,7 +119,7 @@ global.zombieCrowProjectileOnHitBlock = (context) => {
     // }
 
     nearbyEntities.forEach((nearbyEntity) => {
-        nearbyEntity.setRemainingFireTicks(100)
+        global.ZOMBIE_CROW_PROJECTILE_ON_HIT(nearbyEntity)
         nearbyEntity.attack(damageSource, global.ZOMBIE_CROW_PROJECTILE_DAMAGE) // this should be explosive attack or fire damage attack
 
     })
@@ -180,7 +180,7 @@ global.zombieCrowProjectileOnHitEntity = (context) => {
     // }
 
     nearbyEntities.forEach((nearbyEntity) => {
-        nearbyEntity.setRemainingFireTicks(100)
+        global.ZOMBIE_CROW_PROJECTILE_ON_HIT(nearbyEntity)
         nearbyEntity.attack(damageSource, global.ZOMBIE_CROW_PROJECTILE_DAMAGE)
     })
 
