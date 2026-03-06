@@ -14,6 +14,11 @@ global.ZOMBIE_CROW_EGG_MAX_PHASE = 3
 global.ZOMBIE_CROW_ORBIT_MOVE_SPEED = 0.2
 global.ZOMBIE_CROW_FLEE_MOVE_SPEED = 0.7
 global.ZOMBIE_CROW_MAX_SKINNED_STAGE = 4
+global.ZOMBIE_CROW_CARCASS_DROPS = [
+    { item: 'frontiers:crow_feather', count: 4 },
+    { item: 'frontiers:raw_crow', count: 2 },
+    { item: 'minecraft:bone', count: 1 }
+]
 global.ZOMBIE_CROW_PROJECTILE_ON_HIT = (hitEntity) => {
     hitEntity.setRemainingFireTicks(100)
 }
