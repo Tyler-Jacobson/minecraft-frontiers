@@ -2,7 +2,7 @@ let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.prop
 let CARCASS_SKINNED_STAGE = IntegerProperty.create("skinned", 0, 4)
 
 StartupEvents.registry('block', event => {
-    event.create(global.ZOMBIE_CROW_CARCASS_ID)
+    event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_CARCASS_ID)
         .displayName('Zombie Crow Carcass')
         .notSolid()
         .noCollision()

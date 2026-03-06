@@ -1,7 +1,7 @@
 let IntegerProperty = Java.loadClass('net.minecraft.world.level.block.state.properties.IntegerProperty')
 
 EntityJSEvents.createAttributes(event => {
-    event.create(global.ZOMBIE_CROW_ID, attribute => {
+    event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID, attribute => {
         attribute.add("minecraft:generic.max_health", 40)
         attribute.add("minecraft:generic.movement_speed", 1)
     })
@@ -9,7 +9,7 @@ EntityJSEvents.createAttributes(event => {
 
 
 EntityJSEvents.modifyEntity(event => {
-    event.modify(global.ZOMBIE_CROW_ID, modifyBuilder => {
+    event.modify(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID, modifyBuilder => {
         modifyBuilder.defineSyncedData(entity => {
             entity.addSyncedData("string", "headUUID", "default")
             entity.addSyncedData("int", "orbitalDestinationIndex", 0)
@@ -26,7 +26,7 @@ EntityJSEvents.modifyEntity(event => {
 })
 
 StartupEvents.registry('entity_type', event => {
-    let builder = event.create(global.ZOMBIE_CROW_ID, 'entityjs:tamable')
+    let builder = event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID, 'entityjs:tamable')
         .mobCategory('creature')
         .sized(1.5, 1.5)
         .eggItem(item => {
@@ -38,7 +38,7 @@ StartupEvents.registry('entity_type', event => {
         })
     builder.newGeoLayer(builder => {
         // builder.render(context => global.geoLayerRender(context))
-        builder.textureResource(e => global.ZOMBIE_CROW_TEXTURE)
+        builder.textureResource(e => global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_TEXTURE)
     })
     builder.onHurt(context => {
         // Log the amount of damage received by the entity
@@ -49,7 +49,7 @@ StartupEvents.registry('entity_type', event => {
     })
     builder.createNavigation(context => EntityJSUtils.createFlyingPathNavigation(context.entity, context.level))
     builder.dropCustomDeathLoot(context => {
-        context.entity.block.popItemFromFace(global.ZOMBIE_CROW_CARCASS_ID, 'up')
+        context.entity.block.popItemFromFace(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_CARCASS_ID, 'up')
     })
     builder.addPartEntity("one", 0.9, 0.9, builder => {
         // Adds an additional hitbox to the entity with builder support
@@ -72,7 +72,7 @@ global.runZombieCrowTick = entity => {
 
 StartupEvents.registry('entity_type', event => {
     // frontiers:fireball_entity here references geo/entity/fireball_entity.geo.json and textures/entity/fireball_entity.png
-    event.create(global.ZOMBIE_CROW_PROJECTILE_ID, "entityjs:geckolib_projectile")
+    event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_ID, "entityjs:geckolib_projectile")
         .isAttackable(true)
         .isPickable(true)
         .onHitEntity(context => {
@@ -109,7 +109,7 @@ global.zombieCrowProjectileOnHitBlock = (context) => {
 
     const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(global.ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
+    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_RADIUS)).filter(entity => entity.living)
 
 
     let itemStack = global.getPlayerSpecificData(player, 'mostRecentFireStaffAttackItemstack')
@@ -119,8 +119,8 @@ global.zombieCrowProjectileOnHitBlock = (context) => {
     // }
 
     nearbyEntities.forEach((nearbyEntity) => {
-        global.ZOMBIE_CROW_PROJECTILE_ON_HIT(nearbyEntity)
-        nearbyEntity.attack(damageSource, global.ZOMBIE_CROW_PROJECTILE_DAMAGE) // this should be explosive attack or fire damage attack
+        global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_ON_HIT(nearbyEntity)
+        nearbyEntity.attack(damageSource, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_DAMAGE) // this should be explosive attack or fire damage attack
 
     })
 
@@ -168,7 +168,7 @@ global.zombieCrowProjectileOnHitEntity = (context) => {
 
     const { xsize, ysize, zsize } = hitEntity.boundingBox
 
-    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(global.ZOMBIE_CROW_PROJECTILE_RADIUS)).filter(entity => entity.living)
+    let nearbyEntities = hitEntity.level.getEntitiesWithin(hitEntity.boundingBox.deflate(xsize, ysize, zsize).inflate(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_RADIUS)).filter(entity => entity.living)
     if (!nearbyEntities.contains(hitEntity)) {
         nearbyEntities.push(hitEntity)
     }
@@ -180,8 +180,8 @@ global.zombieCrowProjectileOnHitEntity = (context) => {
     // }
 
     nearbyEntities.forEach((nearbyEntity) => {
-        global.ZOMBIE_CROW_PROJECTILE_ON_HIT(nearbyEntity)
-        nearbyEntity.attack(damageSource, global.ZOMBIE_CROW_PROJECTILE_DAMAGE)
+        global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_ON_HIT(nearbyEntity)
+        nearbyEntity.attack(damageSource, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_DAMAGE)
     })
 
     // we now get rid of the projectile entity
@@ -339,7 +339,7 @@ global.zombieCrowProjectileTryArrowIntercept = entity => {
 global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
     const { level, eyePosition } = entity
 
-    let projectile = level.createEntity(global.ZOMBIE_CROW_PROJECTILE_ID);
+    let projectile = level.createEntity(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_PROJECTILE_ID);
     // it's crucial to set the projectile entity's owner here, since we're later going to reference this in order to get the damage source
     // console.log(`player ${player}`)
     projectile.setOwner(entity)
@@ -361,10 +361,10 @@ global.spawnZombieCrowProjectile = (entity, targetX, targetY, targetZ) => {
 }
 
 StartupEvents.registry("block", event => {
-    event.create(global.ZOMBIE_CROW_EGG_ID)
+    event.create(global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_ID)
         .displayName("Zombie Crow Egg")
-        .property(IntegerProperty.create("current_health", 0, global.ZOMBIE_CROW_EGG_MAX_HEALTH))
-        .property(IntegerProperty.create("current_phase", 0, global.ZOMBIE_CROW_EGG_MAX_PHASE))
+        .property(IntegerProperty.create("current_health", 0, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_HEALTH))
+        .property(IntegerProperty.create("current_phase", 0, global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_EGG_MAX_PHASE))
         .placementState(event => {
             console.log(`placed egg`)
         })

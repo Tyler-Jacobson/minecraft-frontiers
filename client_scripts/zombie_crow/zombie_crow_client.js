@@ -5,7 +5,7 @@ ClientEvents.tick(event => {
 
     let levelEntities = event.level.entities
     let zombieCrowEntities = levelEntities.filter(entity => {
-        return entity.type === global.ZOMBIE_CROW_ID
+        return entity.type === global.HUNTABLE_BIRD_CONSTANTS.HUNTABLE_BIRD_ID
     })
 
     if (zombieCrowEntities.length) {
