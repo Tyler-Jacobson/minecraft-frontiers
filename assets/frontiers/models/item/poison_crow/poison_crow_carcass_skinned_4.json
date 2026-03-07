@@ -1,0 +1,86 @@
+{
+	"format_version": "1.21.11",
+	"credit": "Made with Blockbench",
+	"textures": {
+		"1": "frontiers:item/poison_crow/poison_crow_carcass_skinned_4"
+	},
+	"elements": [
+		{
+			"name": "body",
+			"from": [7, 4, 2],
+			"to": [9, 10, 6],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 4]},
+			"faces": {
+				"north": {"uv": [6, 0, 8, 8], "texture": "#1"},
+				"east": {"uv": [4, 0, 8, 8], "texture": "#1"},
+				"south": {"uv": [6, 0, 8, 8], "texture": "#1"},
+				"west": {"uv": [4, 0, 8, 8], "texture": "#1"},
+				"up": {"uv": [11, 3, 8, 1], "texture": "#1"},
+				"down": {"uv": [11, 9, 8, 11], "texture": "#1"}
+			}
+		},
+		{
+			"name": "hook",
+			"from": [7, 15, 7],
+			"to": [9, 16, 9],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 4]},
+			"faces": {
+				"north": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"east": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"south": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"west": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"up": {"uv": [15, 16, 14, 15], "texture": "#1"},
+				"down": {"uv": [15, 14, 14, 15], "texture": "#1"}
+			}
+		},
+		{
+			"name": "hook",
+			"from": [7, 13, 9],
+			"to": [9, 15, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 4]},
+			"faces": {
+				"north": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"east": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"south": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"west": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"up": {"uv": [15, 16, 14, 15], "texture": "#1"},
+				"down": {"uv": [15, 14, 14, 15], "texture": "#1"}
+			}
+		},
+		{
+			"name": "hook",
+			"from": [7, 7, 6],
+			"to": [9, 15, 7],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 0, 4]},
+			"faces": {
+				"north": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"east": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"south": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"west": {"uv": [15, 14, 16, 15], "texture": "#1"},
+				"up": {"uv": [15, 16, 14, 15], "texture": "#1"},
+				"down": {"uv": [15, 14, 14, 15], "texture": "#1"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "root",
+			"origin": [8, 4, 3],
+			"color": 0,
+			"children": [
+				{
+					"name": "body",
+					"origin": [8, 4, 2],
+					"color": 1,
+					"children": [0]
+				},
+				{
+					"name": "hook",
+					"origin": [8, 10, 9],
+					"color": 9,
+					"children": [1, 2, 3]
+				}
+			]
+		}
+	]
+}
