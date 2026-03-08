@@ -7,6 +7,7 @@ StartupEvents.registry('block', event => {
             .displayName(birdConfig.HUNTABLE_BIRD_CARCASS_DISPLAY_NAME)
             .notSolid()
             .noCollision()
+            .renderType('cutout')
             .property($BlockStateProperties.HORIZONTAL_FACING)
             .property(CARCASS_SKINNED_STAGE)
             .defaultState(state => {
