@@ -3,15 +3,16 @@ ClientEvents.tick(event => {
         return
     }
 
+    let allBirdTypeIds = global.HUNTABLE_BIRD_CONSTANTS.map(cfg => cfg.HUNTABLE_BIRD_ID)
     let levelEntities = event.level.entities
-    let zombieCrowEntities = levelEntities.filter(entity => {
-        return entity.type === 'frontiers:zombie_crow'
+    let huntableBirdEntities = levelEntities.filter(entity => {
+        return allBirdTypeIds.includes(entity.type)
     })
 
-    if (zombieCrowEntities.length) {
-        zombieCrowEntities.forEach(zombieCrowEntity => {
-            let currentYaw = zombieCrowEntity.getYaw()
-            zombieCrowEntity.setYBodyRot(currentYaw)
+    if (huntableBirdEntities.length) {
+        huntableBirdEntities.forEach(birdEntity => {
+            let currentYaw = birdEntity.getYaw()
+            birdEntity.setYBodyRot(currentYaw)
         })
     }
 })

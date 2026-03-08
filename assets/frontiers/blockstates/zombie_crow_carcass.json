@@ -1,12 +1,24 @@
 {
     "variants": {
-        "facing=south,skinned=false": {"model": "frontiers:block/zombie_crow_carcass", "y": 0},
-        "facing=west,skinned=false":  {"model": "frontiers:block/zombie_crow_carcass", "y": 90},
-        "facing=north,skinned=false": {"model": "frontiers:block/zombie_crow_carcass", "y": 180},
-        "facing=east,skinned=false":  {"model": "frontiers:block/zombie_crow_carcass", "y": 270},
-        "facing=south,skinned=true":  {"model": "frontiers:block/zombie_crow_carcass_skinned", "y": 0},
-        "facing=west,skinned=true":   {"model": "frontiers:block/zombie_crow_carcass_skinned", "y": 90},
-        "facing=north,skinned=true":  {"model": "frontiers:block/zombie_crow_carcass_skinned", "y": 180},
-        "facing=east,skinned=true":   {"model": "frontiers:block/zombie_crow_carcass_skinned", "y": 270}
+        "facing=south,skinned=0": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass", "y": 0},
+        "facing=west,skinned=0":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass", "y": 90},
+        "facing=north,skinned=0": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass", "y": 180},
+        "facing=east,skinned=0":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass", "y": 270},
+        "facing=south,skinned=1": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_1", "y": 0},
+        "facing=west,skinned=1":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_1", "y": 90},
+        "facing=north,skinned=1": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_1", "y": 180},
+        "facing=east,skinned=1":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_1", "y": 270},
+        "facing=south,skinned=2": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_2", "y": 0},
+        "facing=west,skinned=2":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_2", "y": 90},
+        "facing=north,skinned=2": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_2", "y": 180},
+        "facing=east,skinned=2":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_2", "y": 270},
+        "facing=south,skinned=3": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_3", "y": 0},
+        "facing=west,skinned=3":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_3", "y": 90},
+        "facing=north,skinned=3": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_3", "y": 180},
+        "facing=east,skinned=3":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_3", "y": 270},
+        "facing=south,skinned=4": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_4", "y": 0},
+        "facing=west,skinned=4":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_4", "y": 90},
+        "facing=north,skinned=4": {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_4", "y": 180},
+        "facing=east,skinned=4":  {"model": "frontiers:block/zombie_crow/zombie_crow_carcass_skinned_4", "y": 270}
     }
 }

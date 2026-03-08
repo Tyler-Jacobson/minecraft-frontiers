@@ -111,6 +111,37 @@ ServerEvents.recipes(event => {
         ]
     )
 
+    // Cooked crow (furnace, smoker, campfire)
+    event.smelting('frontiers:cooked_crow', 'frontiers:raw_crow').xp(0.35)
+    event.smoking('frontiers:cooked_crow', 'frontiers:raw_crow').xp(0.35)
+    event.campfireCooking('frontiers:cooked_crow', 'frontiers:raw_crow').xp(0.35)
+
+    // Meat hook (right-handed variant)
+    event.shaped(
+        Item.of('frontiers:meat_hook', 1),
+        [
+            ' F ',
+            ' FF',
+            '   '
+        ],
+        {
+            F: 'minecraft:flint'
+        }
+    )
+
+    // Meat hook (left-handed variant)
+    event.shaped(
+        Item.of('frontiers:meat_hook', 1),
+        [
+            ' F ',
+            'FF ',
+            '   '
+        ],
+        {
+            F: 'minecraft:flint'
+        }
+    )
+
 })
 
 
