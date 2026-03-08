@@ -7,6 +7,8 @@ BlockEvents.rightClicked(event => {
     let currentStage = parseInt(event.block.properties.get('skinned'))
     if (currentStage > skinningBirdConfig.HUNTABLE_BIRD_MAX_SKINNED_STAGE) return
 
+    event.server.runCommandSilent(`playsound ${skinningBirdConfig.HUNTABLE_BIRD_SKINNING_SOUND} player ${event.player.username} ${event.block.x} ${event.block.y} ${event.block.z} 1 1`)
+
     let facing = event.block.properties.get('facing')
     let nextStage = currentStage + 1
 

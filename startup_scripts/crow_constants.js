@@ -22,6 +22,7 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
     HUNTABLE_BIRD_ORBIT_MOVE_SPEED: 0.2,
     HUNTABLE_BIRD_FLEE_MOVE_SPEED: 0.7,
     HUNTABLE_BIRD_MAX_SKINNED_STAGE: 4,
+    HUNTABLE_BIRD_SKINNING_SOUND: 'minecraft:block.coral_block.hit',
     HUNTABLE_BIRD_CARCASS_DROPS: [
         { item: 'frontiers:crow_feather', count: 4 },
         { item: 'frontiers:raw_crow', count: 2 },
@@ -78,6 +79,7 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
     HUNTABLE_BIRD_ORBIT_MOVE_SPEED: 0.2,
     HUNTABLE_BIRD_FLEE_MOVE_SPEED: 0.7,
     HUNTABLE_BIRD_MAX_SKINNED_STAGE: 4,
+    HUNTABLE_BIRD_SKINNING_SOUND: 'minecraft:block.coral_block.hit',
     HUNTABLE_BIRD_CARCASS_DROPS: [
         { item: 'frontiers:crow_feather', count: 4 },
         { item: 'frontiers:raw_crow', count: 2 },
@@ -134,6 +136,7 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
     HUNTABLE_BIRD_ORBIT_MOVE_SPEED: 0.2,
     HUNTABLE_BIRD_FLEE_MOVE_SPEED: 0.7,
     HUNTABLE_BIRD_MAX_SKINNED_STAGE: 4,
+    HUNTABLE_BIRD_SKINNING_SOUND: 'minecraft:block.coral_block.hit',
     HUNTABLE_BIRD_CARCASS_DROPS: [
         { item: 'frontiers:crow_feather', count: 4 },
         { item: 'frontiers:poison_sinew', count: 2 },
@@ -190,6 +193,7 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
     HUNTABLE_BIRD_ORBIT_MOVE_SPEED: 0.2,
     HUNTABLE_BIRD_FLEE_MOVE_SPEED: 0.7,
     HUNTABLE_BIRD_MAX_SKINNED_STAGE: 4,
+    HUNTABLE_BIRD_SKINNING_SOUND: 'minecraft:entity.skeleton.ambient',
     HUNTABLE_BIRD_CARCASS_DROPS: [
         { item: 'frontiers:crow_feather', count: 4 },
         { item: 'frontiers:sharp_beak', count: 2 },
