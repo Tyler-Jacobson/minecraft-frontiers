@@ -52,7 +52,6 @@ StartupEvents.registry('entity_type', event => {
             // global.runOnHurt(context)
         })
         builder.aiStep(entity => {
-            global.runHuntableBirdTick(entity)
         })
         builder.createNavigation(context => EntityJSUtils.createFlyingPathNavigation(context.entity, context.level))
         builder.dropCustomDeathLoot(context => {
@@ -61,25 +60,20 @@ StartupEvents.registry('entity_type', event => {
                 context.entity.block.popItemFromFace(droppedBirdConfig.HUNTABLE_BIRD_CARCASS_ID, 'up')
             }
         })
-        builder.addPartEntity("one", 0.9, 0.9, builder => {
-            // Adds an additional hitbox to the entity with builder support
-            builder
-                .isPickable(true)
-                .onPartHurt(context => {
-                    const { entity, part, source, amount } = context
-                    // Custom logic for determining how the parts of the entity should relay damage
-                    // To the entity. For example, relay double the damage to the entity when this hitbox is hit
-                    entity.attack(source, amount * 2)
-                    console.log("source: " + source + " amount: " + amount + " part name: " + part.name)
-                })
-        })
+        // builder.addPartEntity("one", 0.9, 0.9, builder => {
+        //     // Adds an additional hitbox to the entity with builder support
+        //     builder
+        //         .isPickable(true)
+        //         .onPartHurt(context => {
+        //             const { entity, part, source, amount } = context
+        //             // Custom logic for determining how the parts of the entity should relay damage
+        //             // To the entity. For example, relay double the damage to the entity when this hitbox is hit
+        //             entity.attack(source, amount * 2)
+        //             console.log("source: " + source + " amount: " + amount + " part name: " + part.name)
+        //         })
+        // })
     })
 })
-
-global.runHuntableBirdTick = entity => {
-    // Part entity tick only — fight/flee logic lives in server-script goals
-    entity.tickPart("one", entity.getLookAngle().x(), 0.8, entity.getLookAngle().z())
-}
 
 StartupEvents.registry('entity_type', event => {
     global.HUNTABLE_BIRD_CONSTANTS.forEach(birdConfig => {
