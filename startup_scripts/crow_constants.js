@@ -29,7 +29,7 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'minecraft:bone', count: 1 }
     ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
-        hitEntity.setRemainingFireTicks(100)
+        hitEntity.potionEffects.add('minecraft:hunger', 20 * 20, 0, false, true)
     },
     HUNTABLE_BIRD_ATTACK_MATRICES: [
         [
@@ -86,7 +86,6 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'minecraft:bone', count: 1 }
     ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
-        hitEntity.setRemainingFireTicks(100)
     },
     HUNTABLE_BIRD_ATTACK_MATRICES: [
         [
@@ -143,7 +142,7 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'minecraft:bone', count: 1 }
     ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
-        hitEntity.setRemainingFireTicks(100)
+        hitEntity.potionEffects.add('minecraft:poison', 10 * 20, 0, false, true)
     },
     HUNTABLE_BIRD_ATTACK_MATRICES: [
         [
@@ -200,7 +199,7 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'minecraft:bone', count: 1 }
     ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
-        hitEntity.setRemainingFireTicks(100)
+        hitEntity.potionEffects.add('minecraft:levitation', 8, 18, false, false)
     },
     HUNTABLE_BIRD_ATTACK_MATRICES: [
         [
