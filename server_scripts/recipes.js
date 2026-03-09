@@ -1,4 +1,12 @@
 ServerEvents.recipes(event => {
+    // Remove existing recipes for items we're replacing
+    event.remove({ output: 'morebows:multi_bow', type: 'minecraft:crafting_shaped' })
+    event.remove({ output: 'morebows:multi_bow', type: 'minecraft:crafting_shapeless' })
+    event.remove({ output: 'call_of_yucutan:flint_spear', type: 'minecraft:crafting_shaped' })
+    event.remove({ output: 'call_of_yucutan:flint_spear', type: 'minecraft:crafting_shapeless' })
+    event.remove({ output: 'minecraft:bundle', type: 'minecraft:crafting_shaped' })
+    event.remove({ output: 'minecraft:bundle', type: 'minecraft:crafting_shapeless' })
+
     event.shaped('frontiers:fire_staff', [
         ' AF',
         ' SA',
@@ -136,6 +144,78 @@ ServerEvents.recipes(event => {
         ],
         {
             F: 'minecraft:flint'
+        }
+    )
+
+    // Multi bow (left-handed variant)
+    event.shaped(
+        Item.of('morebows:multi_bow', 1),
+        [
+            'PS ',
+            'P S',
+            'PS '
+        ],
+        {
+            P: 'frontiers:poison_sinew',
+            S: 'minecraft:stick'
+        }
+    )
+
+    // Multi bow (right-handed variant)
+    event.shaped(
+        Item.of('morebows:multi_bow', 1),
+        [
+            ' SP',
+            'S P',
+            ' SP'
+        ],
+        {
+            P: 'frontiers:poison_sinew',
+            S: 'minecraft:stick'
+        }
+    )
+
+    // Flint spear (right-handed variant)
+    event.shaped(
+        Item.of('call_of_yucutan:flint_spear', 1),
+        [
+            ' FB',
+            ' SF',
+            'S  '
+        ],
+        {
+            F: 'minecraft:flint',
+            S: 'minecraft:stick',
+            B: 'frontiers:sharp_beak'
+        }
+    )
+
+    // Flint spear (left-handed variant)
+    event.shaped(
+        Item.of('call_of_yucutan:flint_spear', 1),
+        [
+            'BF ',
+            'FS ',
+            '  S'
+        ],
+        {
+            F: 'minecraft:flint',
+            S: 'minecraft:stick',
+            B: 'frontiers:sharp_beak'
+        }
+    )
+
+    // Bundle
+    event.shaped(
+        Item.of('minecraft:bundle', 1),
+        [
+            ' T ',
+            'Z Z',
+            ' Z '
+        ],
+        {
+            T: 'minecraft:string',
+            Z: 'frontiers:zombie_crow_flesh'
         }
     )
 
