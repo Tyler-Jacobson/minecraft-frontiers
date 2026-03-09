@@ -30,8 +30,8 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         'minecraft:wheat_seeds'
     ],
     HUNTABLE_BIRD_CARCASS_DROPS: [
-        { item: 'frontiers:crow_feather', count: 4 },
-        { item: 'frontiers:raw_crow', count: 2 },
+        { item: 'frontiers:crow_feather', count: 3 },
+        { item: 'frontiers:zombie_crow_flesh', count: 2 },
         { item: 'minecraft:bone', count: 1 }
     ],
     HUNTABLE_BIRD_EGG_DROPS: [
@@ -226,9 +226,9 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         'minecraft:wheat_seeds'
     ],
     HUNTABLE_BIRD_CARCASS_DROPS: [
-        { item: 'frontiers:crow_feather', count: 4 },
-        { item: 'frontiers:sharp_beak', count: 2 },
-        { item: 'minecraft:bone', count: 1 }
+        { item: 'frontiers:crow_feather', count: 2 },
+        { item: 'frontiers:sharp_beak', count: 1 },
+        { item: 'minecraft:bone', count: 3 }
     ],
     HUNTABLE_BIRD_EGG_DROPS: [
         { item: 'frontiers:ebony_shell_plating', count: 1 }
