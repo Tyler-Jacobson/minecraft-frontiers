@@ -380,16 +380,3 @@ global.spawnHuntableBirdProjectile = (entity, targetX, targetY, targetZ) => {
     projectile.setNoGravity(true)
     projectile.spawn()
 }
-
-StartupEvents.registry("block", event => {
-    global.HUNTABLE_BIRD_CONSTANTS.forEach(birdConfig => {
-        event.create(birdConfig.HUNTABLE_BIRD_EGG_ID)
-            .displayName(birdConfig.HUNTABLE_BIRD_EGG_DISPLAY_NAME)
-            .textureAll(birdConfig.HUNTABLE_BIRD_EGG_TEXTURE)
-            .property(IntegerProperty.create("current_health", 0, birdConfig.HUNTABLE_BIRD_EGG_MAX_HEALTH))
-            .property(IntegerProperty.create("current_phase", 0, birdConfig.HUNTABLE_BIRD_EGG_MAX_PHASE))
-            .placementState(event => {
-                console.log(`placed egg`)
-            })
-    })
-})

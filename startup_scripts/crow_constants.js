@@ -28,6 +28,9 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'frontiers:raw_crow', count: 2 },
         { item: 'minecraft:bone', count: 1 }
     ],
+    HUNTABLE_BIRD_EGG_DROPS: [
+        { item: 'frontiers:ebony_shell_plating', count: 1 }
+    ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
         hitEntity.potionEffects.add('minecraft:hunger', 20 * 20, 0, false, true)
     },
@@ -85,6 +88,9 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'frontiers:raw_crow', count: 2 },
         { item: 'minecraft:bone', count: 1 }
     ],
+    HUNTABLE_BIRD_EGG_DROPS: [
+        { item: 'frontiers:ebony_shell_plating', count: 1 }
+    ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
     },
     HUNTABLE_BIRD_ATTACK_MATRICES: [
@@ -140,6 +146,9 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'frontiers:crow_feather', count: 4 },
         { item: 'frontiers:poison_sinew', count: 2 },
         { item: 'minecraft:bone', count: 1 }
+    ],
+    HUNTABLE_BIRD_EGG_DROPS: [
+        { item: 'frontiers:ebony_shell_plating', count: 1 }
     ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
         hitEntity.potionEffects.add('minecraft:poison', 10 * 20, 0, false, true)
@@ -197,6 +206,9 @@ global.HUNTABLE_BIRD_CONSTANTS = [{
         { item: 'frontiers:crow_feather', count: 4 },
         { item: 'frontiers:sharp_beak', count: 2 },
         { item: 'minecraft:bone', count: 1 }
+    ],
+    HUNTABLE_BIRD_EGG_DROPS: [
+        { item: 'frontiers:ebony_shell_plating', count: 1 }
     ],
     HUNTABLE_BIRD_PROJECTILE_ON_HIT: (hitEntity) => {
         hitEntity.potionEffects.add('minecraft:levitation', 8, 18, false, false)
