@@ -6,6 +6,8 @@ ServerEvents.recipes(event => {
     event.remove({ output: 'call_of_yucutan:flint_spear', type: 'minecraft:crafting_shapeless' })
     event.remove({ output: 'minecraft:bundle', type: 'minecraft:crafting_shaped' })
     event.remove({ output: 'minecraft:bundle', type: 'minecraft:crafting_shapeless' })
+    event.remove({ output: 'rediscovered:purple_arrow', type: 'minecraft:crafting_shaped' })
+    event.remove({ output: 'rediscovered:purple_arrow', type: 'minecraft:crafting_shapeless' })
 
     event.shaped('frontiers:fire_staff', [
         ' AF',
@@ -69,9 +71,9 @@ ServerEvents.recipes(event => {
     event.shaped(
         Item.of('minecraft:arrow', 8),
         [
-            '  A',
+            ' A ',
             ' B ',
-            'C  '
+            ' C '
         ],
         {
             A: 'minecraft:flint',
@@ -216,6 +218,21 @@ ServerEvents.recipes(event => {
         {
             T: 'minecraft:string',
             Z: 'frontiers:zombie_crow_flesh'
+        }
+    )
+
+    // Purple arrow (yields 4)
+    event.shaped(
+        Item.of('rediscovered:purple_arrow', 4),
+        [
+            ' F ',
+            ' B ',
+            ' C '
+        ],
+        {
+            F: 'minecraft:flint',
+            B: 'minecraft:bone',
+            C: 'frontiers:crow_feather'
         }
     )
 
