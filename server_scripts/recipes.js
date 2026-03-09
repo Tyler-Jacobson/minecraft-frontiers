@@ -100,16 +100,13 @@ ServerEvents.recipes(event => {
         }
     )
 
-    // Zombie crow bait (shapeless: 2 plant fiber + 2 wheat seeds)
-    event.shapeless(
-        Item.of('frontiers:zombie_crow_bait', 1),
-        [
-            'frontiers:plant_fiber',
-            'frontiers:plant_fiber',
-            'minecraft:wheat_seeds',
-            'minecraft:wheat_seeds'
-        ]
-    )
+    // Huntable bird bait recipes (from crow_constants)
+    global.HUNTABLE_BIRD_CONSTANTS.forEach(birdConfig => {
+        event.shapeless(
+            Item.of(birdConfig.HUNTABLE_BIRD_BAIT_ID, 1),
+            birdConfig.HUNTABLE_BIRD_BAIT_RECIPE
+        )
+    })
 
     // Cooked crow (furnace, smoker, campfire)
     event.smelting('frontiers:cooked_crow', 'frontiers:raw_crow').xp(0.35)
